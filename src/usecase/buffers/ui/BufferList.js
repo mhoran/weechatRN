@@ -18,6 +18,7 @@ export default class BufferList extends Component {
 
         return (
             <View style={styles.container}>
+                <View style={styles.topbar}></View>
                 <ScrollView style={styles.container}>
                     {buffersList.map(buffer => (
                         <TouchableHighlight key={buffer.name}
@@ -44,15 +45,13 @@ export default class BufferList extends Component {
     }
 };
 
-const { width, height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
     container: {
-        height: height,
-        width: width,
-        paddingRight: width * 0.2,
         flex: 1,
         backgroundColor: '#121212'
+    },
+    topbar: {
+        height: 30
     },
     row: {
         flexDirection: 'row',
@@ -62,9 +61,8 @@ const styles = StyleSheet.create({
     },
     listItem: {
         flex: 1,
-        paddingRight: width * 0.4,
         height: 40,
-        paddingLeft: 10,
+        paddingHorizontal: 20,
         justifyContent: 'center',
     },
     listItemText: {

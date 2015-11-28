@@ -2,6 +2,8 @@ import React from 'react-native';
 
 import ParsedText from 'react-native-parsed-text';
 
+import { hashNickToColor } from '../../../../lib/helpers/colorizer';
+
 const {
     Component,
     StyleSheet,
@@ -39,13 +41,15 @@ export default class BufferLine extends Component {
                 <View style={[styles.container, highlightedViewStyles(line)]}>
                     <View style={styles.metaContainer}>
                         <View style={styles.userContainer}>
-                            <Text style={[styles.text, styles.meta, getHighlightedTextStyles(line)]}>{line.nick}</Text>
+                            <Text style={[styles.text, styles.meta, {color: hashNickToColor(line.nick)}, getHighlightedTextStyles(line)]}>
+                                {line.nick}
+                            </Text>
                         </View>
                         <Text style={[styles.text, styles.meta, getHighlightedTextStyles(line)]}>{line.time}</Text>
                     </View>
                     <View style={[styles.messageContainer, highlightedViewStyles(line)]}>
                         <ParsedText
-                            style={[styles.text, getHighlightedTextStyles(line)]}
+                            style={[styles.text, {color: hashNickToColor(line.nick)}, getHighlightedTextStyles(line)]}
                             parse={parseArgs}>
                         {line.message}
                         </ParsedText>

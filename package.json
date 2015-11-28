@@ -6,11 +6,12 @@
     "start": "node_modules/react-native/packager/packager.sh"
   },
   "dependencies": {
+    "js-sha256": "^0.3.0",
     "react": "^0.14.3",
     "react-apple-easing": "0.0.2",
     "react-native": "~0.15.0",
+    "react-native-drawer": "^1.9.0",
     "react-native-parsed-text": "0.0.4",
-    "react-native-side-menu": "^0.15.5",
     "react-redux": "^3.1.0",
     "redux": "^3.0.4",
     "redux-diff-logger": "0.0.6"
