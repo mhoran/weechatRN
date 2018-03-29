@@ -1,19 +1,28 @@
 {
-  "name": "WeechatRN",
+  "name": "WeechatNative",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node_modules/react-native/packager/packager.sh"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
   },
   "dependencies": {
-    "js-sha256": "^0.3.0",
-    "react": "^0.14.3",
-    "react-apple-easing": "0.0.2",
-    "react-native": "~0.15.0",
-    "react-native-drawer": "^1.9.0",
-    "react-native-parsed-text": "0.0.4",
-    "react-redux": "^3.1.0",
-    "redux": "^3.0.4",
-    "redux-diff-logger": "0.0.6"
+    "js-sha256": "^0.9.0",
+    "react": "^16.3.0-alpha.1",
+    "react-apple-easing": "^0.0.2",
+    "react-native": "0.54.4",
+    "react-native-drawer": "^2.5.0",
+    "react-native-parsed-text": "^0.0.20",
+    "react-redux": "^5.0.7",
+    "redux": "^3.7.2"
+  },
+  "devDependencies": {
+    "babel-jest": "22.4.3",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "22.4.3",
+    "react-test-renderer": "^16.3.0-alpha.1"
+  },
+  "jest": {
+    "preset": "react-native"
   }
 }

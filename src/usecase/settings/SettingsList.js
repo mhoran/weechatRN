@@ -1,12 +1,9 @@
-import React from 'react-native';
+import React from "react";
 
-const SettingsList = React.createClass({
-    getInitialState() {
-        return {};
-    },
-    render() {
-        return null;
-    }
-});
+class SettingsList extends React.Component {
+  render() {
+    return null;
+  }
+}
 
 export default SettingsList;

@@ -1,19 +1,17 @@
-import { combineReducers, createStore, applyMiddleware } from 'redux';
-import logger from 'redux-diff-logger';
+import { combineReducers, createStore, applyMiddleware } from "redux";
 
-import buffer from '../usecase/buffers/reducers/BufferReducer';
-
+import buffer from "../usecase/buffers/reducers/BufferReducer";
 
 const app = (state = {}, action) => {
-    return state;
+  return state;
 };
 
 const reducer = combineReducers({
-    app,
-    buffer
+  app,
+  buffer
 });
 
-
-const createStoreWithMiddleware = applyMiddleware(logger)(createStore);
-
-export default createStoreWithMiddleware(reducer);
+export default createStore(
+  reducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);

@@ -1,26 +1,31 @@
+import { WeeChatProtocol } from "./parser";
+
+const protocol = new WeeChatProtocol();
+
 export default class WeechatConnection {
-    constructor(host: string, password: string = '') {
-        this.host = host;
-        this.password = password;
-        this.websocket = null;
-    }
+  constructor(host, password = "") {
+    this.host = host;
+    this.password = password;
+    this.websocket = null;
+  }
 
-    connect() {
-        return new Promise((resolve, reject) => {
-            this.websocket = new WebSocket(this.host);
+  connect() {
+    return new Promise((resolve, reject) => {
+      this.websocket = new WebSocket(this.host);
 
-            this.websocket.onopen = () => resolve(this);
-            this.websocket.onmessage = (msg) => console.log(msg);
-            this.websocket.onerror = reject;
-        });
-    }
+      this.websocket.onopen = () => resolve(this);
+      this.websocket.onmessage = this.onmessage;
+      this.websocket.onerror = reject;
+    });
+  }
 
-    onmessage(message) {
-        console.log('Recieved data:', message);
-    }
+  onmessage(event) {
+    console.log("Recieved data:", event.data);
+    console.log("Parsed data:", protocol.parse(event.data));
+  }
 
-    send(data) {
-        console.log('Sending data:', data);
-        this.websocket.send(data);
-    }
+  send(data) {
+    console.log("Sending data:", data);
+    this.websocket.send(data);
+  }
 }

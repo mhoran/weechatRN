@@ -1,18 +1,14 @@
-import React from 'react-native';
+import React from "react";
 
-const {
-    Component,
-    } = React;
+import Default from "./themes/Default";
+import Messenger from "./themes/Messenger";
 
-import Default from './themes/Default';
-import Messenger from './themes/Messenger';
+export default class BufferLine extends React.Component {
+  render() {
+    const { line, onLongPress, parseArgs } = this.props;
 
-export default class BufferLine extends Component {
-    render() {
-        let { line, onLongPress, parseArgs } = this.props;
-
-        return (
-            <Default line={line} onLongPress={onLongPress} parseArgs={parseArgs} />
-        );
-    }
-};
+    return (
+      <Default line={line} onLongPress={onLongPress} parseArgs={parseArgs} />
+    );
+  }
+}
