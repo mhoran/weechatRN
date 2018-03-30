@@ -7,7 +7,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.106",
     "js-sha256": "^0.9.0",
+    "lodash": "^4.17.5",
     "react": "^16.3.0-alpha.1",
     "react-apple-easing": "^0.0.2",
     "react-native": "0.54.4",
@@ -17,10 +19,14 @@
     "redux": "^3.7.2"
   },
   "devDependencies": {
+    "@types/react-native": "^0.52.21",
     "babel-jest": "22.4.3",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.4.3",
-    "react-test-renderer": "^16.3.0-alpha.1"
+    "prettier": "^1.11.1",
+    "react-native-typescript-transformer": "^1.2.3",
+    "react-test-renderer": "^16.3.0-alpha.1",
+    "typescript": "^2.8.1"
   },
   "jest": {
     "preset": "react-native"
