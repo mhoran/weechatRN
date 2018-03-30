@@ -5,7 +5,7 @@ import {
   LinkingIOS,
   ActionSheetIOS,
   Animated,
-  DeviceEventEmitter,
+  Keyboard,
   TextInput,
   Easing,
   View
@@ -72,13 +72,11 @@ class BufferView extends React.Component {
     inputWidth: new Animated.Value(350)
   };
   componentDidMount() {
-    this.cancelKeyboardWillShow = DeviceEventEmitter.addListener(
-      "keyboardWillShow",
-      e => this._keyboardWillShow(e)
+    this.cancelKeyboardWillShow = Keyboard.addListener("keyboardWillShow", e =>
+      this._keyboardWillShow(e)
     );
-    this.cancelKeyboardWillHide = DeviceEventEmitter.addListener(
-      "keyboardWillHide",
-      e => this._keyboardWillHide(e)
+    this.cancelKeyboardWillHide = Keyboard.addListener("keyboardWillHide", e =>
+      this._keyboardWillHide(e)
     );
   }
   _keyboardWillShow(e) {
@@ -159,7 +157,7 @@ class BufferView extends React.Component {
 }
 
 export default connect((state, props) => ({
-  buffer: state.buffer.buffers[props.bufferName]
+  buffer: state.buffers[props.bufferName]
 }))(BufferView);
 
 const light = false;

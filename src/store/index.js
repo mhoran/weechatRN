@@ -1,14 +1,21 @@
 import { combineReducers, createStore, applyMiddleware } from "redux";
 
-import buffer from "../usecase/buffers/reducers/BufferReducer";
+import buffers from "./buffers";
 
-const app = (state = {}, action) => {
-  return state;
+const app = (state = { connected: false }, action) => {
+  switch (action.type) {
+    case "FETCH_VERSION":
+      return {
+        connected: true
+      };
+    default:
+      return state;
+  }
 };
 
 const reducer = combineReducers({
   app,
-  buffer
+  buffers
 });
 
 export default createStore(

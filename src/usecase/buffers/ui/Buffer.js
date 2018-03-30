@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Animated,
-  DeviceEventEmitter,
-  ListView,
-  View
-} from "react-native";
+import { StyleSheet, Animated, Keyboard, ListView, View } from "react-native";
 import { connect } from "react-redux";
 
 import AppleEasing from "react-apple-easing";
@@ -21,13 +15,11 @@ class Buffer extends React.Component {
   };
 
   componentDidMount() {
-    this.cancelKeyboardWillShow = DeviceEventEmitter.addListener(
-      "keyboardWillShow",
-      e => this._keyboardWillShow(e)
+    this.cancelKeyboardWillShow = Keyboard.addListener("keyboardWillShow", e =>
+      this._keyboardWillShow(e)
     );
-    this.cancelKeyboardWillHide = DeviceEventEmitter.addListener(
-      "keyboardWillHide",
-      e => this._keyboardWillHide(e)
+    this.cancelKeyboardWillHide = Keyboard.addListener("keyboardWillHide", e =>
+      this._keyboardWillHide(e)
     );
   }
   _keyboardWillShow(e) {

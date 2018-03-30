@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { connect } from "react-redux";
+import * as _ from "lodash";
 
 import Drawer from "react-native-drawer";
 
@@ -9,19 +10,28 @@ import { changeCurrentBuffer } from "./buffers/actions/BufferActions";
 import BufferView from "./buffers/ui/BufferView";
 import BufferList from "./buffers/ui/BufferList";
 
-class App extends React.Component {
+interface Props {
+  buffers: WeechatBuffer[];
+  currentBufferName: string;
+}
+
+class App extends React.Component<Props> {
+  drawer: Drawer;
+
   changeCurrentBuffer(bufferName) {
-    this.props.dispatch(changeCurrentBuffer(bufferName));
+    // this.props.dispatch(changeCurrentBuffer(bufferName));
     this.drawer.close();
   }
   render() {
     const { buffers, currentBufferName } = this.props;
 
+    console.log(buffers);
+
     const sidebar = (
       <BufferList
-        buffers={buffers}
+        buffers={_.orderBy(buffers, ["number"])}
         currentBufferName={currentBufferName}
-        onSelectBuffer={b => this.changeCurrentBuffer(b.name)}
+        onSelectBuffer={b => this.changeCurrentBuffer(b.short_name)}
       />
     );
 
@@ -59,8 +69,7 @@ class App extends React.Component {
 }
 
 export default connect(state => ({
-  currentBufferName: state.buffer.currentBufferName,
-  buffers: state.buffer.buffers
+  buffers: _.values(state.buffers)
 }))(App);
 
 const styles = StyleSheet.create({
