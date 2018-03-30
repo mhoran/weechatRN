@@ -49,3 +49,20 @@ interface Header {
   length: number;
   compression: number;
 }
+
+interface WeechatLine {
+  pointers: string[];
+  prefix_length: number;
+  prefix: string;
+  displayed: number;
+  message: string;
+  refresh_needed: number;
+  str_time: string;
+  date: string;
+  tags_count: number;
+  date_printed: string;
+  tags_array: string[];
+  buffer: string;
+  highlight: number;
+  y: number;
+}

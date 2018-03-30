@@ -1,6 +1,7 @@
 import { combineReducers, createStore, applyMiddleware } from "redux";
 
 import buffers from "./buffers";
+import lines from "./lines";
 
 const app = (state = { connected: false }, action) => {
   switch (action.type) {
@@ -15,7 +16,8 @@ const app = (state = { connected: false }, action) => {
 
 const reducer = combineReducers({
   app,
-  buffers
+  buffers,
+  lines
 });
 
 export default createStore(

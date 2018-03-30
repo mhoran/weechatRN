@@ -25,7 +25,13 @@ const getHighlightedTextStyles = line => {
   }
 };
 
-export default class BufferLine extends React.Component {
+interface Props {
+  line: WeechatLine;
+  onLongPress: (any) => any;
+  parseArgs: any;
+}
+
+export default class BufferLine extends React.Component<Props> {
   render() {
     const { line, onLongPress, parseArgs } = this.props;
     return (
@@ -37,24 +43,24 @@ export default class BufferLine extends React.Component {
                 style={[
                   styles.text,
                   styles.meta,
-                  { color: hashNickToColor(line.nick) },
+                  { color: hashNickToColor(line.prefix) },
                   getHighlightedTextStyles(line)
                 ]}
               >
-                {line.nick}
+                {line.prefix}
               </Text>
             </View>
             <Text
               style={[styles.text, styles.meta, getHighlightedTextStyles(line)]}
             >
-              {line.time}
+              {String(line.date_printed)}
             </Text>
           </View>
           <View style={[styles.messageContainer, highlightedViewStyles(line)]}>
             <ParsedText
               style={[
                 styles.text,
-                { color: hashNickToColor(line.nick) },
+                { color: hashNickToColor(line.prefix) },
                 getHighlightedTextStyles(line)
               ]}
               parse={parseArgs}

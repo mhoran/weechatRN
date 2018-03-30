@@ -10,10 +10,11 @@ import store from "./src/store";
 import App from "./src/usecase/App";
 import ConnectionGate from "./src/usecase/ConnectionGate";
 
+const connection = new WeechatConnection(store.dispatch, HOSTNAME, PASSWORD);
+
 class WeechatNative extends React.Component {
   componentWillMount() {
-    let connection = new WeechatConnection(store.dispatch, HOSTNAME, PASSWORD);
-    let compressed = false;
+    const compressed = false;
 
     connection.connect().then(
       conn => {
@@ -33,11 +34,17 @@ class WeechatNative extends React.Component {
       }
     );
   }
+  fetchLines = (bufferId, numLines = 50) => {
+    connection &&
+      connection.send(
+        `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`
+      );
+  };
   render() {
     return (
       <Provider store={store}>
         <ConnectionGate>
-          <App />
+          <App fetchLinesForBuffer={this.fetchLines} />
         </ConnectionGate>
       </Provider>
     );

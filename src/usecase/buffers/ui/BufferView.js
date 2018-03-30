@@ -66,7 +66,7 @@ const formatUrl = (type, text) => {
 const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
 //const easingFunction = AppleEasing.easeIn;
 
-class BufferView extends React.Component {
+export default class BufferView extends React.Component {
   state = {
     keyboardOffset: new Animated.Value(0),
     inputWidth: new Animated.Value(350)
@@ -119,17 +119,19 @@ class BufferView extends React.Component {
     );
   }
   handleOnPress(type, text) {
-    console.log(type, text);
-    if (type === "channel") {
-      this.props.dispatch(changeCurrentBuffer(text));
-    } else {
-      LinkingIOS.openURL(formatUrl(type, text));
-    }
+    // console.log(type, text);
+    // if (type === "channel") {
+    //   this.props.dispatch(changeCurrentBuffer(text));
+    // } else {
+    //   LinkingIOS.openURL(formatUrl(type, text));
+    // }
   }
   render() {
-    const { buffer } = this.props;
+    const { bufferId } = this.props;
 
-    if (!buffer) {
+    console.log({ bufferId });
+
+    if (!bufferId) {
       return <View style={styles.container} />;
     }
 
@@ -138,7 +140,7 @@ class BufferView extends React.Component {
         style={[styles.container, { marginBottom: this.state.keyboardOffset }]}
       >
         <Buffer
-          buffer={buffer}
+          bufferId={bufferId}
           onLongPress={line => null}
           parseArgs={getParseArgs(this.handleOnPress, this.handleOnLongPress)}
         />
@@ -155,10 +157,6 @@ class BufferView extends React.Component {
     );
   }
 }
-
-export default connect((state, props) => ({
-  buffer: state.buffers[props.bufferName]
-}))(BufferView);
 
 const light = false;
 

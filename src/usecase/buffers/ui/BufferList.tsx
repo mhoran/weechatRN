@@ -61,7 +61,7 @@ export default class BufferList extends React.Component<Props> {
         <FlatList
           style={styles.container}
           data={buffers}
-          keyExtractor={buffer => buffer.pointers[0]}
+          keyExtractor={buffer => buffer.id}
           renderItem={({ item }) => (
             <BufferListItem
               buffer={item}

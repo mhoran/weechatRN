@@ -18,8 +18,8 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
         return {
           type: "FETCH_BUFFERS",
           payload: reduceToObjectByKey(
-            object.content,
-            buffer => buffer.pointers[0]
+            object.content.map(o => ({ ...o, id: o.pointers[0] })),
+            buffer => buffer.id
           )
         };
       }
@@ -29,6 +29,14 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
         return {
           type: "FETCH_VERSION",
           payload: infolist.content.value
+        };
+      }
+      case "lines": {
+        const object = data.objects[0] as WeechatObject<WeechatLine[]>;
+        return {
+          type: "FETCH_LINES",
+          bufferId: object.content[0].buffer,
+          payload: object.content
         };
       }
     }

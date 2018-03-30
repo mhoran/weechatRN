@@ -13,27 +13,40 @@ import BufferList from "./buffers/ui/BufferList";
 interface Props {
   buffers: WeechatBuffer[];
   currentBufferName: string;
+  fetchLinesForBuffer: (string) => void;
 }
 
-class App extends React.Component<Props> {
+interface State {
+  currentBufferId: string | null;
+}
+
+class App extends React.Component<Props, State> {
   drawer: Drawer;
 
-  changeCurrentBuffer(bufferName) {
+  state: State = { currentBufferId: null };
+
+  changeCurrentBuffer = buffer => {
     // this.props.dispatch(changeCurrentBuffer(bufferName));
     this.drawer.close();
-  }
+    this.props.fetchLinesForBuffer(buffer.id);
+    console.log(buffer, buffer.id);
+    this.setState({
+      currentBufferId: buffer.id
+    });
+  };
   render() {
+    const { currentBufferId } = this.state;
     const { buffers, currentBufferName } = this.props;
-
-    console.log(buffers);
 
     const sidebar = (
       <BufferList
         buffers={_.orderBy(buffers, ["number"])}
         currentBufferName={currentBufferName}
-        onSelectBuffer={b => this.changeCurrentBuffer(b.short_name)}
+        onSelectBuffer={this.changeCurrentBuffer}
       />
     );
+
+    console.log({ currentBufferId });
 
     return (
       <View style={styles.container}>
@@ -61,7 +74,7 @@ class App extends React.Component<Props> {
             </View>
             <View style={styles.channels} />
           </View>
-          <BufferView bufferName={currentBufferName} />
+          <BufferView bufferId={currentBufferId} />
         </Drawer>
       </View>
     );

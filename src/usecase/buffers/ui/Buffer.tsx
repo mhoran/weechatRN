@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, Animated, Keyboard, ListView, View } from "react-native";
+import {
+  StyleSheet,
+  Animated,
+  Keyboard,
+  FlatList,
+  View,
+  EmitterSubscription
+} from "react-native";
 import { connect } from "react-redux";
 
 import AppleEasing from "react-apple-easing";
@@ -9,7 +16,16 @@ import BufferLine from "./BufferLine";
 //const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
 const easingFunction = AppleEasing.easeIn;
 
-class Buffer extends React.Component {
+interface Props {
+  lines: WeechatLine[];
+  onLongPress: () => any;
+  parseArgs: any;
+}
+
+class Buffer extends React.Component<Props> {
+  cancelKeyboardWillShow: EmitterSubscription;
+  cancelKeyboardWillHide: EmitterSubscription;
+
   state = {
     keyboardOffset: new Animated.Value(0)
   };
@@ -38,15 +54,14 @@ class Buffer extends React.Component {
     }).start();
   }
   render() {
-    const { dataSource, onLongPress, parseArgs } = this.props;
+    const { lines, onLongPress, parseArgs } = this.props;
     return (
-      <ListView
-        style={styles.main}
-        dataSource={dataSource}
+      <FlatList
+        data={lines}
         keyboardDismissMode="interactive"
-        renderRow={line => (
+        renderItem={({ item }) => (
           <BufferLine
-            line={line}
+            line={item}
             onLongPress={onLongPress}
             parseArgs={parseArgs}
           />
@@ -56,15 +71,9 @@ class Buffer extends React.Component {
   }
 }
 
-export default connect((state, { buffer }) => {
-  const dataSource = new ListView.DataSource({
-    rowHasChanged: (r1, r2) => r1 !== r2
-  });
-
-  return {
-    dataSource: dataSource.cloneWithRows(buffer.lines)
-  };
-})(Buffer);
+export default connect((state, { bufferId }) => ({
+  lines: state.lines[bufferId] || []
+}))(Buffer);
 
 const styles = StyleSheet.create({
   topbar: {

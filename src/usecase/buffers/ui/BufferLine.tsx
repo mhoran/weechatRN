@@ -3,7 +3,13 @@ import React from "react";
 import Default from "./themes/Default";
 import Messenger from "./themes/Messenger";
 
-export default class BufferLine extends React.Component {
+interface Props {
+  line: WeechatLine;
+  onLongPress: (any) => any;
+  parseArgs: any;
+}
+
+export default class BufferLine extends React.Component<Props> {
   render() {
     const { line, onLongPress, parseArgs } = this.props;
 
