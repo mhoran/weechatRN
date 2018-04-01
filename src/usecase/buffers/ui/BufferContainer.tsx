@@ -4,6 +4,7 @@ import {
   AlertIOS,
   LinkingIOS,
   ActionSheetIOS,
+  KeyboardAvoidingView,
   Animated,
   Keyboard,
   TextInput,
@@ -11,7 +12,6 @@ import {
   View,
   EmitterSubscription
 } from "react-native";
-import AppleEasing from "react-apple-easing";
 
 import { connect } from "react-redux";
 
@@ -22,55 +22,25 @@ import Buffer from "./Buffer";
 import { getParseArgs } from "../../../lib/helpers/parse-text-args";
 import { formatUrl } from "../../../lib/helpers/url-formatter";
 
-const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
-//const easingFunction = AppleEasing.easeIn;
-
 interface Props {
   bufferId: string;
+  fetchLinesForBuffer: (string) => void;
 }
 
 interface State {
-  keyboardOffset: Animated.Value;
   inputWidth: Animated.Value;
 }
 
 export default class BufferContainer extends React.Component<Props, State> {
-  cancelKeyboardWillShow: EmitterSubscription;
-  cancelKeyboardWillHide: EmitterSubscription;
-
   state = {
-    keyboardOffset: new Animated.Value(0),
     inputWidth: new Animated.Value(350)
   };
 
-  componentDidMount() {
-    this.cancelKeyboardWillShow = Keyboard.addListener("keyboardWillShow", e =>
-      this._keyboardWillShow(e)
-    );
-    this.cancelKeyboardWillHide = Keyboard.addListener("keyboardWillHide", e =>
-      this._keyboardWillHide(e)
-    );
-  }
-  _keyboardWillShow(e) {
-    console.log(e);
-    Animated.timing(this.state.keyboardOffset, {
-      toValue: e.endCoordinates.height,
-      duration: e.duration,
-      easing: easingFunction
-    }).start();
-  }
-  _keyboardWillHide(e) {
-    Animated.timing(this.state.keyboardOffset, {
-      toValue: 0,
-      duration: e.duration,
-      easing: easingFunction
-    }).start();
-  }
   handleOnFocus() {
     Animated.timing(this.state.inputWidth, {
       toValue: 310,
       duration: 250,
-      easing: easingFunction
+      easing: Easing.inOut(Easing.ease)
     }).start();
   }
   handleOnBlur() {
@@ -106,9 +76,7 @@ export default class BufferContainer extends React.Component<Props, State> {
     }
 
     return (
-      <Animated.View
-        style={[styles.container, { marginBottom: this.state.keyboardOffset }]}
-      >
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
         <Buffer
           bufferId={bufferId}
           onLongPress={line => null}
@@ -127,12 +95,10 @@ export default class BufferContainer extends React.Component<Props, State> {
             />
           </Animated.View>
         </View>
-      </Animated.View>
+      </KeyboardAvoidingView>
     );
   }
 }
-
-const light = false;
 
 const styles = StyleSheet.create({
   topbar: {
@@ -148,7 +114,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: light ? "#fff" : "#222"
+    backgroundColor: "#222"
   },
   main: {
     paddingVertical: 20
@@ -157,7 +123,7 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 10,
     justifyContent: "center",
-    backgroundColor: "#aaa"
+    backgroundColor: "#333"
   },
   inputBox: {
     height: 25,

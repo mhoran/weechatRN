@@ -1,22 +1,10 @@
 import * as React from "react";
-import {
-  StyleSheet,
-  Animated,
-  Keyboard,
-  FlatList,
-  View,
-  EmitterSubscription
-} from "react-native";
+import { StyleSheet, Animated, Keyboard, FlatList, View } from "react-native";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 
-import AppleEasing from "react-apple-easing";
-
 import BufferLine from "./BufferLine";
 import { StoreState } from "../../../store";
-
-//const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
-const easingFunction = AppleEasing.easeIn;
 
 interface Props {
   lines: WeechatLine[];
@@ -25,47 +13,13 @@ interface Props {
   bufferId: string;
 }
 
-interface State {
-  keyboardOffset: Animated.Value;
-}
-
-class Buffer extends React.Component<Props, State> {
-  cancelKeyboardWillShow: EmitterSubscription;
-  cancelKeyboardWillHide: EmitterSubscription;
-
-  state: State = {
-    keyboardOffset: new Animated.Value(0)
-  };
-
-  componentDidMount() {
-    this.cancelKeyboardWillShow = Keyboard.addListener("keyboardWillShow", e =>
-      this._keyboardWillShow(e)
-    );
-    this.cancelKeyboardWillHide = Keyboard.addListener("keyboardWillHide", e =>
-      this._keyboardWillHide(e)
-    );
-  }
-  _keyboardWillShow(e) {
-    console.log(e);
-    Animated.timing(this.state.keyboardOffset, {
-      toValue: e.endCoordinates.height,
-      duration: e.duration,
-      easing: easingFunction
-    }).start();
-  }
-  _keyboardWillHide(e) {
-    Animated.timing(this.state.keyboardOffset, {
-      toValue: 0,
-      duration: e.duration,
-      easing: easingFunction
-    }).start();
-  }
+class Buffer extends React.Component<Props> {
   render() {
     const { lines, onLongPress, parseArgs } = this.props;
     return (
       <FlatList
         data={lines.filter(
-          line => !line.tags_array.includes("irc_smart_filter")
+          line => !_.includes(line.tags_array, "irc_smart_filter")
         )}
         inverted
         keyboardDismissMode="interactive"
