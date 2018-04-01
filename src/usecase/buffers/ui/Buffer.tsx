@@ -8,6 +8,7 @@ import {
   EmitterSubscription
 } from "react-native";
 import { connect } from "react-redux";
+import * as _ from "lodash";
 
 import AppleEasing from "react-apple-easing";
 
@@ -58,7 +59,9 @@ class Buffer extends React.Component<Props> {
     return (
       <FlatList
         data={lines}
+        inverted
         keyboardDismissMode="interactive"
+        keyExtractor={line => _.last(line.pointers)}
         renderItem={({ item }) => (
           <BufferLine
             line={item}
