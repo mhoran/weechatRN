@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as _ from "lodash";
@@ -29,7 +29,6 @@ class App extends React.Component<Props, State> {
     // this.props.dispatch(changeCurrentBuffer(bufferName));
     this.drawer.close();
     this.props.fetchLinesForBuffer(buffer.id);
-    console.log(buffer, buffer.id);
     this.setState({
       currentBufferId: buffer.id
     });
@@ -45,8 +44,6 @@ class App extends React.Component<Props, State> {
         onSelectBuffer={this.changeCurrentBuffer}
       />
     );
-
-    console.log({ currentBufferId });
 
     return (
       <View style={styles.container}>
