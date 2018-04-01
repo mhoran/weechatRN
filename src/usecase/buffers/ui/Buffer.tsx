@@ -1,5 +1,12 @@
 import * as React from "react";
-import { StyleSheet, Animated, Keyboard, FlatList, View } from "react-native";
+import {
+  StyleSheet,
+  Animated,
+  Keyboard,
+  FlatList,
+  View,
+  ListRenderItem
+} from "react-native";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 
@@ -13,7 +20,17 @@ interface Props {
   bufferId: string;
 }
 
-class Buffer extends React.Component<Props> {
+const keyExtractor = (line: WeechatLine, index: number) =>
+  _.last(line.pointers);
+
+class Buffer extends React.PureComponent<Props> {
+  renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
+    const { onLongPress, parseArgs } = this.props;
+
+    return (
+      <BufferLine line={item} onLongPress={onLongPress} parseArgs={parseArgs} />
+    );
+  };
   render() {
     const { lines, onLongPress, parseArgs } = this.props;
     return (
@@ -23,14 +40,8 @@ class Buffer extends React.Component<Props> {
         )}
         inverted
         keyboardDismissMode="interactive"
-        keyExtractor={line => _.last(line.pointers)}
-        renderItem={({ item }) => (
-          <BufferLine
-            line={item}
-            onLongPress={onLongPress}
-            parseArgs={parseArgs}
-          />
-        )}
+        keyExtractor={keyExtractor}
+        renderItem={this.renderBuffer}
       />
     );
   }

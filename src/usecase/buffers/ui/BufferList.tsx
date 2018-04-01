@@ -5,7 +5,8 @@ import {
   Text,
   TouchableHighlight,
   FlatList,
-  View
+  View,
+  ListRenderItem
 } from "react-native";
 import BufferListItem from "./BufferListItem";
 
@@ -15,7 +16,20 @@ interface Props {
   onSelectBuffer: (b: WeechatBuffer) => any;
 }
 
+const keyExtractor = (buffer: WeechatBuffer): string => buffer.id;
+
 export default class BufferList extends React.Component<Props> {
+  renderListItem: ListRenderItem<WeechatBuffer> = ({ item }) => {
+    const { onSelectBuffer, currentBufferId } = this.props;
+
+    return (
+      <BufferListItem
+        buffer={item}
+        onSelectBuffer={onSelectBuffer}
+        currentBufferId={currentBufferId}
+      />
+    );
+  };
   render() {
     const { buffers, onSelectBuffer, currentBufferId } = this.props;
 
@@ -25,14 +39,8 @@ export default class BufferList extends React.Component<Props> {
         <FlatList
           style={styles.container}
           data={buffers}
-          keyExtractor={buffer => buffer.id}
-          renderItem={({ item }) => (
-            <BufferListItem
-              buffer={item}
-              onSelectBuffer={onSelectBuffer}
-              currentBufferId={currentBufferId}
-            />
-          )}
+          keyExtractor={keyExtractor}
+          renderItem={this.renderListItem}
         />
       </View>
     );

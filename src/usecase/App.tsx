@@ -19,7 +19,7 @@ import BufferList from "./buffers/ui/BufferList";
 import { StoreState } from "../store";
 
 interface Props {
-  buffers: WeechatBuffer[];
+  buffers: { [key: string]: WeechatBuffer };
   currentBufferId: string | null;
   currentBuffer: WeechatBuffer | null;
   fetchLinesForBuffer: (bufferId: string) => void;
@@ -52,7 +52,6 @@ class App extends React.Component<Props> {
 
   sendMessage = (message: string) => {
     const { currentBuffer, sendMessageToBuffer } = this.props;
-    console.log(this.props);
 
     sendMessageToBuffer(currentBuffer.full_name, message);
   };
@@ -67,7 +66,7 @@ class App extends React.Component<Props> {
 
     const sidebar = (
       <BufferList
-        buffers={_.orderBy(buffers, ["number"])}
+        buffers={_.orderBy(_.values(buffers), ["number"])}
         currentBufferId={currentBufferId}
         onSelectBuffer={this.changeCurrentBuffer}
       />
@@ -119,7 +118,7 @@ export default connect((state: StoreState) => {
   const currentBuffer = currentBufferId && state.buffers[currentBufferId];
 
   return {
-    buffers: _.values(state.buffers),
+    buffers: state.buffers,
     currentBufferId,
     currentBuffer
   };

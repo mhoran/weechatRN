@@ -39,6 +39,12 @@ export default class BufferContainer extends React.Component<Props, State> {
     textValue: ""
   };
 
+  parseArgs = getParseArgs(
+    styles.link,
+    this.handleOnPress,
+    this.handleOnLongPress
+  );
+
   handleOnFocus() {
     Animated.timing(this.state.inputWidth, {
       toValue: 310,
@@ -86,6 +92,8 @@ export default class BufferContainer extends React.Component<Props, State> {
     });
   };
 
+  onLongPress = (line: WeechatLine) => {};
+
   render() {
     const { bufferId } = this.props;
     const { textValue } = this.state;
@@ -98,12 +106,8 @@ export default class BufferContainer extends React.Component<Props, State> {
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <Buffer
           bufferId={bufferId}
-          onLongPress={line => null}
-          parseArgs={getParseArgs(
-            styles.link,
-            this.handleOnPress,
-            this.handleOnLongPress
-          )}
+          onLongPress={this.onLongPress}
+          parseArgs={this.parseArgs}
         />
         <View style={styles.bottomBox}>
           <Animated.View style={{ width: this.state.inputWidth }}>

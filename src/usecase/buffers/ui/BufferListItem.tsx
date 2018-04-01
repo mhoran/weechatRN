@@ -5,7 +5,6 @@ import {
   Dimensions,
   Text,
   TouchableHighlight,
-  FlatList,
   View,
   TextStyle,
   ViewStyle

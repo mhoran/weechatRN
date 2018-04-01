@@ -9,7 +9,7 @@ interface Props {
   parseArgs: any;
 }
 
-export default class BufferLine extends React.Component<Props> {
+export default class BufferLine extends React.PureComponent<Props> {
   render() {
     const { line, onLongPress, parseArgs } = this.props;
 
