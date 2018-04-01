@@ -30,10 +30,13 @@ export default class WeechatConnection {
     const parsed = protocol.parse(event.data) as WeechatResponse<any>;
 
     console.log("Parsed data:", parsed);
-    const action = transformToReduxAction(parsed);
-
-    if (action) {
-      this.dispatch(action);
+    try {
+      const action = transformToReduxAction(parsed);
+      if (action) {
+        this.dispatch(action);
+      }
+    } catch (e) {
+      console.log(e, parsed);
     }
   }
 
