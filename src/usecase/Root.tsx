@@ -10,18 +10,18 @@ import store from "../store";
 import App from "./App";
 import ConnectionGate from "./ConnectionGate";
 
-const connection = new WeechatConnection(store.dispatch, HOSTNAME, PASSWORD);
+const compressed = false;
+const connection = new WeechatConnection(
+  store.dispatch,
+  HOSTNAME,
+  PASSWORD,
+  compressed
+);
 
 export default class WeechatNative extends React.Component {
   componentWillMount() {
-    const compressed = false;
-
     connection.connect().then(
       conn => {
-        conn.send(
-          `init password=${PASSWORD},compression=${compressed ? "zlib" : "off"}`
-        );
-        conn.send("(version) info version");
         // conn.send("(hotlist) hdata hotlist:gui_hotlist(*)");
         conn.send(
           "(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type"
