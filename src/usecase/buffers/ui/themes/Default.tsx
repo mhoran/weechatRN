@@ -13,6 +13,7 @@ import {
   getHighlightedViewStyles,
   getHighlightedTextStyles
 } from "../../../../lib/weechat/color-formatter";
+import { formatDate } from "../../../../lib/helpers/date-formatter";
 
 interface Props {
   line: WeechatLine;
@@ -35,7 +36,7 @@ export default class BufferLine extends React.Component<Props> {
             <Text
               style={[styles.text, styles.meta, getHighlightedTextStyles(line)]}
             >
-              {String(line.date_printed)}
+              {formatDate(line.date_printed)}
             </Text>
           </View>
           <View
