@@ -43,12 +43,6 @@ export const renderWeechatFormat = (input: string): React.ReactNode => {
   const formattedNode = WeeChatProtocol.rawText2Rich(
     input
   ) as AttributedStringNode[];
-  // console.log(formattedNode);
-
-  const debugNode = formattedNode.find(n => n.text === "neon");
-  if (debugNode) {
-    console.log(debugNode);
-  }
 
   return formattedNode.map((node, index) => (
     <Text
