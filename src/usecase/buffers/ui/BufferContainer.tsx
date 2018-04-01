@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   StyleSheet,
   AlertIOS,
-  LinkingIOS,
+  Linking,
   ActionSheetIOS,
   KeyboardAvoidingView,
   Animated,
@@ -61,12 +61,12 @@ export default class BufferContainer extends React.Component<Props, State> {
     );
   }
   handleOnPress(type, text) {
-    // console.log(type, text);
-    // if (type === "channel") {
-    //   this.props.dispatch(changeCurrentBuffer(text));
-    // } else {
-    //   LinkingIOS.openURL(formatUrl(type, text));
-    // }
+    console.log(type, text);
+    if (type === "channel") {
+      // this.props.dispatch(changeCurrentBuffer(text));
+    } else {
+      Linking.openURL(formatUrl(type, text));
+    }
   }
   render() {
     const { bufferId } = this.props;
