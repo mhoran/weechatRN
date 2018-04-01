@@ -7,41 +7,7 @@ import {
   FlatList,
   View
 } from "react-native";
-
-interface BufferListItemProps {
-  buffer: WeechatBuffer;
-  currentBufferId: string;
-  onSelectBuffer: (b: WeechatBuffer) => any;
-}
-
-const BufferListItem = ({
-  buffer,
-  currentBufferId,
-  onSelectBuffer
-}: BufferListItemProps) => (
-  <TouchableHighlight
-    onPress={() => onSelectBuffer(buffer)}
-    underlayColor="#F2777A"
-    style={[
-      styles.listItem,
-      currentBufferId === buffer.id ? { backgroundColor: "#F2777A" } : null
-    ]}
-  >
-    <View style={styles.row}>
-      <View style={styles.bufferName}>
-        <Text
-          style={[
-            styles.listItemText,
-            currentBufferId !== buffer.id ? { color: "#888" } : null
-          ]}
-        >
-          {buffer.short_name || buffer.full_name}
-        </Text>
-      </View>
-      <Text style={styles.listItemText}>1</Text>
-    </View>
-  </TouchableHighlight>
-);
+import { BufferListItem } from "./BufferListItem";
 
 interface Props {
   buffers: WeechatBuffer[];
@@ -80,23 +46,5 @@ const styles = StyleSheet.create({
   },
   topbar: {
     height: 30
-  },
-  row: {
-    flexDirection: "row"
-  },
-  bufferName: {
-    flex: 1
-  },
-  listItem: {
-    flex: 1,
-    height: 40,
-    paddingHorizontal: 20,
-    justifyContent: "center"
-  },
-  listItemText: {
-    color: "#eee",
-    fontFamily: "Thonburi",
-    fontWeight: "bold",
-    fontSize: 15
   }
 });
