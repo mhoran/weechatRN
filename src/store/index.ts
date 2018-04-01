@@ -5,6 +5,7 @@ import lines, { LineState } from "./lines";
 
 type AppState = {
   connected: boolean;
+  currentBufferId: string | null;
 };
 
 export type StoreState = {
@@ -13,11 +14,22 @@ export type StoreState = {
   lines: LineState;
 };
 
-const app = (state: AppState = { connected: false }, action) => {
+const initialState: AppState = {
+  connected: false,
+  currentBufferId: null
+};
+
+const app = (state: AppState = initialState, action) => {
   switch (action.type) {
     case "FETCH_VERSION":
       return {
+        ...state,
         connected: true
+      };
+    case "CHANGE_CURRENT_BUFFER":
+      return {
+        ...state,
+        currentBufferId: action.bufferId
       };
     default:
       return state;

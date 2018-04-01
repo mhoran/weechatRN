@@ -10,13 +10,13 @@ import {
 
 interface BufferListItemProps {
   buffer: WeechatBuffer;
-  currentBufferName: string;
+  currentBufferId: string;
   onSelectBuffer: (b: WeechatBuffer) => any;
 }
 
 const BufferListItem = ({
   buffer,
-  currentBufferName,
+  currentBufferId,
   onSelectBuffer
 }: BufferListItemProps) => (
   <TouchableHighlight
@@ -24,9 +24,7 @@ const BufferListItem = ({
     underlayColor="#F2777A"
     style={[
       styles.listItem,
-      currentBufferName === buffer.short_name
-        ? { backgroundColor: "#F2777A" }
-        : null
+      currentBufferId === buffer.id ? { backgroundColor: "#F2777A" } : null
     ]}
   >
     <View style={styles.row}>
@@ -34,7 +32,7 @@ const BufferListItem = ({
         <Text
           style={[
             styles.listItemText,
-            currentBufferName !== buffer.short_name ? { color: "#888" } : null
+            currentBufferId !== buffer.id ? { color: "#888" } : null
           ]}
         >
           {buffer.short_name || buffer.full_name}
@@ -47,13 +45,13 @@ const BufferListItem = ({
 
 interface Props {
   buffers: WeechatBuffer[];
-  currentBufferName: string;
+  currentBufferId: string | null;
   onSelectBuffer: (b: WeechatBuffer) => any;
 }
 
 export default class BufferList extends React.Component<Props> {
   render() {
-    const { buffers, onSelectBuffer, currentBufferName } = this.props;
+    const { buffers, onSelectBuffer, currentBufferId } = this.props;
 
     return (
       <View style={styles.container}>
@@ -66,7 +64,7 @@ export default class BufferList extends React.Component<Props> {
             <BufferListItem
               buffer={item}
               onSelectBuffer={onSelectBuffer}
-              currentBufferName={currentBufferName}
+              currentBufferId={currentBufferId}
             />
           )}
         />

@@ -1,5 +1,11 @@
 import * as React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet
+} from "react-native";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 
@@ -9,38 +15,36 @@ import { changeCurrentBuffer } from "./buffers/actions/BufferActions";
 
 import BufferContainer from "./buffers/ui/BufferContainer";
 import BufferList from "./buffers/ui/BufferList";
+import { StoreState } from "../store";
 
 interface Props {
   buffers: WeechatBuffer[];
-  currentBufferName: string;
-  fetchLinesForBuffer: (string) => void;
-}
-
-interface State {
   currentBufferId: string | null;
+  currentBuffer: WeechatBuffer | null;
+  fetchLinesForBuffer: (string) => void;
+  dispatch: (any) => void;
 }
 
-class App extends React.Component<Props, State> {
+class App extends React.Component<Props> {
   drawer: Drawer;
 
-  state: State = { currentBufferId: null };
-
   changeCurrentBuffer = buffer => {
-    // this.props.dispatch(changeCurrentBuffer(bufferName));
     this.drawer.close();
+    this.props.dispatch({ type: "CHANGE_CURRENT_BUFFER", bufferId: buffer.id });
     this.props.fetchLinesForBuffer(buffer.id);
-    this.setState({
-      currentBufferId: buffer.id
-    });
   };
   render() {
-    const { currentBufferId } = this.state;
-    const { buffers, currentBufferName } = this.props;
+    const {
+      buffers,
+      currentBufferId,
+      currentBuffer,
+      fetchLinesForBuffer
+    } = this.props;
 
     const sidebar = (
       <BufferList
         buffers={_.orderBy(buffers, ["number"])}
-        currentBufferName={currentBufferName}
+        currentBufferId={currentBufferId}
         onSelectBuffer={this.changeCurrentBuffer}
       />
     );
@@ -57,36 +61,48 @@ class App extends React.Component<Props, State> {
           ref={d => (this.drawer = d)}
           tweenHandler={Drawer.tweenPresets.parallax}
         >
-          <View style={styles.topbar}>
-            <View style={styles.channels}>
-              <TouchableOpacity
-                style={styles.channelsButton}
-                onPress={() => this.drawer.open()}
-              >
-                <Text style={styles.channelsButtonText}>#</Text>
-              </TouchableOpacity>
+          <SafeAreaView style={styles.container}>
+            <View style={styles.topbar}>
+              <View style={styles.channels}>
+                <TouchableOpacity
+                  style={styles.channelsButton}
+                  onPress={() => this.drawer.open()}
+                >
+                  <Text style={styles.channelsButtonText}>#</Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <Text style={styles.topbarText}>
+                  {currentBuffer && currentBuffer.short_name}
+                </Text>
+              </View>
+              <View style={styles.channels} />
             </View>
-            <View>
-              <Text style={styles.topbarText}>{currentBufferName}</Text>
-            </View>
-            <View style={styles.channels} />
-          </View>
-          <BufferContainer bufferId={currentBufferId} />
+            <BufferContainer
+              fetchLinesForBuffer={fetchLinesForBuffer}
+              bufferId={currentBufferId}
+            />
+          </SafeAreaView>
         </Drawer>
       </View>
     );
   }
 }
 
-export default connect(state => ({
-  buffers: _.values(state.buffers)
-}))(App);
+export default connect((state: StoreState) => {
+  const currentBufferId = state.app.currentBufferId;
+  const currentBuffer = currentBufferId && state.buffers[currentBufferId];
+
+  return {
+    buffers: _.values(state.buffers),
+    currentBufferId,
+    currentBuffer
+  };
+})(App);
 
 const styles = StyleSheet.create({
   topbar: {
     flexDirection: "row",
-    paddingTop: 20,
-    height: 70,
     backgroundColor: "#333",
     justifyContent: "center",
     alignItems: "center"
@@ -115,6 +131,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#89a"
+    backgroundColor: "#333"
   }
 });
