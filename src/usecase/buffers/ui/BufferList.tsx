@@ -7,7 +7,7 @@ import {
   FlatList,
   View
 } from "react-native";
-import { BufferListItem } from "./BufferListItem";
+import BufferListItem from "./BufferListItem";
 
 interface Props {
   buffers: WeechatBuffer[];

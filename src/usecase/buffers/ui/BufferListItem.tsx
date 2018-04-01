@@ -1,4 +1,5 @@
 import * as React from "react";
+import { connect } from "react-redux";
 import {
   StyleSheet,
   Dimensions,
@@ -9,9 +10,12 @@ import {
   TextStyle,
   ViewStyle
 } from "react-native";
+import { StoreState } from "../../../store";
+import { getHotlistForBufferId } from "../../../store/selectors";
 
 interface Props {
   buffer: WeechatBuffer;
+  hotlist: Hotlist;
   currentBufferId: string;
   onSelectBuffer: (b: WeechatBuffer) => any;
 }
@@ -19,8 +23,10 @@ interface Props {
 const getBufferViewStyleFromProps = (props: Props): ViewStyle => {
   if (props.currentBufferId === props.buffer.id) {
     return { backgroundColor: "#f2777a" };
-  } else if (false /* highlight */) {
+  } else if (props.hotlist.highlight > 0) {
     return { backgroundColor: "#ffcf7f" };
+  } else if (props.hotlist.sum > 0) {
+    return { backgroundColor: "#3b4252" };
   } else {
     return null;
   }
@@ -29,15 +35,17 @@ const getBufferViewStyleFromProps = (props: Props): ViewStyle => {
 const getBufferTextStyleFromProps = (props: Props): TextStyle => {
   if (props.currentBufferId === props.buffer.id) {
     return { color: "#fff" };
-  } else if (false /* highlight */) {
+  } else if (props.hotlist.highlight > 0) {
     return { color: "#000" };
+  } else if (props.hotlist.sum > 0) {
+    return { color: "#ebcb8b" };
   } else {
     return null;
   }
 };
 
-export const BufferListItem = (props: Props) => {
-  const { buffer, currentBufferId, onSelectBuffer } = props;
+const BufferListItem = (props: Props) => {
+  const { buffer, hotlist, currentBufferId, onSelectBuffer } = props;
   return (
     <TouchableHighlight
       onPress={() => onSelectBuffer(buffer)}
@@ -52,11 +60,22 @@ export const BufferListItem = (props: Props) => {
             {buffer.short_name || buffer.full_name}
           </Text>
         </View>
-        <Text style={styles.listItemText}>1</Text>
+        {hotlist.sum > 0 && (
+          <Text
+            style={[styles.listItemText, getBufferTextStyleFromProps(props)]}
+          >
+            {hotlist.sum}
+          </Text>
+        )}
       </View>
     </TouchableHighlight>
   );
 };
+
+export default connect((state: StoreState, props: Props) => {
+  const hotlist = getHotlistForBufferId(state, props.buffer.id);
+  return { hotlist };
+})(BufferListItem);
 
 const styles = StyleSheet.create({
   listItem: {
