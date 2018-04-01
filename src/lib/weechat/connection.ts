@@ -16,7 +16,7 @@ export default class WeechatConnection {
     this.websocket = null;
   }
 
-  connect() {
+  connect(): Promise<WeechatConnection> {
     return new Promise((resolve, reject) => {
       this.websocket = new WebSocket(this.host);
 
