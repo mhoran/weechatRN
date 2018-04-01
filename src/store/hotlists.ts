@@ -11,7 +11,11 @@ export default (state: HotListState = initialState, action): HotListState => {
       return action.payload;
     case "CHANGE_CURRENT_BUFFER":
       return omit(state, action.bufferId);
-    case "BUFFER_LINE_ADDED":
+    case "BUFFER_LINE_ADDED": {
+      if (action.bufferId === action.currentBufferId) {
+        return state;
+      }
+
       const payload = action.payload as WeechatLine;
       const hotlist = {
         ...getHotlistForBufferId(state, action.bufferId)
@@ -26,6 +30,7 @@ export default (state: HotListState = initialState, action): HotListState => {
         ...state,
         [action.bufferId]: hotlist
       };
+    }
     default:
       return state;
   }

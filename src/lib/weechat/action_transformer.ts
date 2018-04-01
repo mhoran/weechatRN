@@ -1,3 +1,5 @@
+import { StoreState } from "../../store";
+
 export type WeechatReduxAction = {
   type: string;
   payload: any;
@@ -20,10 +22,15 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
       const object = data.objects[0] as WeechatObject<WeechatLine[]>;
       const line = object.content[0];
 
-      return {
-        type: "BUFFER_LINE_ADDED",
-        bufferId: line.buffer,
-        payload: line
+      return (dispatch, getState) => {
+        const state: StoreState = getState();
+
+        dispatch({
+          type: "BUFFER_LINE_ADDED",
+          bufferId: line.buffer,
+          currentBufferId: state.app.currentBufferId,
+          payload: line
+        });
       };
     }
     case "_buffer_closing": {
@@ -126,6 +133,6 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
     }
     default:
       console.log("unhandled event!", data.id, data);
-      return null;
+      return undefined;
   }
 };
