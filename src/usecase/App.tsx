@@ -29,9 +29,16 @@ class App extends React.Component<Props> {
   drawer: Drawer;
 
   changeCurrentBuffer = buffer => {
+    const { currentBufferId, fetchLinesForBuffer } = this.props;
+
     this.drawer.close();
-    this.props.dispatch({ type: "CHANGE_CURRENT_BUFFER", bufferId: buffer.id });
-    this.props.fetchLinesForBuffer(buffer.id);
+    if (currentBufferId !== buffer.id) {
+      this.props.dispatch({
+        type: "CHANGE_CURRENT_BUFFER",
+        bufferId: buffer.id
+      });
+      fetchLinesForBuffer(buffer.id);
+    }
   };
   render() {
     const {
@@ -105,7 +112,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#333",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    paddingBottom: 10
   },
   channels: {
     flex: 1,
