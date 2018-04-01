@@ -3,8 +3,15 @@ export type WeechatReduxAction = {
   payload: any;
 };
 
-const reduceToObjectByKey = <T>(array: T[], keyFn: (t: T) => string): object =>
-  array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: elem }), {});
+type KeyFn<T> = (t: T) => string;
+type MapFn<A, B> = (a: A) => A | B;
+
+const reduceToObjectByKey = <T, U>(
+  array: T[],
+  keyFn: KeyFn<T>,
+  mapFn: MapFn<T, U> = a => a
+): object =>
+  array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: mapFn(elem) }), {});
 
 export const transformToReduxAction = (data: WeechatResponse<any>) => {
   switch (data.id) {
@@ -73,14 +80,31 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
         bufferId: buffer.id
       };
     }
+    case "hotlist": {
+      const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
+
+      return {
+        type: "FETCH_HOTLISTS",
+        payload: reduceToObjectByKey(
+          object.content,
+          hotlist => hotlist.buffer,
+          h => {
+            const [unknown, message, privmsg, highlight] = h.count;
+            const sum = message + privmsg + highlight;
+            return { ...h, message, privmsg, highlight, sum };
+          }
+        )
+      };
+    }
     case "buffers": {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
 
       return {
         type: "FETCH_BUFFERS",
         payload: reduceToObjectByKey(
-          object.content.map(o => ({ ...o, id: o.pointers[0] })),
-          buffer => buffer.id
+          object.content,
+          buffer => buffer.pointers[0],
+          buf => ({ ...buf, id: buf.pointers[0] })
         )
       };
     }
