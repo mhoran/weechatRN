@@ -1,29 +1,18 @@
-import React from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import * as React from "react";
+import {
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  TextStyle
+} from "react-native";
 
 import ParsedText from "react-native-parsed-text";
-
-import { hashNickToColor } from "../../../../lib/helpers/colorizer";
-
-const highlightedViewStyles = line => {
-  if (line.highlight) {
-    return {
-      backgroundColor: "#FFCF7F"
-    };
-  } else {
-    return null;
-  }
-};
-
-const getHighlightedTextStyles = line => {
-  if (line.highlight) {
-    return {
-      color: "#000"
-    };
-  } else {
-    return null;
-  }
-};
+import {
+  renderWeechatFormat,
+  getHighlightedViewStyles,
+  getHighlightedTextStyles
+} from "../../../../lib/weechat/color-formatter";
 
 interface Props {
   line: WeechatLine;
@@ -36,18 +25,11 @@ export default class BufferLine extends React.Component<Props> {
     const { line, onLongPress, parseArgs } = this.props;
     return (
       <TouchableHighlight onLongPress={() => onLongPress(line)}>
-        <View style={[styles.container, highlightedViewStyles(line)]}>
+        <View style={[styles.container, getHighlightedViewStyles(line)]}>
           <View style={styles.metaContainer}>
             <View style={styles.userContainer}>
-              <Text
-                style={[
-                  styles.text,
-                  styles.meta,
-                  { color: hashNickToColor(line.prefix) },
-                  getHighlightedTextStyles(line)
-                ]}
-              >
-                {line.prefix}
+              <Text style={[styles.text, styles.meta]}>
+                {renderWeechatFormat(line.prefix)}
               </Text>
             </View>
             <Text
@@ -56,16 +38,11 @@ export default class BufferLine extends React.Component<Props> {
               {String(line.date_printed)}
             </Text>
           </View>
-          <View style={[styles.messageContainer, highlightedViewStyles(line)]}>
-            <ParsedText
-              style={[
-                styles.text,
-                { color: hashNickToColor(line.prefix) },
-                getHighlightedTextStyles(line)
-              ]}
-              parse={parseArgs}
-            >
-              {line.message}
+          <View
+            style={[styles.messageContainer, getHighlightedViewStyles(line)]}
+          >
+            <ParsedText style={[styles.text]} parse={parseArgs}>
+              {renderWeechatFormat(line.message)}
             </ParsedText>
           </View>
         </View>
@@ -76,7 +53,7 @@ export default class BufferLine extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#222",
+    backgroundColor: "#2e3440",
     paddingTop: 4,
     paddingBottom: 8,
     paddingHorizontal: 7
