@@ -4,7 +4,8 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  Keyboard
 } from "react-native";
 import { connect } from "react-redux";
 import * as _ from "lodash";
@@ -21,14 +22,15 @@ interface Props {
   buffers: WeechatBuffer[];
   currentBufferId: string | null;
   currentBuffer: WeechatBuffer | null;
-  fetchLinesForBuffer: (string) => void;
+  fetchLinesForBuffer: (bufferId: string) => void;
+  sendMessageToBuffer: (fullBufferName: string, message: string) => void;
   dispatch: (any) => void;
 }
 
 class App extends React.Component<Props> {
   drawer: Drawer;
 
-  changeCurrentBuffer = buffer => {
+  changeCurrentBuffer = (buffer: WeechatBuffer) => {
     const { currentBufferId, fetchLinesForBuffer } = this.props;
 
     this.drawer.close();
@@ -40,6 +42,19 @@ class App extends React.Component<Props> {
       fetchLinesForBuffer(buffer.id);
     }
   };
+
+  openDrawer = () => {
+    this.drawer.open();
+    Keyboard.dismiss();
+  };
+
+  sendMessage = (message: string) => {
+    const { currentBuffer, sendMessageToBuffer } = this.props;
+    console.log(this.props);
+
+    sendMessageToBuffer(currentBuffer.full_name, message);
+  };
+
   render() {
     const {
       buffers,
@@ -73,7 +88,7 @@ class App extends React.Component<Props> {
               <View style={styles.channels}>
                 <TouchableOpacity
                   style={styles.channelsButton}
-                  onPress={() => this.drawer.open()}
+                  onPress={this.openDrawer}
                 >
                   <Text style={styles.channelsButtonText}>#</Text>
                 </TouchableOpacity>
@@ -86,6 +101,7 @@ class App extends React.Component<Props> {
               <View style={styles.channels} />
             </View>
             <BufferContainer
+              sendMessage={this.sendMessage}
               fetchLinesForBuffer={fetchLinesForBuffer}
               bufferId={currentBufferId}
             />

@@ -24,16 +24,19 @@ import { formatUrl } from "../../../lib/helpers/url-formatter";
 
 interface Props {
   bufferId: string;
-  fetchLinesForBuffer: (string) => void;
+  fetchLinesForBuffer: (bufferId: string) => void;
+  sendMessage: (message: string) => void;
 }
 
 interface State {
   inputWidth: Animated.Value;
+  textValue: string;
 }
 
 export default class BufferContainer extends React.Component<Props, State> {
   state = {
-    inputWidth: new Animated.Value(350)
+    inputWidth: new Animated.Value(350),
+    textValue: ""
   };
 
   handleOnFocus() {
@@ -68,8 +71,24 @@ export default class BufferContainer extends React.Component<Props, State> {
       Linking.openURL(formatUrl(type, text));
     }
   }
+
+  handleChangeText = (textValue: string) => {
+    this.setState({
+      textValue
+    });
+  };
+
+  handleSubmit = () => {
+    const { textValue } = this.state;
+    this.props.sendMessage(textValue);
+    this.setState({
+      textValue: ""
+    });
+  };
+
   render() {
     const { bufferId } = this.props;
+    const { textValue } = this.state;
 
     if (!bufferId) {
       return <View style={styles.container} />;
@@ -90,8 +109,13 @@ export default class BufferContainer extends React.Component<Props, State> {
           <Animated.View style={{ width: this.state.inputWidth }}>
             <TextInput
               style={styles.inputBox}
+              value={textValue}
+              onChangeText={this.handleChangeText}
               onFocus={() => this.handleOnFocus()}
               onBlur={() => this.handleOnBlur()}
+              returnKeyType="send"
+              blurOnSubmit={false}
+              onSubmitEditing={this.handleSubmit}
             />
           </Animated.View>
         </View>
