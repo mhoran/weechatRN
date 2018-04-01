@@ -22,7 +22,7 @@ export default class WeechatNative extends React.Component {
   componentWillMount() {
     connection.connect().then(
       conn => {
-        // conn.send("(hotlist) hdata hotlist:gui_hotlist(*)");
+        conn.send("(hotlist) hdata hotlist:gui_hotlist(*)");
         conn.send(
           "(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type"
         );

@@ -2,6 +2,7 @@ import { combineReducers, createStore, applyMiddleware } from "redux";
 
 import buffers, { BufferState } from "./buffers";
 import lines, { LineState } from "./lines";
+import hotlists, { HotListState } from "./hotlists";
 
 type AppState = {
   connected: boolean;
@@ -12,6 +13,7 @@ export type StoreState = {
   app: AppState;
   buffers: BufferState;
   lines: LineState;
+  hotlists: HotListState;
 };
 
 const initialState: AppState = {
@@ -39,7 +41,8 @@ const app = (state: AppState = initialState, action) => {
 const reducer = combineReducers({
   app,
   buffers,
-  lines
+  lines,
+  hotlists
 });
 
 export default createStore(

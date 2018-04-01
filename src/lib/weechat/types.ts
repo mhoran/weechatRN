@@ -29,6 +29,18 @@ interface WeechatBuffer {
   type: number;
 }
 
+interface WeechatHotlist {
+  buffer: string;
+  count: number[];
+}
+
+interface Hotlist extends WeechatHotlist {
+  message: number;
+  privmsg: number;
+  highlight: number;
+  sum: number;
+}
+
 interface Localvariables {
   plugin: string;
   name: string;
