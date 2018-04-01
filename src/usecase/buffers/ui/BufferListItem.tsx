@@ -5,7 +5,9 @@ import {
   Text,
   TouchableHighlight,
   FlatList,
-  View
+  View,
+  TextStyle,
+  ViewStyle
 } from "react-native";
 
 interface Props {
@@ -14,34 +16,47 @@ interface Props {
   onSelectBuffer: (b: WeechatBuffer) => any;
 }
 
-export const BufferListItem = ({
-  buffer,
-  currentBufferId,
-  onSelectBuffer
-}: Props) => (
-  <TouchableHighlight
-    onPress={() => onSelectBuffer(buffer)}
-    underlayColor="#F2777A"
-    style={[
-      styles.listItem,
-      currentBufferId === buffer.id ? { backgroundColor: "#F2777A" } : null
-    ]}
-  >
-    <View style={styles.row}>
-      <View style={styles.bufferName}>
-        <Text
-          style={[
-            styles.listItemText,
-            currentBufferId !== buffer.id ? { color: "#888" } : null
-          ]}
-        >
-          {buffer.short_name || buffer.full_name}
-        </Text>
+const getBufferViewStyleFromProps = (props: Props): ViewStyle => {
+  if (props.currentBufferId === props.buffer.id) {
+    return { backgroundColor: "#f2777a" };
+  } else if (false /* highlight */) {
+    return { backgroundColor: "#ffcf7f" };
+  } else {
+    return null;
+  }
+};
+
+const getBufferTextStyleFromProps = (props: Props): TextStyle => {
+  if (props.currentBufferId === props.buffer.id) {
+    return { color: "#fff" };
+  } else if (false /* highlight */) {
+    return { color: "#000" };
+  } else {
+    return null;
+  }
+};
+
+export const BufferListItem = (props: Props) => {
+  const { buffer, currentBufferId, onSelectBuffer } = props;
+  return (
+    <TouchableHighlight
+      onPress={() => onSelectBuffer(buffer)}
+      underlayColor="#F2777A"
+      style={[styles.listItem, getBufferViewStyleFromProps(props)]}
+    >
+      <View style={styles.row}>
+        <View style={styles.bufferName}>
+          <Text
+            style={[styles.listItemText, getBufferTextStyleFromProps(props)]}
+          >
+            {buffer.short_name || buffer.full_name}
+          </Text>
+        </View>
+        <Text style={styles.listItemText}>1</Text>
       </View>
-      <Text style={styles.listItemText}>1</Text>
-    </View>
-  </TouchableHighlight>
-);
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   listItem: {
