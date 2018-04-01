@@ -73,7 +73,7 @@ const BufferListItem = (props: Props) => {
 };
 
 export default connect((state: StoreState, props: Props) => {
-  const hotlist = getHotlistForBufferId(state, props.buffer.id);
+  const hotlist = getHotlistForBufferId(state.hotlists, props.buffer.id);
   return { hotlist };
 })(BufferListItem);
 

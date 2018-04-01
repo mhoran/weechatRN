@@ -1,4 +1,4 @@
-import { StoreState } from ".";
+import { HotListState } from "./hotlists";
 
 const createEmptyHotlist = (bufferId: string) => ({
   buffer: bufferId,
@@ -10,11 +10,11 @@ const createEmptyHotlist = (bufferId: string) => ({
 });
 
 export const getHotlistForBufferId = (
-  state: StoreState,
+  state: HotListState,
   bufferId: string
 ): Hotlist => {
-  if (bufferId && state.hotlists[bufferId]) {
-    return state.hotlists[bufferId];
+  if (bufferId && state[bufferId]) {
+    return state[bufferId];
   } else {
     return createEmptyHotlist(bufferId);
   }

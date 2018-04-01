@@ -43,12 +43,20 @@ export default class WeechatNative extends React.Component {
   sendMessageToBuffer = (fullBufferName: string, message: string) => {
     connection && connection.send(`(input) input ${fullBufferName} ${message}`);
   };
+  clearHotlistForBuffer = (fullBufferName: string) => {
+    this.sendMessageToBuffer(fullBufferName, "/buffer set hotlist -1");
+    this.sendMessageToBuffer(
+      fullBufferName,
+      "/input set_unread_current_buffer"
+    );
+  };
   render() {
     return (
       <Provider store={store}>
         <ConnectionGate>
           <StatusBar barStyle="light-content" />
           <App
+            clearHotlistForBuffer={this.clearHotlistForBuffer}
             sendMessageToBuffer={this.sendMessageToBuffer}
             fetchLinesForBuffer={this.fetchLines}
           />

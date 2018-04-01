@@ -24,6 +24,7 @@ interface Props {
   currentBuffer: WeechatBuffer | null;
   fetchLinesForBuffer: (bufferId: string) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
+  clearHotlistForBuffer: (fullBufferName: string) => void;
   dispatch: (any) => void;
 }
 
@@ -39,6 +40,7 @@ class App extends React.Component<Props> {
         type: "CHANGE_CURRENT_BUFFER",
         bufferId: buffer.id
       });
+      this.props.clearHotlistForBuffer(buffer.full_name);
       fetchLinesForBuffer(buffer.id);
     }
   };

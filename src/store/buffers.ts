@@ -10,8 +10,7 @@ export default (state: BufferState = initialState, action): BufferState => {
       return action.payload;
     }
     case "BUFFER_CLOSED": {
-      const newState = omit(state, action.bufferId);
-      return newState;
+      return omit(state, action.bufferId);
     }
     case "BUFFER_OPENED": {
       return {
