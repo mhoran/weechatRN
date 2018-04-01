@@ -17,7 +17,8 @@
     "react-native-drawer": "^2.5.0",
     "react-native-parsed-text": "^0.0.20",
     "react-redux": "^5.0.7",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "@types/react-native": "^0.52.21",
@@ -28,7 +29,8 @@
     "react-native-typescript-transformer": "^1.2.3",
     "react-test-renderer": "^16.3.0-alpha.1",
     "tslib": "^1.9.0",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "why-did-you-update": "^0.1.1"
   },
   "jest": {
     "preset": "react-native"

@@ -1,4 +1,5 @@
-import { combineReducers, createStore, applyMiddleware } from "redux";
+import { compose, combineReducers, createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
 
 import buffers, { BufferState } from "./buffers";
 import lines, { LineState } from "./lines";
@@ -45,8 +46,12 @@ const reducer = combineReducers({
   hotlists
 });
 
-export default createStore(
-  reducer,
+const middleware = applyMiddleware(thunk);
+
+const enhancers = compose(
+  middleware,
   (<any>window).__REDUX_DEVTOOLS_EXTENSION__ &&
     (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
 );
+
+export default createStore(reducer, enhancers);
