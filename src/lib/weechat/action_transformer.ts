@@ -19,6 +19,60 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
         payload: line
       };
     }
+    case "_buffer_closing": {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+
+      return {
+        type: "BUFFER_CLOSED",
+        bufferId: buffer.pointers[0]
+      };
+    }
+    case "_buffer_opened": {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return {
+        type: "BUFFER_OPENED",
+        payload: buffer,
+        bufferId: buffer.id
+      };
+    }
+    case "_buffer_renamed": {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return {
+        type: "BUFFER_RENAMED",
+        payload: buffer,
+        bufferId: buffer.id
+      };
+    }
+    case "_buffer_localvar_removed": {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return {
+        type: "BUFFER_LOCALVAR_REMOVE",
+        payload: buffer,
+        bufferId: buffer.id
+      };
+    }
+    case "_buffer_title_changed":
+    case "_buffer_localvar_added": {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return {
+        type: "BUFFER_LOCALVAR_UPDATE",
+        payload: buffer,
+        bufferId: buffer.id
+      };
+    }
     case "buffers": {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
 
