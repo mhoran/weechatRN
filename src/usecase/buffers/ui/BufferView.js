@@ -18,50 +18,8 @@ import { changeCurrentBuffer } from "../actions/BufferActions";
 
 import BufferLine from "./BufferLine";
 import Buffer from "./Buffer";
-
-const getParseArgs = (onPress, onLongPress) => {
-  const baseObj = {
-    style: styles.link
-  };
-
-  return [
-    {
-      ...baseObj,
-      onPress: arg => onPress("url", arg),
-      onLongPress: arg => onLongPress("url", arg),
-      type: "url"
-    },
-    {
-      ...baseObj,
-      onPress: arg => onPress("channel", arg),
-      onLongPress: arg => onLongPress("channel", arg),
-      pattern: /#(\w+)/
-    },
-    {
-      ...baseObj,
-      onPress: arg => onPress("phone", arg),
-      onLongPress: arg => onLongPress("phone", arg),
-      type: "phone"
-    },
-    {
-      ...baseObj,
-      onPress: arg => onPress("email", arg),
-      onLongPress: arg => onLongPress("email", arg),
-      type: "email"
-    }
-  ];
-};
-
-const formatUrl = (type, text) => {
-  switch (type) {
-    case "url":
-      return text;
-    case "email":
-      return "mailto:" + text;
-    case "phone":
-      return "tel:" + text;
-  }
-};
+import { getParseArgs } from "../../../lib/helpers/parse-text-args";
+import { formatUrl } from "../../../lib/helpers/url-formatter";
 
 const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
 //const easingFunction = AppleEasing.easeIn;
@@ -142,7 +100,11 @@ export default class BufferView extends React.Component {
         <Buffer
           bufferId={bufferId}
           onLongPress={line => null}
-          parseArgs={getParseArgs(this.handleOnPress, this.handleOnLongPress)}
+          parseArgs={getParseArgs(
+            styles.link,
+            this.handleOnPress,
+            this.handleOnLongPress
+          )}
         />
         <View style={styles.bottomBox}>
           <Animated.View style={{ width: this.state.inputWidth }}>
