@@ -34,7 +34,7 @@ interface State {
   inputWidth: Animated.Value;
 }
 
-export default class BufferView extends React.Component<Props, State> {
+export default class BufferContainer extends React.Component<Props, State> {
   cancelKeyboardWillShow: EmitterSubscription;
   cancelKeyboardWillHide: EmitterSubscription;
 

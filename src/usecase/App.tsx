@@ -7,7 +7,7 @@ import Drawer from "react-native-drawer";
 
 import { changeCurrentBuffer } from "./buffers/actions/BufferActions";
 
-import BufferView from "./buffers/ui/BufferView";
+import BufferContainer from "./buffers/ui/BufferContainer";
 import BufferList from "./buffers/ui/BufferList";
 
 interface Props {
@@ -74,7 +74,7 @@ class App extends React.Component<Props, State> {
             </View>
             <View style={styles.channels} />
           </View>
-          <BufferView bufferId={currentBufferId} />
+          <BufferContainer bufferId={currentBufferId} />
         </Drawer>
       </View>
     );
