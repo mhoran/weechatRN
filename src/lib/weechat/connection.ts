@@ -31,7 +31,10 @@ export default class WeechatConnection {
 
     console.log("Parsed data:", parsed);
     const action = transformToReduxAction(parsed);
-    this.dispatch(action);
+
+    if (action) {
+      this.dispatch(action);
+    }
   }
 
   send(data) {

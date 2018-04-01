@@ -1,4 +1,4 @@
-export type LineState = { [key: string]: WeechatLine };
+export type LineState = { [key: string]: WeechatLine[] };
 
 const initialState: LineState = {};
 
@@ -8,6 +8,11 @@ export default (state: LineState = initialState, action): LineState => {
       return {
         ...state,
         [action.bufferId]: action.payload
+      };
+    case "BUFFER_LINE_ADDED":
+      return {
+        ...state,
+        [action.bufferId]: [action.payload, ...(state[action.bufferId] || [])]
       };
     default:
       return state;

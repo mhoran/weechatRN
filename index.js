@@ -27,7 +27,7 @@ class WeechatNative extends React.Component {
           "(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type"
         );
         // conn.send("(nicklist) nicklist");
-        // conn.send("sync");
+        conn.send("sync");
       },
       error => {
         console.log(error);
