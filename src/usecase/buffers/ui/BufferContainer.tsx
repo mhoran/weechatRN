@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import {
   StyleSheet,
   AlertIOS,
@@ -100,8 +100,6 @@ export default class BufferContainer extends React.Component<Props, State> {
   }
   render() {
     const { bufferId } = this.props;
-
-    console.log({ bufferId });
 
     if (!bufferId) {
       return <View style={styles.container} />;

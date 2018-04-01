@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 
 import Default from "./themes/Default";
 import Messenger from "./themes/Messenger";
