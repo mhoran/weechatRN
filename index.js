@@ -44,6 +44,7 @@ class WeechatNative extends React.Component {
     return (
       <Provider store={store}>
         <ConnectionGate>
+          <StatusBar barStyle="light-content" />
           <App fetchLinesForBuffer={this.fetchLines} />
         </ConnectionGate>
       </Provider>
