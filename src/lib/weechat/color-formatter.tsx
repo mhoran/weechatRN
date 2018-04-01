@@ -1,5 +1,4 @@
-import * as React from "react";
-import { TextStyle, Text } from "react-native";
+import { TextStyle, TextProperties } from "react-native";
 
 import { WeeChatProtocol } from "./parser";
 import { ceb, cwb, cob, cef, cwf, cof } from "./colors";
@@ -39,19 +38,15 @@ const getFgColor = (colorAttr: WeechatColorAttribute): TextStyle => {
   }
 };
 
-export const renderWeechatFormat = (input: string): React.ReactNode => {
+export const renderWeechatFormat = (input: string): TextProperties[] => {
   const formattedNode = WeeChatProtocol.rawText2Rich(
     input
   ) as AttributedStringNode[];
 
-  return formattedNode.map((node, index) => (
-    <Text
-      key={index}
-      style={[getBgColor(node.bgColor), getFgColor(node.fgColor)]}
-    >
-      {node.text}
-    </Text>
-  ));
+  return formattedNode.map(node => ({
+    children: node.text,
+    style: [getBgColor(node.bgColor), getFgColor(node.fgColor)]
+  }));
 };
 
 export const getHighlightedViewStyles = line => {

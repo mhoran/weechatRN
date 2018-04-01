@@ -30,7 +30,9 @@ export default class BufferLine extends React.Component<Props> {
           <View style={styles.metaContainer}>
             <View style={styles.userContainer}>
               <Text style={[styles.text, styles.meta]}>
-                {renderWeechatFormat(line.prefix)}
+                {renderWeechatFormat(line.prefix).map((props, index) => (
+                  <Text {...props} key={index} />
+                ))}
               </Text>
             </View>
             <Text
@@ -42,9 +44,11 @@ export default class BufferLine extends React.Component<Props> {
           <View
             style={[styles.messageContainer, getHighlightedViewStyles(line)]}
           >
-            <ParsedText style={[styles.text]} parse={parseArgs}>
-              {renderWeechatFormat(line.message)}
-            </ParsedText>
+            <Text style={styles.text}>
+              {renderWeechatFormat(line.message).map((props, index) => (
+                <ParsedText {...props} key={index} parse={parseArgs} />
+              ))}
+            </Text>
           </View>
         </View>
       </TouchableHighlight>
