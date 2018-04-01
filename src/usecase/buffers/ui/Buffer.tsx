@@ -13,6 +13,7 @@ import * as _ from "lodash";
 import AppleEasing from "react-apple-easing";
 
 import BufferLine from "./BufferLine";
+import { StoreState } from "../../../store";
 
 //const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
 const easingFunction = AppleEasing.easeIn;
@@ -21,13 +22,18 @@ interface Props {
   lines: WeechatLine[];
   onLongPress: () => any;
   parseArgs: any;
+  bufferId: string;
 }
 
-class Buffer extends React.Component<Props> {
+interface State {
+  keyboardOffset: Animated.Value;
+}
+
+class Buffer extends React.Component<Props, State> {
   cancelKeyboardWillShow: EmitterSubscription;
   cancelKeyboardWillHide: EmitterSubscription;
 
-  state = {
+  state: State = {
     keyboardOffset: new Animated.Value(0)
   };
 
@@ -74,7 +80,7 @@ class Buffer extends React.Component<Props> {
   }
 }
 
-export default connect((state, { bufferId }) => ({
+export default connect((state: StoreState, { bufferId }: Props) => ({
   lines: state.lines[bufferId] || []
 }))(Buffer);
 

@@ -1,8 +1,8 @@
-type LinesState = { [key: string]: WeechatLine };
+export type LineState = { [key: string]: WeechatLine };
 
-const initialState: LinesState = {};
+const initialState: LineState = {};
 
-export default (state: LinesState = initialState, action): LinesState => {
+export default (state: LineState = initialState, action): LineState => {
   switch (action.type) {
     case "FETCH_LINES":
       return {

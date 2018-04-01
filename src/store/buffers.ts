@@ -1,4 +1,4 @@
-type BufferState = { [key: string]: WeechatBuffer };
+export type BufferState = { [key: string]: WeechatBuffer };
 
 const initialState: BufferState = {};
 

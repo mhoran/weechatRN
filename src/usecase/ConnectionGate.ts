@@ -1,6 +1,11 @@
 import { connect } from "react-redux";
 
-const ConnectionGate = props => {
+interface Props {
+  connected: boolean;
+  children: React.ReactChild;
+}
+
+const ConnectionGate = (props: Props) => {
   console.log("connection gate", props.connected);
   if (props.connected) {
     return props.children;

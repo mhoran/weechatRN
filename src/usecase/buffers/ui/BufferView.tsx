@@ -8,7 +8,8 @@ import {
   Keyboard,
   TextInput,
   Easing,
-  View
+  View,
+  EmitterSubscription
 } from "react-native";
 import AppleEasing from "react-apple-easing";
 
@@ -24,11 +25,24 @@ import { formatUrl } from "../../../lib/helpers/url-formatter";
 const easingFunction = Easing.bezier(0.55, 0.085, 0.68, 0.53);
 //const easingFunction = AppleEasing.easeIn;
 
-export default class BufferView extends React.Component {
+interface Props {
+  bufferId: string;
+}
+
+interface State {
+  keyboardOffset: Animated.Value;
+  inputWidth: Animated.Value;
+}
+
+export default class BufferView extends React.Component<Props, State> {
+  cancelKeyboardWillShow: EmitterSubscription;
+  cancelKeyboardWillHide: EmitterSubscription;
+
   state = {
     keyboardOffset: new Animated.Value(0),
     inputWidth: new Animated.Value(350)
   };
+
   componentDidMount() {
     this.cancelKeyboardWillShow = Keyboard.addListener("keyboardWillShow", e =>
       this._keyboardWillShow(e)
@@ -127,6 +141,9 @@ const styles = StyleSheet.create({
     height: 20,
     paddingHorizontal: 5,
     backgroundColor: "#001"
+  },
+  link: {
+    textDecorationLine: "underline"
   },
   text: {
     color: "#eee"
