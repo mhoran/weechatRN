@@ -7,6 +7,7 @@ export default class WeechatConnection {
   dispatch: any;
   hostname: string;
   password: string;
+  ssl: boolean;
   compressed: boolean;
   websocket: WebSocket;
 
@@ -15,11 +16,20 @@ export default class WeechatConnection {
     this.websocket = null;
   }
 
-  connect(host, password = "", onSuccess, onError) {
+  connect(
+    host: string,
+    password: string = "",
+    ssl: boolean,
+    onSuccess: (conn: WeechatConnection) => any,
+    onError: (event: Event) => any
+  ) {
     this.hostname = host;
     this.password = password;
+    this.ssl = ssl;
 
-    this.websocket = new WebSocket(this.hostname);
+    this.websocket = new WebSocket(
+      `${this.ssl ? "wss" : "ws"}://${this.hostname}/weechat`
+    );
 
     this.websocket.onopen = () => this.onopen(onSuccess);
     this.websocket.onmessage = event => this.onmessage(event);
@@ -30,7 +40,8 @@ export default class WeechatConnection {
     this.dispatch({
       type: "SET_CONNECTION_INFO",
       hostname: this.hostname,
-      password: this.password
+      password: this.password,
+      ssl: this.ssl
     });
     this.send(
       `init password=${this.password},compression=${

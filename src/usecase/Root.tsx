@@ -1,9 +1,10 @@
 import * as React from "react";
 import { StatusBar } from "react-native";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 import WeechatConnection from "../lib/weechat/connection";
-import store from "../store";
+import { store, persistor } from "../store";
 
 import App from "./App";
 import ConnectionGate from "./ConnectionGate";
@@ -39,12 +40,12 @@ export default class WeechatNative extends React.Component<{}, State> {
     console.log(error);
   };
 
-  onConnect = (hostname: string, password: string) => {
-    console.log(hostname, password);
+  onConnect = (hostname: string, password: string, ssl: boolean) => {
     this.setState({ connecting: true });
     this.connection.connect(
       hostname,
       password,
+      ssl,
       this.onConnectionSuccess,
       this.onConnectionError
     );
@@ -72,14 +73,16 @@ export default class WeechatNative extends React.Component<{}, State> {
 
     return (
       <Provider store={store}>
-        <ConnectionGate connecting={connecting} onConnect={this.onConnect}>
-          <StatusBar barStyle="light-content" />
-          <App
-            clearHotlistForBuffer={this.clearHotlistForBuffer}
-            sendMessageToBuffer={this.sendMessageToBuffer}
-            fetchLinesForBuffer={this.fetchLines}
-          />
-        </ConnectionGate>
+        <PersistGate loading={null} persistor={persistor}>
+          <ConnectionGate connecting={connecting} onConnect={this.onConnect}>
+            <StatusBar barStyle="light-content" />
+            <App
+              clearHotlistForBuffer={this.clearHotlistForBuffer}
+              sendMessageToBuffer={this.sendMessageToBuffer}
+              fetchLinesForBuffer={this.fetchLines}
+            />
+          </ConnectionGate>
+        </PersistGate>
       </Provider>
     );
   }

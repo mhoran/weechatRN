@@ -10,10 +10,14 @@ import {
   TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
+import { StoreState } from "../../store";
 
 interface Props {
-  onConnect: (hostname: string, password: string) => void;
+  onConnect: (hostname: string, password: string, ssl: boolean) => void;
   connecting: boolean;
+  hostname: string;
+  password: string;
+  ssl: boolean;
 }
 interface State {
   hostname: string;
@@ -21,20 +25,29 @@ interface State {
   ssl: boolean;
 }
 
-export default class LoginForm extends React.Component<Props, State> {
+class LoginForm extends React.Component<Props, State> {
   state: State = {
     hostname: "",
     password: "",
     ssl: true
   };
 
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (!prevState.hostname && !prevState.password) {
+      return {
+        ...prevState,
+        hostname: nextProps.hostname,
+        password: nextProps.password
+      };
+    } else {
+      return null;
+    }
+  }
+
   onPress = () => {
     const { hostname, password, ssl } = this.state;
-    this.props.onConnect(this.getFullWebsocketUrl(hostname, ssl), password);
+    this.props.onConnect(hostname, password, ssl);
   };
-
-  getFullWebsocketUrl = (hostname: string, ssl: boolean) =>
-    `${ssl ? "wss" : "ws"}://${hostname}/weechat`;
 
   setHostname = (hostname: string) => {
     this.setState({ hostname });
@@ -100,6 +113,11 @@ export default class LoginForm extends React.Component<Props, State> {
     );
   }
 }
+
+export default connect((state: StoreState) => ({
+  hostname: state.connection.hostname,
+  password: state.connection.password
+}))(LoginForm);
 
 const styles = StyleSheet.create({
   container: {
