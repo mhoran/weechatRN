@@ -10,22 +10,20 @@ export default class WeechatConnection {
   compressed: boolean;
   websocket: WebSocket;
 
-  constructor(dispatch, host, password = "", compressed = false) {
+  constructor(dispatch) {
     this.dispatch = dispatch;
-    this.host = host;
-    this.password = password;
-    this.compressed = compressed;
     this.websocket = null;
   }
 
-  connect(): Promise<WeechatConnection> {
-    return new Promise((resolve, reject) => {
-      this.websocket = new WebSocket(this.host);
+  connect(host, password = "", onSuccess, onError) {
+    this.host = host;
+    this.password = password;
 
-      this.websocket.onopen = () => this.onopen(resolve);
-      this.websocket.onmessage = event => this.onmessage(event);
-      this.websocket.onerror = reject;
-    });
+    this.websocket = new WebSocket(this.host);
+
+    this.websocket.onopen = () => this.onopen(onSuccess);
+    this.websocket.onmessage = event => this.onmessage(event);
+    this.websocket.onerror = onError;
   }
 
   onopen(callback) {

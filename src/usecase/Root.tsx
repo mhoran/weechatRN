@@ -3,45 +3,62 @@ import { StatusBar } from "react-native";
 import { Provider } from "react-redux";
 
 import WeechatConnection from "../lib/weechat/connection";
-import { HOSTNAME, PASSWORD } from "../../config";
-
 import store from "../store";
 
 import App from "./App";
 import ConnectionGate from "./ConnectionGate";
 
-const compressed = false;
-const connection = new WeechatConnection(
-  store.dispatch,
-  HOSTNAME,
-  PASSWORD,
-  compressed
-);
+interface State {
+  connecting: boolean;
+}
 
-export default class WeechatNative extends React.Component {
-  componentWillMount() {
-    connection.connect().then(
-      conn => {
-        conn.send("(hotlist) hdata hotlist:gui_hotlist(*)");
-        conn.send(
-          "(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type"
-        );
-        // conn.send("(nicklist) nicklist");
-        conn.send("sync");
-      },
-      error => {
-        console.log(error);
-      }
-    );
+export default class WeechatNative extends React.Component<{}, State> {
+  state: State = {
+    connecting: false
+  };
+
+  connection: WeechatConnection;
+
+  constructor(props) {
+    super(props);
+    this.connection = new WeechatConnection(store.dispatch);
   }
+
+  onConnectionSuccess = connection => {
+    this.setState({ connecting: false });
+    connection.send("(hotlist) hdata hotlist:gui_hotlist(*)");
+    connection.send(
+      "(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type"
+    );
+    // connection.send("(nicklist) nicklist");
+    connection.send("sync");
+  };
+
+  onConnectionError = error => {
+    this.setState({ connecting: false });
+    console.log(error);
+  };
+
+  onConnect = (hostname: string, password: string) => {
+    console.log(hostname, password);
+    this.setState({ connecting: true });
+    this.connection.connect(
+      hostname,
+      password,
+      this.onConnectionSuccess,
+      this.onConnectionError
+    );
+  };
+
   fetchLines = (bufferId: string, numLines: number = 50) => {
-    connection &&
-      connection.send(
+    this.connection &&
+      this.connection.send(
         `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`
       );
   };
   sendMessageToBuffer = (fullBufferName: string, message: string) => {
-    connection && connection.send(`(input) input ${fullBufferName} ${message}`);
+    this.connection &&
+      this.connection.send(`(input) input ${fullBufferName} ${message}`);
   };
   clearHotlistForBuffer = (fullBufferName: string) => {
     this.sendMessageToBuffer(fullBufferName, "/buffer set hotlist -1");
@@ -51,9 +68,11 @@ export default class WeechatNative extends React.Component {
     );
   };
   render() {
+    const { connecting } = this.state;
+
     return (
       <Provider store={store}>
-        <ConnectionGate>
+        <ConnectionGate connecting={connecting} onConnect={this.onConnect}>
           <StatusBar barStyle="light-content" />
           <App
             clearHotlistForBuffer={this.clearHotlistForBuffer}
