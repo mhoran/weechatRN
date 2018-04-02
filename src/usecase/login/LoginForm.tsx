@@ -68,7 +68,7 @@ class LoginForm extends React.Component<Props, State> {
 
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="dark-content" />
         <Text style={styles.header}>
           Connect to Weechat relay via websocket
         </Text>
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f8f8f8",
     flex: 1,
-    padding: 30
+    margin: 20
   },
   header: {
     textAlign: "center",
