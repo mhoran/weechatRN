@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   View,
+  SafeAreaView,
   Text,
   TextInput,
   ActivityIndicator,
@@ -66,7 +67,7 @@ class LoginForm extends React.Component<Props, State> {
     const { hostname, password, ssl } = this.state;
 
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
         <Text style={styles.header}>
           Connect to Weechat relay via websocket
@@ -74,6 +75,7 @@ class LoginForm extends React.Component<Props, State> {
         <TextInput
           style={styles.input}
           placeholderTextColor="#4157af"
+          keyboardType="url"
           autoCapitalize="none"
           placeholder="Hostname"
           onChangeText={this.setHostname}
@@ -109,7 +111,7 @@ class LoginForm extends React.Component<Props, State> {
             )}
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f8f8f8",
     flex: 1,
-    padding: 20
+    padding: 30
   },
   header: {
     textAlign: "center",
