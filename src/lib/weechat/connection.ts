@@ -5,7 +5,7 @@ const protocol = new WeeChatProtocol();
 
 export default class WeechatConnection {
   dispatch: any;
-  host: string;
+  hostname: string;
   password: string;
   compressed: boolean;
   websocket: WebSocket;
@@ -16,10 +16,10 @@ export default class WeechatConnection {
   }
 
   connect(host, password = "", onSuccess, onError) {
-    this.host = host;
+    this.hostname = host;
     this.password = password;
 
-    this.websocket = new WebSocket(this.host);
+    this.websocket = new WebSocket(this.hostname);
 
     this.websocket.onopen = () => this.onopen(onSuccess);
     this.websocket.onmessage = event => this.onmessage(event);
@@ -27,6 +27,11 @@ export default class WeechatConnection {
   }
 
   onopen(callback) {
+    this.dispatch({
+      type: "SET_CONNECTION_INFO",
+      hostname: this.hostname,
+      password: this.password
+    });
     this.send(
       `init password=${this.password},compression=${
         this.compressed ? "zlib" : "off"
