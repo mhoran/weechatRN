@@ -46,12 +46,7 @@ const reducer = combineReducers({
   hotlists
 });
 
-const middleware = applyMiddleware(thunk);
+const composeEnhancers =
+  (<any>window).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const enhancers = compose(
-  middleware,
-  (<any>window).__REDUX_DEVTOOLS_EXTENSION__ &&
-    (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
-);
-
-export default createStore(reducer, enhancers);
+export default createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
