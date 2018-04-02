@@ -35,9 +35,7 @@ class Buffer extends React.PureComponent<Props> {
     const { lines, onLongPress, parseArgs } = this.props;
     return (
       <FlatList
-        data={lines.filter(
-          line => !_.includes(line.tags_array, "irc_smart_filter")
-        )}
+        data={lines.filter(line => line.displayed !== 0)}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
