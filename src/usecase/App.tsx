@@ -24,6 +24,7 @@ interface Props {
   buffers: { [key: string]: WeechatBuffer };
   currentBufferId: string | null;
   currentBuffer: WeechatBuffer | null;
+  hasHighlights: boolean;
   disconnect: () => void;
   fetchLinesForBuffer: (bufferId: string) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
@@ -78,7 +79,8 @@ class App extends React.Component<Props, State> {
       buffers,
       currentBufferId,
       currentBuffer,
-      fetchLinesForBuffer
+      fetchLinesForBuffer,
+      hasHighlights
     } = this.props;
 
     const { showTopic } = this.state;
@@ -110,7 +112,16 @@ class App extends React.Component<Props, State> {
                   style={styles.channelsButton}
                   onPress={this.openDrawer}
                 >
-                  <Text style={styles.channelsButtonText}>#</Text>
+                  <Text
+                    style={[
+                      styles.channelsButtonText,
+                      hasHighlights && {
+                        color: "#ffcf7f"
+                      }
+                    ]}
+                  >
+                    #
+                  </Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={this.toggleShowTopic}>
@@ -145,10 +156,16 @@ export default connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
   const currentBuffer = currentBufferId && state.buffers[currentBufferId];
 
+  const numHighlights = _.values(state.hotlists).reduce(
+    (sum, hlist) => sum + hlist.highlight,
+    0
+  );
+
   return {
     buffers: state.buffers,
     currentBufferId,
-    currentBuffer
+    currentBuffer,
+    hasHighlights: numHighlights > 0
   };
 })(App);
 
