@@ -28,6 +28,11 @@ const initialState: AppState = {
 
 const app = (state: AppState = initialState, action) => {
   switch (action.type) {
+    case "DISCONNECT":
+      return {
+        ...state,
+        connected: false
+      };
     case "FETCH_VERSION":
       return {
         ...state,
