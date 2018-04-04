@@ -10,10 +10,12 @@ import {
   TextInput,
   Easing,
   View,
+  Text,
   EmitterSubscription
 } from "react-native";
 
 import { connect } from "react-redux";
+import ParsedText from "react-native-parsed-text";
 
 import { changeCurrentBuffer } from "../actions/BufferActions";
 
@@ -21,9 +23,12 @@ import BufferLine from "./BufferLine";
 import Buffer from "./Buffer";
 import { getParseArgs } from "../../../lib/helpers/parse-text-args";
 import { formatUrl } from "../../../lib/helpers/url-formatter";
+import { renderWeechatFormat } from "../../../lib/weechat/color-formatter";
 
 interface Props {
+  buffer: WeechatBuffer | null;
   bufferId: string;
+  showTopic: boolean;
   fetchLinesForBuffer: (bufferId: string) => void;
   sendMessage: (message: string) => void;
 }
@@ -95,7 +100,7 @@ export default class BufferContainer extends React.Component<Props, State> {
   onLongPress = (line: WeechatLine) => {};
 
   render() {
-    const { bufferId } = this.props;
+    const { bufferId, buffer, showTopic } = this.props;
     const { textValue } = this.state;
 
     if (!bufferId) {
@@ -104,6 +109,15 @@ export default class BufferContainer extends React.Component<Props, State> {
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
+        {showTopic && (
+          <View>
+            <Text>
+              {renderWeechatFormat(buffer.title).map((props, index) => (
+                <ParsedText {...props} key={index} parse={this.parseArgs} />
+              ))}
+            </Text>
+          </View>
+        )}
         <Buffer
           bufferId={bufferId}
           onLongPress={this.onLongPress}

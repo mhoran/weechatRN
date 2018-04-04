@@ -17,6 +17,7 @@ import { changeCurrentBuffer } from "./buffers/actions/BufferActions";
 import BufferContainer from "./buffers/ui/BufferContainer";
 import BufferList from "./buffers/ui/BufferList";
 import { StoreState } from "../store";
+import { renderWeechatFormat } from "../lib/weechat/color-formatter";
 
 interface Props {
   buffers: { [key: string]: WeechatBuffer };
@@ -28,8 +29,16 @@ interface Props {
   dispatch: (any) => void;
 }
 
-class App extends React.Component<Props> {
+interface State {
+  showTopic: boolean;
+}
+
+class App extends React.Component<Props, State> {
   drawer: Drawer;
+
+  state: State = {
+    showTopic: false
+  };
 
   changeCurrentBuffer = (buffer: WeechatBuffer) => {
     const { currentBufferId, fetchLinesForBuffer } = this.props;
@@ -43,6 +52,12 @@ class App extends React.Component<Props> {
       this.props.clearHotlistForBuffer(buffer.full_name);
       fetchLinesForBuffer(buffer.id);
     }
+  };
+
+  toggleShowTopic = () => {
+    this.setState(state => ({
+      showTopic: !state.showTopic
+    }));
   };
 
   openDrawer = () => {
@@ -63,6 +78,8 @@ class App extends React.Component<Props> {
       currentBuffer,
       fetchLinesForBuffer
     } = this.props;
+
+    const { showTopic } = this.state;
 
     const sidebar = (
       <BufferList
@@ -94,14 +111,16 @@ class App extends React.Component<Props> {
                   <Text style={styles.channelsButtonText}>#</Text>
                 </TouchableOpacity>
               </View>
-              <View>
+              <TouchableOpacity onPress={this.toggleShowTopic}>
                 <Text style={styles.topbarText}>
                   {currentBuffer && currentBuffer.short_name}
                 </Text>
-              </View>
+              </TouchableOpacity>
               <View style={styles.channels} />
             </View>
             <BufferContainer
+              showTopic={showTopic}
+              buffer={currentBuffer}
               sendMessage={this.sendMessage}
               fetchLinesForBuffer={fetchLinesForBuffer}
               bufferId={currentBufferId}
