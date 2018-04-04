@@ -67,51 +67,55 @@ class LoginForm extends React.Component<Props, State> {
     const { hostname, password, ssl } = this.state;
 
     return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" />
-        <Text style={styles.header}>
-          Connect to Weechat relay via websocket
-        </Text>
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#4157af"
-          keyboardType="url"
-          autoCapitalize="none"
-          placeholder="Hostname"
-          onChangeText={this.setHostname}
-          value={hostname}
-        />
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#4157af"
-          autoCapitalize="none"
-          placeholder="Password"
-          secureTextEntry
-          onChangeText={this.setPassword}
-          value={password}
-        />
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={styles.text}>SSL</Text>
-          <Switch
-            style={{ margin: 10 }}
-            value={ssl}
-            onValueChange={this.setSSL}
+      <View style={styles.container}>
+        <SafeAreaView>
+          <StatusBar barStyle="dark-content" />
+          <Text style={styles.header}>
+            Connect to Weechat relay via websocket
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholderTextColor="#4157af"
+            keyboardType="url"
+            autoCapitalize="none"
+            placeholder="Hostname"
+            onChangeText={this.setHostname}
+            value={hostname}
           />
-        </View>
-        <View style={styles.centeredButton}>
-          <TouchableOpacity
-            disabled={connecting}
-            style={styles.button}
-            onPress={this.onPress}
+          <TextInput
+            style={styles.input}
+            placeholderTextColor="#4157af"
+            autoCapitalize="none"
+            placeholder="Password"
+            secureTextEntry
+            onChangeText={this.setPassword}
+            value={password}
+          />
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            {connecting ? (
-              <ActivityIndicator color="#4157af" animating={connecting} />
-            ) : (
-              <Text style={styles.buttonText}>CONNECT</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+            <Text style={styles.text}>SSL</Text>
+            <Switch
+              style={{ margin: 10 }}
+              value={ssl}
+              onValueChange={this.setSSL}
+            />
+          </View>
+          <View style={styles.centeredButton}>
+            <TouchableOpacity
+              disabled={connecting}
+              style={styles.button}
+              onPress={this.onPress}
+            >
+              {connecting ? (
+                <ActivityIndicator color="#4157af" animating={connecting} />
+              ) : (
+                <Text style={styles.buttonText}>CONNECT</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 }
@@ -125,7 +129,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f8f8f8",
     flex: 1,
-    margin: 20
+    padding: 20
   },
   header: {
     textAlign: "center",
