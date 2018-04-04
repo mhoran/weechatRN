@@ -40,6 +40,10 @@ export default class WeechatNative extends React.Component<{}, State> {
     console.log(error);
   };
 
+  disconnect = () => {
+    this.connection.close();
+  };
+
   onConnect = (hostname: string, password: string, ssl: boolean) => {
     this.setState({ connecting: true });
     this.connection.connect(
@@ -77,6 +81,7 @@ export default class WeechatNative extends React.Component<{}, State> {
           <ConnectionGate connecting={connecting} onConnect={this.onConnect}>
             <StatusBar barStyle="light-content" />
             <App
+              disconnect={this.disconnect}
               clearHotlistForBuffer={this.clearHotlistForBuffer}
               sendMessageToBuffer={this.sendMessageToBuffer}
               fetchLinesForBuffer={this.fetchLines}

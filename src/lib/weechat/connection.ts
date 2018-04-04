@@ -34,7 +34,7 @@ export default class WeechatConnection {
     this.websocket.onopen = () => this.onopen(onSuccess);
     this.websocket.onmessage = event => this.onmessage(event);
     this.websocket.onerror = onError;
-    this.websocket.onclose = () => this.onclose();
+    this.websocket.onclose = () => this.close();
   }
 
   onopen(callback) {
@@ -53,7 +53,8 @@ export default class WeechatConnection {
     callback(this);
   }
 
-  onclose() {
+  close() {
+    this.websocket.close();
     this.dispatch({
       type: "DISCONNECT"
     });

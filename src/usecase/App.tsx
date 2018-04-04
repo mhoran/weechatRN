@@ -3,6 +3,7 @@ import {
   SafeAreaView,
   View,
   Text,
+  Image,
   TouchableOpacity,
   StyleSheet,
   Keyboard
@@ -23,6 +24,7 @@ interface Props {
   buffers: { [key: string]: WeechatBuffer };
   currentBufferId: string | null;
   currentBuffer: WeechatBuffer | null;
+  disconnect: () => void;
   fetchLinesForBuffer: (bufferId: string) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
   clearHotlistForBuffer: (fullBufferName: string) => void;
@@ -116,7 +118,14 @@ class App extends React.Component<Props, State> {
                   {currentBuffer && currentBuffer.short_name}
                 </Text>
               </TouchableOpacity>
-              <View style={styles.channels} />
+              <View style={styles.channels}>
+                <TouchableOpacity
+                  style={styles.channelsButton}
+                  onPress={this.props.disconnect}
+                >
+                  <Image source={require("./icons/eject.png")} />
+                </TouchableOpacity>
+              </View>
             </View>
             <BufferContainer
               showTopic={showTopic}
@@ -147,12 +156,11 @@ const styles = StyleSheet.create({
   topbar: {
     flexDirection: "row",
     backgroundColor: "#333",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingBottom: 10
   },
   channels: {
-    flex: 1,
     paddingHorizontal: 5
   },
   channelsButton: {
