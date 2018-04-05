@@ -54,6 +54,7 @@ export default class WeechatConnection {
   }
 
   close() {
+    this.send("quit");
     this.websocket.close();
     this.dispatch({
       type: "DISCONNECT"
