@@ -7,11 +7,9 @@ import {
   View,
   ListRenderItem
 } from "react-native";
-import { connect } from "react-redux";
 import * as _ from "lodash";
 
 import BufferLine from "./BufferLine";
-import { StoreState } from "../../../store";
 
 interface Props {
   lines: WeechatLine[];
@@ -23,7 +21,7 @@ interface Props {
 const keyExtractor = (line: WeechatLine, index: number) =>
   _.last(line.pointers);
 
-class Buffer extends React.PureComponent<Props> {
+export default class Buffer extends React.PureComponent<Props> {
   renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
     const { onLongPress, parseArgs } = this.props;
 
@@ -44,10 +42,6 @@ class Buffer extends React.PureComponent<Props> {
     );
   }
 }
-
-export default connect((state: StoreState, { bufferId }: Props) => ({
-  lines: state.lines[bufferId] || []
-}))(Buffer);
 
 const styles = StyleSheet.create({
   topbar: {

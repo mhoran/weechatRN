@@ -8,13 +8,16 @@ import {
   Animated,
   Keyboard,
   TextInput,
+  Image,
   Easing,
   View,
   Text,
-  EmitterSubscription
+  EmitterSubscription,
+  TouchableOpacity
 } from "react-native";
 
 import { connect } from "react-redux";
+import * as _ from "lodash";
 import ParsedText from "react-native-parsed-text";
 
 import { changeCurrentBuffer } from "../actions/BufferActions";
@@ -24,22 +27,26 @@ import Buffer from "./Buffer";
 import { getParseArgs } from "../../../lib/helpers/parse-text-args";
 import { formatUrl } from "../../../lib/helpers/url-formatter";
 import { renderWeechatFormat } from "../../../lib/weechat/color-formatter";
+import { StoreState } from "../../../store";
 
 interface Props {
   buffer: WeechatBuffer | null;
+  lines: WeechatLine[];
+  nicklist: WeechatNicklist[];
   bufferId: string;
   showTopic: boolean;
-  fetchLinesForBuffer: (bufferId: string) => void;
   sendMessage: (message: string) => void;
 }
 
 interface State {
+  showTabButton: boolean;
   inputWidth: Animated.Value;
   textValue: string;
 }
 
-export default class BufferContainer extends React.Component<Props, State> {
+class BufferContainer extends React.Component<Props, State> {
   state = {
+    showTabButton: false,
     inputWidth: new Animated.Value(350),
     textValue: ""
   };
@@ -51,6 +58,9 @@ export default class BufferContainer extends React.Component<Props, State> {
   );
 
   handleOnFocus() {
+    this.setState({
+      showTabButton: true
+    });
     Animated.timing(this.state.inputWidth, {
       toValue: 310,
       duration: 250,
@@ -58,6 +68,9 @@ export default class BufferContainer extends React.Component<Props, State> {
     }).start();
   }
   handleOnBlur() {
+    this.setState({
+      showTabButton: false
+    });
     Animated.timing(this.state.inputWidth, {
       toValue: 350,
       duration: 250,
@@ -97,11 +110,29 @@ export default class BufferContainer extends React.Component<Props, State> {
     });
   };
 
-  onLongPress = (line: WeechatLine) => {};
+  tabCompleteNick = () => {
+    const tokens = this.state.textValue.split(" ");
+    const lastIndex = tokens.length - 1;
+    const nickcomplete = tokens[lastIndex].toLowerCase();
+
+    const alternatives = this.props.nicklist.filter(nick =>
+      nick.name.toLowerCase().startsWith(nickcomplete)
+    );
+
+    if (alternatives[0]) {
+      tokens[lastIndex] = alternatives[0].name + ": ";
+
+      this.setState({
+        textValue: tokens.join(" ")
+      });
+    }
+  };
+
+  onLongPress = () => {};
 
   render() {
-    const { bufferId, buffer, showTopic } = this.props;
-    const { textValue } = this.state;
+    const { bufferId, buffer, showTopic, lines } = this.props;
+    const { textValue, showTabButton } = this.state;
 
     if (!bufferId) {
       return <View style={styles.container} />;
@@ -120,6 +151,7 @@ export default class BufferContainer extends React.Component<Props, State> {
         )}
         <Buffer
           bufferId={bufferId}
+          lines={lines}
           onLongPress={this.onLongPress}
           parseArgs={this.parseArgs}
         />
@@ -136,11 +168,24 @@ export default class BufferContainer extends React.Component<Props, State> {
               onSubmitEditing={this.handleSubmit}
             />
           </Animated.View>
+          {showTabButton && (
+            <TouchableOpacity
+              style={{ alignItems: "center", width: 40 }}
+              onPress={this.tabCompleteNick}
+            >
+              <Image source={require("../../icons/long-arrow-right.png")} />
+            </TouchableOpacity>
+          )}
         </View>
       </KeyboardAvoidingView>
     );
   }
 }
+
+export default connect((state: StoreState, { bufferId }: Props) => ({
+  lines: state.lines[bufferId] || [],
+  nicklist: state.nicklists[bufferId] || []
+}))(BufferContainer);
 
 const styles = StyleSheet.create({
   topbar: {
@@ -164,7 +209,9 @@ const styles = StyleSheet.create({
   bottomBox: {
     height: 40,
     paddingHorizontal: 10,
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "#333"
   },
   inputBox: {
