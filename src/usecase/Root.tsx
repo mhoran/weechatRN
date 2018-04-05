@@ -55,11 +55,13 @@ export default class WeechatNative extends React.Component<{}, State> {
     );
   };
 
-  fetchLines = (bufferId: string, numLines: number = 50) => {
-    this.connection &&
+  fetchBufferInfo = (bufferId: string, numLines: number = 50) => {
+    if (this.connection) {
       this.connection.send(
         `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`
       );
+      this.connection.send(`(nicklist) nicklist 0x${bufferId}`);
+    }
   };
   sendMessageToBuffer = (fullBufferName: string, message: string) => {
     this.connection &&
@@ -84,7 +86,7 @@ export default class WeechatNative extends React.Component<{}, State> {
               disconnect={this.disconnect}
               clearHotlistForBuffer={this.clearHotlistForBuffer}
               sendMessageToBuffer={this.sendMessageToBuffer}
-              fetchLinesForBuffer={this.fetchLines}
+              fetchBufferInfo={this.fetchBufferInfo}
             />
           </ConnectionGate>
         </PersistGate>

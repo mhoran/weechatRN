@@ -7,6 +7,7 @@ import buffers, { BufferState } from "./buffers";
 import lines, { LineState } from "./lines";
 import hotlists, { HotListState } from "./hotlists";
 import connection, { ConnectionInfo } from "./connection-info";
+import nicklists, { NicklistState } from "./nicklists";
 
 type AppState = {
   connected: boolean;
@@ -19,6 +20,7 @@ export type StoreState = {
   buffers: BufferState;
   lines: LineState;
   hotlists: HotListState;
+  nicklists: NicklistState;
 };
 
 const initialState: AppState = {
@@ -53,7 +55,8 @@ const reducer = combineReducers({
   buffers,
   lines,
   connection,
-  hotlists
+  hotlists,
+  nicklists
 });
 
 const composeEnhancers =

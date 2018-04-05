@@ -34,6 +34,18 @@ interface WeechatHotlist {
   count: number[];
 }
 
+interface WeechatNicklist {
+  color: string;
+  group: number;
+  level: number;
+  name: string;
+  pointers: string[];
+  prefix: string;
+  prefix_color: string;
+  visible: number;
+  _diff: number;
+}
+
 interface Hotlist extends WeechatHotlist {
   message: number;
   privmsg: number;

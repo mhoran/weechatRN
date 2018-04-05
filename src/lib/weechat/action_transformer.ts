@@ -18,6 +18,43 @@ const reduceToObjectByKey = <T, U>(
 export const transformToReduxAction = (data: WeechatResponse<any>) => {
   switch (data.id) {
     // Weechat internal events starts with "_"
+    case "_nicklist_diff": {
+      const object = data.objects[0] as WeechatObject<WeechatNicklist[]>;
+      const nicklistDiffs = object.content;
+
+      const nick = nicklistDiffs.filter(diff => diff.group === 0)[0];
+
+      if (nick) {
+        const bufferId = nick.pointers[0];
+        const payload = nick;
+
+        switch (String.fromCharCode(nick._diff)) {
+          case "+": {
+            return {
+              type: "NICK_ADDED",
+              bufferId,
+              payload
+            };
+          }
+          case "-": {
+            return {
+              type: "NICK_REMOVED",
+              bufferId,
+              payload
+            };
+          }
+          case "*": {
+            return {
+              type: "NICK_UPDATED",
+              bufferId,
+              payload
+            };
+          }
+        }
+      }
+
+      return null;
+    }
     case "_buffer_line_added": {
       const object = data.objects[0] as WeechatObject<WeechatLine[]>;
       const line = object.content[0];
@@ -101,6 +138,18 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
             return { ...h, message, privmsg, highlight, sum };
           }
         )
+      };
+    }
+    case "nicklist": {
+      const object = data.objects[0] as WeechatObject<WeechatNicklist[]>;
+      const nicklistDiffs = object.content;
+
+      const nicks = nicklistDiffs.filter(diff => diff.group === 0);
+
+      return {
+        type: "FETCH_NICKLIST",
+        bufferId: object.content[0].pointers[0],
+        payload: nicks
       };
     }
     case "buffers": {

@@ -26,7 +26,7 @@ interface Props {
   currentBuffer: WeechatBuffer | null;
   hasHighlights: boolean;
   disconnect: () => void;
-  fetchLinesForBuffer: (bufferId: string) => void;
+  fetchBufferInfo: (bufferId: string) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
   clearHotlistForBuffer: (fullBufferName: string) => void;
   dispatch: (any) => void;
@@ -44,7 +44,7 @@ class App extends React.Component<Props, State> {
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer) => {
-    const { currentBufferId, fetchLinesForBuffer } = this.props;
+    const { currentBufferId, fetchBufferInfo } = this.props;
 
     this.drawer.close();
     if (currentBufferId !== buffer.id) {
@@ -53,7 +53,7 @@ class App extends React.Component<Props, State> {
         bufferId: buffer.id
       });
       this.props.clearHotlistForBuffer(buffer.full_name);
-      fetchLinesForBuffer(buffer.id);
+      fetchBufferInfo(buffer.id);
     }
   };
 
@@ -142,7 +142,6 @@ class App extends React.Component<Props, State> {
               showTopic={showTopic}
               buffer={currentBuffer}
               sendMessage={this.sendMessage}
-              fetchLinesForBuffer={fetchLinesForBuffer}
               bufferId={currentBufferId}
             />
           </SafeAreaView>
