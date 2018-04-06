@@ -10,7 +10,7 @@ The only supported option for connecting to a weechat instance is through websoc
 
 ```bash
 # Install react-native-cli
-yarn add global react-native-cli
+yarn global add react-native-cli
 
 # Install dependencies for project
 yarn install
