@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "eject": "expo eject",
     "test": "jest"
   },
   "dependencies": {
@@ -11,9 +14,10 @@
     "date-fns": "^1.29.0",
     "js-sha256": "^0.9.0",
     "lodash": "^4.17.5",
-    "react": "16.3.0",
+    "expo": "^30.0.1",
+    "react": "16.3.1",
     "react-apple-easing": "^0.0.2",
-    "react-native": "0.54.4",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
     "react-native-drawer": "^2.5.0",
     "react-native-parsed-text": "^0.0.20",
     "react-redux": "^5.0.7",

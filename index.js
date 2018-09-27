@@ -1,4 +1,5 @@
-import { AppRegistry } from "react-native";
+import Expo from 'expo';
 import Root from "./src/usecase/Root";
 
-AppRegistry.registerComponent("WeechatNative", () => Root);
+Expo.registerRootComponent(Root);
+
