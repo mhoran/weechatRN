@@ -5,7 +5,6 @@ import {
   Linking,
   ActionSheetIOS,
   KeyboardAvoidingView,
-  Animated,
   Keyboard,
   TextInput,
   Image,
@@ -13,7 +12,8 @@ import {
   View,
   Text,
   EmitterSubscription,
-  TouchableOpacity
+  TouchableOpacity,
+  LayoutAnimation
 } from "react-native";
 
 import { connect } from "react-redux";
@@ -40,14 +40,12 @@ interface Props {
 
 interface State {
   showTabButton: boolean;
-  inputWidth: Animated.Value;
   textValue: string;
 }
 
 class BufferContainer extends React.Component<Props, State> {
   state = {
     showTabButton: false,
-    inputWidth: new Animated.Value(350),
     textValue: ""
   };
 
@@ -61,21 +59,13 @@ class BufferContainer extends React.Component<Props, State> {
     this.setState({
       showTabButton: true
     });
-    Animated.timing(this.state.inputWidth, {
-      toValue: 310,
-      duration: 250,
-      easing: Easing.inOut(Easing.ease)
-    }).start();
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }
   handleOnBlur() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.setState({
       showTabButton: false
     });
-    Animated.timing(this.state.inputWidth, {
-      toValue: 350,
-      duration: 250,
-      easing: Easing.inOut(Easing.ease)
-    }).start();
   }
   handleOnLongPress(type, text) {
     ActionSheetIOS.showShareActionSheetWithOptions(
@@ -156,18 +146,16 @@ class BufferContainer extends React.Component<Props, State> {
           parseArgs={this.parseArgs}
         />
         <View style={styles.bottomBox}>
-          <Animated.View style={{ width: this.state.inputWidth }}>
-            <TextInput
-              style={styles.inputBox}
-              value={textValue}
-              onChangeText={this.handleChangeText}
-              onFocus={() => this.handleOnFocus()}
-              onBlur={() => this.handleOnBlur()}
-              returnKeyType="send"
-              blurOnSubmit={false}
-              onSubmitEditing={this.handleSubmit}
-            />
-          </Animated.View>
+          <TextInput
+            style={styles.inputBox}
+            value={textValue}
+            onChangeText={this.handleChangeText}
+            onFocus={() => this.handleOnFocus()}
+            onBlur={() => this.handleOnBlur()}
+            returnKeyType="send"
+            blurOnSubmit={false}
+            onSubmitEditing={this.handleSubmit}
+          />
           {showTabButton && (
             <TouchableOpacity
               style={{ alignItems: "center", width: 40 }}
@@ -219,6 +207,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     justifyContent: "center",
     borderColor: "gray",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    flex: 1
   }
 });
