@@ -6,12 +6,14 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Keyboard
+  Keyboard,
+  Dimensions,
+  Platform
 } from "react-native";
 import { connect } from "react-redux";
 import * as _ from "lodash";
 
-import Drawer from "react-native-drawer";
+import DrawerLayout from 'react-native-drawer-layout-polyfill';
 
 import { changeCurrentBuffer } from "./buffers/actions/BufferActions";
 
@@ -37,16 +39,33 @@ interface State {
 }
 
 class App extends React.Component<Props, State> {
-  drawer: Drawer;
+  drawer: DrawerNavigator;
+
+  drawerWidth = () => {
+    /*
+     * Default drawer width is screen width - header height
+     * with a max width of 280 on mobile and 320 on tablet
+     * https://material.io/guidelines/patterns/navigation-drawer.html
+     */
+    const { height, width } = Dimensions.get('window');
+    const smallerAxisSize = Math.min(height, width);
+    const isLandscape = width > height;
+    const isTablet = smallerAxisSize >= 600;
+    const appBarHeight = Platform.OS === 'ios' ? isLandscape ? 32 : 44 : 56;
+    const maxWidth = isTablet ? 320 : 280;
+
+    return Math.min(smallerAxisSize - appBarHeight, maxWidth);
+  }
 
   state: State = {
-    showTopic: false
+    showTopic: false,
+    drawerWidth: this.drawerWidth()
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer) => {
     const { currentBufferId, fetchBufferInfo } = this.props;
 
-    this.drawer.close();
+    this.drawer.closeDrawer();
     if (currentBufferId !== buffer.id) {
       this.props.dispatch({
         type: "CHANGE_CURRENT_BUFFER",
@@ -64,7 +83,7 @@ class App extends React.Component<Props, State> {
   };
 
   openDrawer = () => {
-    this.drawer.open();
+    this.drawer.openDrawer();
     Keyboard.dismiss();
   };
 
@@ -73,6 +92,20 @@ class App extends React.Component<Props, State> {
 
     sendMessageToBuffer(currentBuffer.full_name, message);
   };
+
+  updateWidth = () => {
+    if (this.state.drawerWidth !== this.drawerWidth()) {
+      this.setState({ drawerWidth: this.drawerWidth() });
+    }
+  }
+
+  componentDidMount() {
+    Dimensions.addEventListener('change', this.updateWidth);
+  }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener('change', this.updateWidth);
+  }
 
   render() {
     const {
@@ -83,9 +116,9 @@ class App extends React.Component<Props, State> {
       hasHighlights
     } = this.props;
 
-    const { showTopic } = this.state;
+    const { showTopic, drawerWidth } = this.state;
 
-    const sidebar = (
+    const sidebar = () => (
       <BufferList
         buffers={_.orderBy(_.values(buffers), ["number"])}
         currentBufferId={currentBufferId}
@@ -95,16 +128,12 @@ class App extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <Drawer
-          type="static"
-          content={sidebar}
-          panOpenMask={0.03}
-          tapToClose={true}
-          openDrawerOffset={100}
-          captureGestures={true}
-          ref={d => (this.drawer = d)}
-          tweenHandler={Drawer.tweenPresets.parallax}
-        >
+        <DrawerLayout
+          ref={ d => (this.drawer = d) }
+          renderNavigationView={sidebar}
+          keyboardDismissMode={'on-drag'}
+          drawerWidth={drawerWidth}
+          useNativeAnimations={true}>
           <SafeAreaView style={styles.container}>
             <View style={styles.topbar}>
               <View style={styles.channels}>
@@ -145,7 +174,7 @@ class App extends React.Component<Props, State> {
               bufferId={currentBufferId}
             />
           </SafeAreaView>
-        </Drawer>
+        </DrawerLayout>
       </View>
     );
   }
