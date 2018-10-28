@@ -21,10 +21,15 @@ export default (state: HotListState = initialState, action): HotListState => {
         ...getHotlistForBufferId(state, action.bufferId)
       };
 
-      if (payload.highlight !== 0) {
-        hotlist.highlight++;
+      const shouldNotify = (tag) => (
+        tag != "irc_smart_filter" && tag != "notify_none"
+      );
+      if (payload.tags_array.every(shouldNotify)) {
+        if (payload.highlight !== 0) {
+          hotlist.highlight++;
+        }
+        hotlist.sum++;
       }
-      hotlist.sum++;
 
       return {
         ...state,
