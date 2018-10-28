@@ -41,6 +41,8 @@ export default (state: BufferState = initialState, action): BufferState => {
             }
           }
         };
+      } else {
+        return state;
       }
     }
     case "BUFFER_RENAMED": {
