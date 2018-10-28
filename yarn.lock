@@ -5707,11 +5707,6 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-apple-easing@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/react-apple-easing/-/react-apple-easing-0.0.2.tgz#dd216409784297fdcd8fb3754791d2e2dd56c41f"
-  integrity sha1-3SFkCXhCl/3Nj7N1R5HS4t1WxB8=
-
 react-clone-referenced-element@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-clone-referenced-element/-/react-clone-referenced-element-1.0.1.tgz#2bba8c69404c5e4a944398600bcc4c941f860682"

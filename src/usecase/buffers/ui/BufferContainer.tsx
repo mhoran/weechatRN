@@ -8,7 +8,6 @@ import {
   Keyboard,
   TextInput,
   Image,
-  Easing,
   View,
   Text,
   EmitterSubscription,
