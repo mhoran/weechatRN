@@ -101,6 +101,11 @@ class App extends React.Component<Props, State> {
 
   componentDidMount() {
     Dimensions.addEventListener('change', this.updateWidth);
+
+    const { currentBufferId, fetchBufferInfo } = this.props;
+    if (currentBufferId) {
+      fetchBufferInfo(this.props.currentBufferId);
+    }
   }
 
   componentWillUnmount() {
