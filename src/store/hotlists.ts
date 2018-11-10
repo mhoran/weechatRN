@@ -8,6 +8,10 @@ const initialState: HotListState = {};
 export default (state: HotListState = initialState, action): HotListState => {
   switch (action.type) {
     case "FETCH_HOTLISTS":
+      if (action.currentBufferId) {
+          return omit(action.payload, currentBufferId);
+      }
+
       return action.payload;
     case "CHANGE_CURRENT_BUFFER":
       return omit(state, action.bufferId);

@@ -137,7 +137,8 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
             const sum = message + privmsg + highlight;
             return { ...h, message, privmsg, highlight, sum };
           }
-        )
+        ),
+        currentBufferId: state.app.currentBufferId
       };
     }
     case "nicklist": {
