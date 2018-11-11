@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import Default from "./themes/Default";
-import Messenger from "./themes/Messenger";
 
 interface Props {
   line: WeechatLine;
