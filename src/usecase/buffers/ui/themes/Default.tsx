@@ -10,8 +10,6 @@ import {
 import ParsedText from "react-native-parsed-text";
 import {
   renderWeechatFormat,
-  getHighlightedViewStyles,
-  getHighlightedTextStyles
 } from "../../../../lib/weechat/color-formatter";
 import { formatDate } from "../../../../lib/helpers/date-formatter";
 
@@ -26,23 +24,28 @@ export default class BufferLine extends React.Component<Props> {
     const { line, onLongPress, parseArgs } = this.props;
     return (
       <TouchableHighlight onLongPress={() => onLongPress(line)}>
-        <View style={[styles.container, getHighlightedViewStyles(line)]}>
+        <View style={[styles.container]}>
           <View style={styles.metaContainer}>
             <View style={styles.userContainer}>
               <Text style={[styles.text, styles.meta]}>
-                {renderWeechatFormat(line.prefix).map((props, index) => (
-                  <Text {...props} key={index} />
-                ))}
+                {renderWeechatFormat(line.prefix).map((props, index) => {
+                  const { style, ...rest } = props;
+                  return (
+                    <Text {...rest} key={index}
+                      style={ line.highlight ? styles.highlight : style }
+                    />
+                  )
+                })}
               </Text>
             </View>
             <Text
-              style={[styles.text, styles.meta, getHighlightedTextStyles(line)]}
+              style={[styles.text, styles.meta]}
             >
               {formatDate(line.date_printed)}
             </Text>
           </View>
           <View
-            style={[styles.messageContainer, getHighlightedViewStyles(line)]}
+            style={[styles.messageContainer]}
           >
             <Text style={styles.text}>
               {renderWeechatFormat(line.message).map((props, index) => (
@@ -81,5 +84,9 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 10
+  },
+  highlight: {
+    backgroundColor: "magenta",
+    color: "yellow"
   }
 });

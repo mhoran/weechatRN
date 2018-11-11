@@ -48,23 +48,3 @@ export const renderWeechatFormat = (input: string): TextProperties[] => {
     style: [getBgColor(node.bgColor), getFgColor(node.fgColor)]
   }));
 };
-
-export const getHighlightedViewStyles = line => {
-  if (line.highlight) {
-    return {
-      backgroundColor: "#ffcf7f"
-    };
-  } else {
-    return null;
-  }
-};
-
-export const getHighlightedTextStyles = line => {
-  if (line.highlight) {
-    return {
-      color: "#000"
-    };
-  } else {
-    return null;
-  }
-};
