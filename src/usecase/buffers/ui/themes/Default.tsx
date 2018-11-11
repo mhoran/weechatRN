@@ -41,7 +41,7 @@ export default class BufferLine extends React.Component<Props> {
             <Text
               style={[styles.text, styles.meta]}
             >
-              {formatDate(line.date_printed)}
+              {formatDate(line.date)}
             </Text>
           </View>
           <View
