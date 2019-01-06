@@ -127,18 +127,22 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
     case "hotlist": {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
 
-      return {
-        type: "FETCH_HOTLISTS",
-        payload: reduceToObjectByKey(
-          object.content,
-          hotlist => hotlist.buffer,
-          h => {
-            const [unknown, message, privmsg, highlight] = h.count;
-            const sum = message + privmsg + highlight;
-            return { ...h, message, privmsg, highlight, sum };
-          }
-        ),
-        currentBufferId: state.app.currentBufferId
+      return (dispatch, getState) => {
+        const state: StoreState = getState();
+
+        dispatch({
+          type: "FETCH_HOTLISTS",
+          payload: reduceToObjectByKey(
+            object.content,
+            hotlist => hotlist.buffer,
+            h => {
+              const [unknown, message, privmsg, highlight] = h.count;
+              const sum = message + privmsg + highlight;
+              return { ...h, message, privmsg, highlight, sum };
+            }
+          ),
+          currentBufferId: state.app.currentBufferId
+        });
       };
     }
     case "nicklist": {

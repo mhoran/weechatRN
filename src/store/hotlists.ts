@@ -9,7 +9,7 @@ export default (state: HotListState = initialState, action): HotListState => {
   switch (action.type) {
     case "FETCH_HOTLISTS":
       if (action.currentBufferId) {
-          return omit(action.payload, currentBufferId);
+          return omit(action.payload, action.currentBufferId);
       }
 
       return action.payload;
