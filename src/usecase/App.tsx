@@ -36,10 +36,11 @@ interface Props {
 
 interface State {
   showTopic: boolean;
+  drawerWidth: number;
 }
 
 class App extends React.Component<Props, State> {
-  drawer: DrawerNavigator;
+  drawer: DrawerLayout;
 
   drawerWidth = () => {
     /*
@@ -117,7 +118,6 @@ class App extends React.Component<Props, State> {
       buffers,
       currentBufferId,
       currentBuffer,
-      fetchLinesForBuffer,
       hasHighlights
     } = this.props;
 
