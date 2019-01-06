@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
     "eject": "expo eject",
     "test": "jest"
   },
