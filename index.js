@@ -1,5 +1,5 @@
-import Expo from 'expo';
+import { registerRootComponent } from 'expo';
 import Root from "./src/usecase/Root";
 
-Expo.registerRootComponent(Root);
+registerRootComponent(Root);
 

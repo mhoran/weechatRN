@@ -4,7 +4,7 @@
     "description": "Weechat relay client using websockets",
     "slug": "WeechatRN",
     "privacy": "unlisted",
-    "sdkVersion": "30.0.0",
+    "sdkVersion": "31.0.0",
     "platforms": [
       "ios",
       "android"
@@ -24,13 +24,6 @@
     ],
     "ios": {
       "supportsTablet": true
-    },
-    "packagerOpts": {
-      "sourceExts": [
-        "ts",
-        "tsx"
-      ],
-      "transformer": "node_modules/react-native-typescript-transformer/index.js"
     }
   }
 }
