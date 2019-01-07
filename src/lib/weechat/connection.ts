@@ -10,6 +10,10 @@ export default class WeechatConnection {
   ssl: boolean;
   compressed: boolean;
   websocket: WebSocket;
+  onSuccess: (conn: WeechatConnection) => any;
+  onError: (event: Event) => any;
+  connected: boolean;
+  reconnect: boolean;
 
   constructor(dispatch) {
     this.dispatch = dispatch;
@@ -26,18 +30,24 @@ export default class WeechatConnection {
     this.hostname = host;
     this.password = password;
     this.ssl = ssl;
+    this.onSuccess = onSuccess;
+    this.onError = onError;
 
+    this.openSocket();
+  }
+
+  openSocket() {
     this.websocket = new WebSocket(
       `${this.ssl ? "wss" : "ws"}://${this.hostname}/weechat`
     );
 
-    this.websocket.onopen = () => this.onopen(onSuccess);
+    this.websocket.onopen = () => this.onopen();
     this.websocket.onmessage = event => this.onmessage(event);
-    this.websocket.onerror = onError;
-    this.websocket.onclose = () => this.close();
+    this.websocket.onerror = event => this.handleError(event);
+    this.websocket.onclose = event => this.close(event);
   }
 
-  onopen(callback) {
+  onopen() {
     this.dispatch({
       type: "SET_CONNECTION_INFO",
       hostname: this.hostname,
@@ -50,15 +60,27 @@ export default class WeechatConnection {
       }\n`
     );
     this.send("(version) info version");
-    callback(this);
+    this.connected = true;
+    this.onSuccess(this);
   }
 
-  close() {
+  handleError(event) {
+    this.reconnect = this.connected && true;
+    this.onError(event);
+  }
+
+  close(event) {
+    this.connected = false;
     this.send("quit");
     this.websocket.close();
     this.dispatch({
       type: "DISCONNECT"
     });
+
+    if (this.reconnect) {
+      this.reconnect = false;
+      this.openSocket();
+    }
   }
 
   onmessage(event) {
