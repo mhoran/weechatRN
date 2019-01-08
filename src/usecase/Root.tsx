@@ -35,9 +35,8 @@ export default class WeechatNative extends React.Component<{}, State> {
     connection.send("sync");
   };
 
-  onConnectionError = error => {
-    this.setState({ connecting: false });
-    console.log(error);
+  onConnectionError = reconnect => {
+    this.setState({ connecting: reconnect });
   };
 
   disconnect = () => {

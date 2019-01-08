@@ -11,13 +11,14 @@ export default class WeechatConnection {
   compressed: boolean;
   websocket: WebSocket;
   onSuccess: (conn: WeechatConnection) => any;
-  onError: (event: Event) => any;
+  onError: (reconnect: boolean) => any;
   connected: boolean;
   reconnect: boolean;
 
   constructor(dispatch) {
     this.dispatch = dispatch;
     this.websocket = null;
+    this.reconnect = this.connected = false;
   }
 
   connect(
@@ -25,7 +26,7 @@ export default class WeechatConnection {
     password: string = "",
     ssl: boolean,
     onSuccess: (conn: WeechatConnection) => any,
-    onError: (event: Event) => any
+    onError: (reconnect: boolean) => any
   ) {
     this.hostname = host;
     this.password = password;
@@ -44,7 +45,7 @@ export default class WeechatConnection {
     this.websocket.onopen = () => this.onopen();
     this.websocket.onmessage = event => this.onmessage(event);
     this.websocket.onerror = event => this.handleError(event);
-    this.websocket.onclose = event => this.close(event);
+    this.websocket.onclose = () => this.close();
   }
 
   onopen() {
@@ -65,11 +66,12 @@ export default class WeechatConnection {
   }
 
   handleError(event) {
-    this.reconnect = this.connected && true;
-    this.onError(event);
+    console.log(event);
+    this.reconnect = this.connected;
+    this.onError(this.reconnect);
   }
 
-  close(event) {
+  close() {
     this.connected = false;
     this.send("quit");
     this.websocket.close();
