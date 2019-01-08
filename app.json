@@ -3,7 +3,7 @@
     "name": "WeechatRN",
     "description": "Weechat relay client using websockets",
     "slug": "WeechatRN",
-    "privacy": "unlisted",
+    "privacy": "public",
     "sdkVersion": "31.0.0",
     "platforms": [
       "ios",
