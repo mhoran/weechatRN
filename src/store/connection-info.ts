@@ -7,7 +7,7 @@ export type ConnectionInfo = {
 const initialState: ConnectionInfo = {
   hostname: null,
   password: null,
-  ssl: false
+  ssl: true
 };
 
 export default (state: ConnectionInfo = initialState, action) => {

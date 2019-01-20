@@ -49,12 +49,6 @@ export default class WeechatConnection {
   }
 
   onopen() {
-    this.dispatch({
-      type: "SET_CONNECTION_INFO",
-      hostname: this.hostname,
-      password: this.password,
-      ssl: this.ssl
-    });
     this.send(
       `init password=${this.password},compression=${
         this.compressed ? "zlib" : "off"

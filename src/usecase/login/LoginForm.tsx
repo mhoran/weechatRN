@@ -19,6 +19,7 @@ interface Props {
   hostname: string;
   password: string;
   ssl: boolean;
+  dispatch: (any) => void;
 }
 interface State {
   hostname: string;
@@ -38,7 +39,8 @@ class LoginForm extends React.Component<Props, State> {
       return {
         ...prevState,
         hostname: nextProps.hostname,
-        password: nextProps.password
+        password: nextProps.password,
+        ssl: nextProps.ssl
       };
     } else {
       return null;
@@ -46,6 +48,12 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   onPress = () => {
+    this.props.dispatch({
+      type: "SET_CONNECTION_INFO",
+      hostname: this.state.hostname,
+      password: this.state.password,
+      ssl: this.state.ssl
+    });
     const { hostname, password, ssl } = this.state;
     this.props.onConnect(hostname, password, ssl);
   };
@@ -122,7 +130,8 @@ class LoginForm extends React.Component<Props, State> {
 
 export default connect((state: StoreState) => ({
   hostname: state.connection.hostname,
-  password: state.connection.password
+  password: state.connection.password,
+  ssl: state.connection.ssl
 }))(LoginForm);
 
 const styles = StyleSheet.create({
