@@ -40,13 +40,24 @@ interface Props {
 interface State {
   showTabButton: boolean;
   textValue: string;
+  selection: {start: number, end: number};
 }
 
 class BufferContainer extends React.Component<Props, State> {
   state = {
     showTabButton: false,
-    textValue: ""
+    textValue: "",
+    selection: {
+      start: 0,
+      end: 0
+    }
   };
+
+  tabCompleteInProgress = false;
+  tabCompleteMatches: WeechatNicklist[];
+  tabCompleteIndex = 0;
+  tabCompleteWordStart = 0;
+  tabCompleteWordEnd = 0;
 
   parseArgs = getParseArgs(
     styles.link,
@@ -86,6 +97,7 @@ class BufferContainer extends React.Component<Props, State> {
   }
 
   handleChangeText = (textValue: string) => {
+    this.tabCompleteInProgress = false;
     this.setState({
       textValue
     });
@@ -100,28 +112,59 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   tabCompleteNick = () => {
-    const tokens = this.state.textValue.split(" ");
-    const lastIndex = tokens.length - 1;
-    const nickcomplete = tokens[lastIndex].toLowerCase();
+    const { textValue, selection } = this.state;
+    const { nicklist } = this.props;
 
-    const alternatives = this.props.nicklist.filter(nick =>
-      nick.name.toLowerCase().startsWith(nickcomplete)
-    );
+    if (!this.tabCompleteInProgress) {
+      this.tabCompleteWordEnd = selection.start;
 
-    if (alternatives[0]) {
-      tokens[lastIndex] = alternatives[0].name + ": ";
+      this.tabCompleteWordStart = this.tabCompleteWordEnd;
+      while (this.tabCompleteWordStart > 0 &&
+        textValue.charAt(this.tabCompleteWordStart - 1) != ' ') {
+        this.tabCompleteWordStart--;
+      }
 
-      this.setState({
-        textValue: tokens.join(" ")
-      });
+      if (this.tabCompleteWordStart == this.tabCompleteWordEnd)
+        return;
+
+      const prefix = textValue.substring(this.tabCompleteWordStart,
+        this.tabCompleteWordEnd).toLowerCase();
+
+      this.tabCompleteMatches = nicklist.filter(nick =>
+        nick.name.toLowerCase().startsWith(prefix)
+      );
+      if (this.tabCompleteMatches.length == 0) {
+        return;
+      }
+
+      this.tabCompleteIndex = 0;
+    } else {
+      this.tabCompleteIndex = (this.tabCompleteIndex + 1) %
+        this.tabCompleteMatches.length;
     }
+
+    let nick = this.tabCompleteMatches[this.tabCompleteIndex].name;
+    if (this.tabCompleteWordStart == 0) {
+      nick += ": ";
+    }
+
+    this.setState({
+      textValue: textValue.substring(0, this.tabCompleteWordStart) +
+        nick + textValue.substring(this.tabCompleteWordEnd)
+    });
+    this.tabCompleteWordEnd = this.tabCompleteWordStart + nick.length;
+    this.tabCompleteInProgress = true;
   };
+
+  handleSelectionChange = ({ nativeEvent: { selection } }) => {
+    this.setState({ selection })
+  }
 
   onLongPress = () => {};
 
   render() {
     const { bufferId, buffer, showTopic, lines } = this.props;
-    const { textValue, showTabButton } = this.state;
+    const { textValue, showTabButton, selection } = this.state;
 
     if (!bufferId) {
       return <View style={styles.container} />;
@@ -151,6 +194,8 @@ class BufferContainer extends React.Component<Props, State> {
             onChangeText={this.handleChangeText}
             onFocus={() => this.handleOnFocus()}
             onBlur={() => this.handleOnBlur()}
+            selection={selection}
+            onSelectionChange={this.handleSelectionChange}
             returnKeyType="send"
             blurOnSubmit={false}
             onSubmitEditing={this.handleSubmit}
