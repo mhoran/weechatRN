@@ -1,37 +1,40 @@
 import * as React from "react";
+import { connect } from "react-redux";
 import {
   StyleSheet,
-  Dimensions,
-  Text,
-  TouchableHighlight,
   FlatList,
   View,
   ListRenderItem
 } from "react-native";
 import BufferListItem from "./BufferListItem";
+import { StoreState } from "../../../store";
+import { getHotlistForBufferId } from "../../../store/selectors";
+import { HotListState } from '../../../store/hotlists';
 
 interface Props {
   buffers: WeechatBuffer[];
   currentBufferId: string | null;
   onSelectBuffer: (b: WeechatBuffer) => any;
+  hotlists: HotListState;
 }
 
 const keyExtractor = (buffer: WeechatBuffer): string => buffer.id;
 
-export default class BufferList extends React.Component<Props> {
+class BufferList extends React.Component<Props> {
   renderListItem: ListRenderItem<WeechatBuffer> = ({ item }) => {
-    const { onSelectBuffer, currentBufferId } = this.props;
+    const { onSelectBuffer, currentBufferId, hotlists } = this.props;
 
     return (
       <BufferListItem
         buffer={item}
         onSelectBuffer={onSelectBuffer}
         currentBufferId={currentBufferId}
+        hotlist={getHotlistForBufferId(hotlists, item.id)}
       />
     );
   };
   render() {
-    const { buffers, onSelectBuffer, currentBufferId } = this.props;
+    const { buffers } = this.props;
 
     return (
       <View style={styles.container}>
@@ -46,6 +49,10 @@ export default class BufferList extends React.Component<Props> {
     );
   }
 }
+
+export default connect((state: StoreState) => ({
+  hotlists: state.hotlists
+}))(BufferList);
 
 const styles = StyleSheet.create({
   container: {
