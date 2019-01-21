@@ -16,6 +16,7 @@ interface Props {
   currentBufferId: string | null;
   onSelectBuffer: (b: WeechatBuffer) => any;
   hotlists: HotListState;
+  filterBuffers: boolean;
 }
 
 const keyExtractor = (buffer: WeechatBuffer): string => buffer.id;
@@ -33,6 +34,19 @@ class BufferList extends React.Component<Props> {
       />
     );
   };
+
+  visibleBuffer = (buffer: WeechatBuffer) => {
+    const { filterBuffers, hotlists } = this.props;
+
+    if (filterBuffers) {
+      return buffer.local_variables.type != "server" &&
+          buffer.local_variables.type != null ||
+          hotlists[buffer.id] && hotlists[buffer.id].sum != 0;
+    } else {
+      return true;
+    }
+  }
+
   render() {
     const { buffers } = this.props;
 
@@ -41,7 +55,7 @@ class BufferList extends React.Component<Props> {
         <View style={styles.topbar} />
         <FlatList
           style={styles.container}
-          data={buffers}
+          data={buffers.filter(this.visibleBuffer)}
           keyExtractor={keyExtractor}
           renderItem={this.renderListItem}
         />
@@ -51,7 +65,8 @@ class BufferList extends React.Component<Props> {
 }
 
 export default connect((state: StoreState) => ({
-  hotlists: state.hotlists
+  hotlists: state.hotlists,
+  filterBuffers: state.connection.filterBuffers
 }))(BufferList);
 
 const styles = StyleSheet.create({

@@ -19,19 +19,22 @@ interface Props {
   hostname: string;
   password: string;
   ssl: boolean;
+  filterBuffers: boolean;
   dispatch: (any) => void;
 }
 interface State {
   hostname: string;
   password: string;
   ssl: boolean;
+  filterBuffers: boolean;
 }
 
 class LoginForm extends React.Component<Props, State> {
   state: State = {
     hostname: "",
     password: "",
-    ssl: true
+    ssl: true,
+    filterBuffers: true
   };
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
@@ -40,7 +43,8 @@ class LoginForm extends React.Component<Props, State> {
         ...prevState,
         hostname: nextProps.hostname,
         password: nextProps.password,
-        ssl: nextProps.ssl
+        ssl: nextProps.ssl,
+        filterBuffers: nextProps.filterBuffers
       };
     } else {
       return null;
@@ -52,7 +56,8 @@ class LoginForm extends React.Component<Props, State> {
       type: "SET_CONNECTION_INFO",
       hostname: this.state.hostname,
       password: this.state.password,
-      ssl: this.state.ssl
+      ssl: this.state.ssl,
+      filterBuffers: this.state.filterBuffers
     });
     const { hostname, password, ssl } = this.state;
     this.props.onConnect(hostname, password, ssl);
@@ -70,9 +75,13 @@ class LoginForm extends React.Component<Props, State> {
     this.setState({ ssl });
   };
 
+  setFilterBuffers = (filterBuffers: boolean) => {
+    this.setState({ filterBuffers });
+  };
+
   render() {
     const { children, connecting } = this.props;
-    const { hostname, password, ssl } = this.state;
+    const { hostname, password, ssl, filterBuffers } = this.state;
 
     return (
       <View style={styles.container}>
@@ -109,6 +118,16 @@ class LoginForm extends React.Component<Props, State> {
               onValueChange={this.setSSL}
             />
           </View>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={styles.text}>Hide server buffers</Text>
+            <Switch
+              style={{ margin: 10 }}
+              value={filterBuffers}
+              onValueChange={this.setFilterBuffers}
+            />
+          </View>
           <View style={styles.centeredButton}>
             <TouchableOpacity
               disabled={connecting}
@@ -131,7 +150,8 @@ class LoginForm extends React.Component<Props, State> {
 export default connect((state: StoreState) => ({
   hostname: state.connection.hostname,
   password: state.connection.password,
-  ssl: state.connection.ssl
+  ssl: state.connection.ssl,
+  filterBuffers: state.connection.filterBuffers
 }))(LoginForm);
 
 const styles = StyleSheet.create({
