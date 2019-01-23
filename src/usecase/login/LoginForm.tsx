@@ -31,25 +31,11 @@ interface State {
 
 class LoginForm extends React.Component<Props, State> {
   state: State = {
-    hostname: "",
-    password: "",
-    ssl: true,
-    filterBuffers: true
+    hostname: this.props.hostname,
+    password: this.props.password,
+    ssl: this.props.ssl,
+    filterBuffers: this.props.filterBuffers
   };
-
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (!prevState.hostname && !prevState.password) {
-      return {
-        ...prevState,
-        hostname: nextProps.hostname,
-        password: nextProps.password,
-        ssl: nextProps.ssl,
-        filterBuffers: nextProps.filterBuffers
-      };
-    } else {
-      return null;
-    }
-  }
 
   onPress = () => {
     this.props.dispatch({
