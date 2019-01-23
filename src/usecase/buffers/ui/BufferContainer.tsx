@@ -118,11 +118,8 @@ class BufferContainer extends React.Component<Props, State> {
     if (!this.tabCompleteInProgress) {
       this.tabCompleteWordEnd = selection.start;
 
-      this.tabCompleteWordStart = this.tabCompleteWordEnd;
-      while (this.tabCompleteWordStart > 0 &&
-        textValue.charAt(this.tabCompleteWordStart - 1) != ' ') {
-        this.tabCompleteWordStart--;
-      }
+      this.tabCompleteWordStart = textValue.lastIndexOf(' ',
+        this.tabCompleteWordEnd - 1) + 1;
 
       if (this.tabCompleteWordStart == this.tabCompleteWordEnd)
         return;
