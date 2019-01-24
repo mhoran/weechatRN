@@ -9,19 +9,17 @@ The only supported option for connecting to a weechat instance is through websoc
 ## Development
 
 ```bash
-# Install react-native-cli
-yarn global add react-native-cli
+# Install expo-cli
+yarn global add expo-cli
 
 # Install dependencies for project
 yarn install
 
-
-# Launch iOS simulator
-react-native run-ios
-
-# Run on Android device (not tested)
-react-native run-android
+# Launch Expo
+yarn start
 ```
+
+On your device, scan the QR code with the Camera app (iOS) or the [Expo Client](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www) (Android).
 
 ## Example configuration
 
