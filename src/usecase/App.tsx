@@ -106,6 +106,8 @@ class App extends React.Component<Props, State> {
     const { currentBufferId, fetchBufferInfo } = this.props;
     if (currentBufferId) {
       fetchBufferInfo(this.props.currentBufferId);
+    } else {
+      this.drawer.openDrawer();
     }
   }
 
