@@ -105,7 +105,7 @@ class App extends React.Component<Props, State> {
 
     const { currentBufferId, fetchBufferInfo } = this.props;
     if (currentBufferId) {
-      fetchBufferInfo(this.props.currentBufferId);
+      fetchBufferInfo(currentBufferId);
     } else {
       this.drawer.openDrawer();
     }
@@ -113,6 +113,13 @@ class App extends React.Component<Props, State> {
 
   componentWillUnmount() {
     Dimensions.removeEventListener('change', this.updateWidth);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const { currentBufferId } = this.props;
+    if (currentBufferId !== prevProps.currentBufferId && !currentBufferId) {
+      this.drawer.openDrawer();
+    }
   }
 
   render() {
@@ -176,7 +183,6 @@ class App extends React.Component<Props, State> {
             </View>
             <BufferContainer
               showTopic={showTopic}
-              buffer={currentBuffer}
               sendMessage={this.sendMessage}
               bufferId={currentBufferId}
             />
@@ -198,7 +204,7 @@ export default connect((state: StoreState) => {
 
   return {
     buffers: state.buffers,
-    currentBufferId,
+    currentBufferId: currentBuffer && currentBufferId,
     currentBuffer,
     hasHighlights: numHighlights > 0
   };
