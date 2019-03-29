@@ -47,3 +47,7 @@ example.com {
 	}
 }
 ```
+
+## License
+
+[MIT License](LICENSE)
