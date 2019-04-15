@@ -96,19 +96,22 @@ class BufferContainer extends React.Component<Props, State> {
     }
   }
 
+  clearTextInput = false;
+
   handleChangeText = (textValue: string) => {
     this.tabCompleteInProgress = false;
     this.setState({
-      textValue
+      textValue: this.clearTextInput ? "" : textValue
     });
+    this.clearTextInput = false
   };
 
   handleSubmit = () => {
     const { textValue } = this.state;
-    this.props.sendMessage(textValue);
-    this.setState({
-      textValue: ""
+    textValue.split("\n").forEach((line) => {
+      this.props.sendMessage(line);
     });
+    this.clearTextInput = true;
   };
 
   tabCompleteNick = () => {
@@ -196,6 +199,8 @@ class BufferContainer extends React.Component<Props, State> {
             returnKeyType="send"
             blurOnSubmit={false}
             onSubmitEditing={this.handleSubmit}
+            multiline={true}
+            enablesReturnKeyAutomatically={true}
           />
           {showTabButton && (
             <TouchableOpacity
@@ -236,16 +241,16 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   bottomBox: {
-    height: 40,
     paddingHorizontal: 10,
+    paddingVertical: 7.5,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#333"
   },
   inputBox: {
-    height: 25,
-    paddingHorizontal: 5,
+    maxHeight: 60.5,
+    padding: 5,
     justifyContent: "center",
     borderColor: "gray",
     backgroundColor: "#fff",
