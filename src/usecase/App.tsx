@@ -183,6 +183,7 @@ class App extends React.Component<Props, State> {
             </View>
             <BufferContainer
               showTopic={showTopic}
+              buffer={currentBuffer}
               sendMessage={this.sendMessage}
               bufferId={currentBufferId}
             />
