@@ -5,6 +5,13 @@
     "slug": "WeechatRN",
     "privacy": "public",
     "sdkVersion": "35.0.0",
+    "ios": {
+      "bundleIdentifier": "com.matthoran.weechatrn",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.matthoran.weechatrn"
+    },
     "platforms": [
       "ios",
       "android"
@@ -22,9 +29,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "githubUrl": "https://github.com/mhoran/weechatRN"
   }
 }
