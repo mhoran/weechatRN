@@ -8,6 +8,7 @@ import { store, persistor } from "../store";
 
 import App from "./App";
 import ConnectionGate from "./ConnectionGate";
+import { getPushNotificationStatusAsync } from "../lib/helpers/push-notifications"
 
 interface State {
   connecting: boolean;
@@ -25,6 +26,12 @@ export default class WeechatNative extends React.Component<{}, State> {
     this.connection = new WeechatConnection(store.dispatch);
   }
 
+  setNotificationToken = async () => {
+    let token = await getPushNotificationStatusAsync();
+    if (token)
+      this.sendMessageToBuffer("core.weechat", "/weechatrn " + token);
+  }
+
   onConnectionSuccess = connection => {
     this.setState({ connecting: false });
     connection.send("(hotlist) hdata hotlist:gui_hotlist(*)");
@@ -33,6 +40,7 @@ export default class WeechatNative extends React.Component<{}, State> {
     );
     // connection.send("(nicklist) nicklist");
     connection.send("sync");
+    this.setNotificationToken();
   };
 
   onConnectionError = reconnect => {

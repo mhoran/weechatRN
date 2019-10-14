@@ -21,6 +21,7 @@ import BufferContainer from "./buffers/ui/BufferContainer";
 import BufferList from "./buffers/ui/BufferList";
 import { StoreState } from "../store";
 import { renderWeechatFormat } from "../lib/weechat/color-formatter";
+import { registerForPushNotificationsAsync } from "../lib/helpers/push-notifications"
 
 interface Props {
   buffers: { [key: string]: WeechatBuffer };
@@ -109,6 +110,8 @@ class App extends React.Component<Props, State> {
     } else {
       this.drawer.openDrawer();
     }
+
+    registerForPushNotificationsAsync();
   }
 
   componentWillUnmount() {
