@@ -71,6 +71,7 @@ class BufferContainer extends React.Component<Props, State> {
     });
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }
+
   handleOnBlur() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.setState({
@@ -96,14 +97,9 @@ class BufferContainer extends React.Component<Props, State> {
     }
   }
 
-  clearTextInput = false;
-
   handleChangeText = (textValue: string) => {
     this.tabCompleteInProgress = false;
-    this.setState({
-      textValue: this.clearTextInput ? "" : textValue
-    });
-    this.clearTextInput = false
+    this.setState({textValue});
   };
 
   handleSubmit = () => {
@@ -111,7 +107,7 @@ class BufferContainer extends React.Component<Props, State> {
     textValue.split("\n").forEach((line) => {
       this.props.sendMessage(line);
     });
-    this.clearTextInput = true;
+    this.handleChangeText("");
   };
 
   tabCompleteNick = () => {
@@ -199,7 +195,6 @@ class BufferContainer extends React.Component<Props, State> {
             returnKeyType="send"
             blurOnSubmit={false}
             onSubmitEditing={this.handleSubmit}
-            multiline={true}
             enablesReturnKeyAutomatically={true}
           />
           {showTabButton && (
