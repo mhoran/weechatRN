@@ -10,33 +10,34 @@
   "dependencies": {
     "@types/lodash": "^4.14.106",
     "date-fns": "^1.29.0",
-    "expo": "^35.0.0",
+    "expo": "^37.0.0",
     "js-sha256": "^0.9.0",
     "lodash": "^4.17.5",
-    "react": "16.8.3",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+    "react": "16.9.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.0.tar.gz",
     "react-native-drawer-layout-polyfill": "^2.0.0",
-    "react-native-parsed-text": "^0.0.20",
-    "react-redux": "^5.0.7",
-    "redux": "^3.7.2",
+    "react-native-parsed-text": "^0.0.21",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5",
     "redux-persist": "^5.9.1",
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
-    "@types/jest": "^23.3.11",
-    "@types/react": "^16.8.23",
-    "@types/react-native": "^0.57.65",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^23.6.0",
-    "babel-preset-expo": "^7.0.0",
-    "jest": "^23.6.0",
-    "jest-expo": "^35.0.0",
+    "@types/jest": "^25.2.1",
+    "@types/react": "^16.9.11",
+    "@types/react-native": "^0.60.22",
+    "babel-jest": "^25.3.0",
+    "babel-preset-expo": "^8.1.0",
+    "jest": "^25.3.0",
+    "jest-expo": "^37.0.0",
     "prettier": "^1.11.1",
-    "react-test-renderer": "^16.3.0-alpha.1",
-    "ts-jest": "^23.10.5",
+    "react-test-renderer": "~16.9.0",
+    "ts-jest": "^25.3.1",
     "tslib": "^1.9.0",
-    "typescript": "^3.4.5",
-    "why-did-you-update": "^0.1.1"
+    "typescript": "^3.8.3"
+  },
+  "resolutions": {
+    "react-native-drawer-layout-polyfill/react-native-drawer-layout": "https://github.com/mhoran/react-native-drawer-layout#91a2476"
   }
 }

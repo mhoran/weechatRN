@@ -4,7 +4,6 @@
     "description": "Weechat relay client using websockets",
     "slug": "WeechatRN",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
     "ios": {
       "bundleIdentifier": "com.matthoran.weechatrn",
       "supportsTablet": true
