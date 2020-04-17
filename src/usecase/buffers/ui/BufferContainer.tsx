@@ -1,16 +1,13 @@
 import * as React from "react";
 import {
   StyleSheet,
-  AlertIOS,
   Linking,
   ActionSheetIOS,
   KeyboardAvoidingView,
-  Keyboard,
   TextInput,
   Image,
   View,
   Text,
-  EmitterSubscription,
   TouchableOpacity,
   LayoutAnimation
 } from "react-native";
@@ -19,9 +16,6 @@ import { connect } from "react-redux";
 import * as _ from "lodash";
 import ParsedText from "react-native-parsed-text";
 
-import { changeCurrentBuffer } from "../actions/BufferActions";
-
-import BufferLine from "./BufferLine";
 import Buffer from "./Buffer";
 import { getParseArgs } from "../../../lib/helpers/parse-text-args";
 import { formatUrl } from "../../../lib/helpers/url-formatter";

@@ -1,10 +1,7 @@
 import * as React from "react";
 import {
   StyleSheet,
-  Animated,
-  Keyboard,
   FlatList,
-  View,
   ListRenderItem
 } from "react-native";
 import * as _ from "lodash";

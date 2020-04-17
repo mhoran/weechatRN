@@ -4,7 +4,6 @@ import {
   Text,
   TouchableHighlight,
   View,
-  TextStyle
 } from "react-native";
 
 import ParsedText from "react-native-parsed-text";

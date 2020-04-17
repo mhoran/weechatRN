@@ -15,12 +15,9 @@ import * as _ from "lodash";
 
 import DrawerLayout from 'react-native-drawer-layout-polyfill';
 
-import { changeCurrentBuffer } from "./buffers/actions/BufferActions";
-
 import BufferContainer from "./buffers/ui/BufferContainer";
 import BufferList from "./buffers/ui/BufferList";
 import { StoreState } from "../store";
-import { renderWeechatFormat } from "../lib/weechat/color-formatter";
 import { registerForPushNotificationsAsync } from "../lib/helpers/push-notifications"
 
 interface Props {
