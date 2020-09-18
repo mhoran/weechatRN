@@ -1,0 +1,29 @@
+name: Publish to TestFlight
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish-to-testflight:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - uses: expo/expo-github-action@v5
+        with:
+          expo-version: 3.x
+          expo-username: ${{secrets.EXPO_CLI_USERNAME}}
+          expo-password: ${{secrets.EXPO_CLI_PASSWORD}}
+      - run: yarn install
+      - run: expo build:ios --non-interactive --apple-id ${{secrets.EXPO_APPLE_ID}}
+        env:
+            EXPO_APPLE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
+            FASTLANE_SESSION: ${{secrets.FASTLANE_SESSION}}
+      - run: expo upload:ios --non-interactive --app-name "WeechatRemote" --apple-id ${{secrets.EXPO_APPLE_ID}}
+        env:
+            EXPO_APPLE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
+            FASTLANE_SESSION: ${{secrets.FASTLANE_SESSION}}
+            FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD}}
