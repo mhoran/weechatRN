@@ -1,4 +1,4 @@
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
 export const registerForPushNotificationsAsync = async () => {
@@ -16,18 +16,19 @@ export const registerForPushNotificationsAsync = async () => {
 }
 
 export const getPushNotificationStatusAsync = async () => {
-  const { status: existingStatus } = await Permissions.getAsync(
-    Permissions.NOTIFICATIONS
-  );
-  let finalStatus = existingStatus;
-
-  // Stop here if the user did not grant permissions
-  if (finalStatus !== 'granted') {
-    return;
+  let token;
+  if (Constants.isDevice) {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
   }
-
-  // Get the token that uniquely identifies this device
-  let token = await Notifications.getExpoPushTokenAsync();
 
   return token;
 }
