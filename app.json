@@ -6,7 +6,10 @@
     "privacy": "public",
     "ios": {
       "bundleIdentifier": "com.matthoran.weechatrn",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.matthoran.weechatrn"
