@@ -184,7 +184,6 @@ class BufferContainer extends React.Component<Props, State> {
             onChangeText={this.handleChangeText}
             onFocus={() => this.handleOnFocus()}
             onBlur={() => this.handleOnBlur()}
-            selection={selection}
             onSelectionChange={this.handleSelectionChange}
             returnKeyType="send"
             blurOnSubmit={false}
