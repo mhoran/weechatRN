@@ -21,6 +21,7 @@ import { getParseArgs } from "../../../lib/helpers/parse-text-args";
 import { formatUrl } from "../../../lib/helpers/url-formatter";
 import { renderWeechatFormat } from "../../../lib/weechat/color-formatter";
 import { StoreState } from "../../../store";
+import UndoTextInput from "./UndoTextInput";
 
 interface Props {
   buffer: WeechatBuffer | null;
@@ -72,6 +73,7 @@ class BufferContainer extends React.Component<Props, State> {
       showTabButton: false
     });
   }
+
   handleOnLongPress(type, text) {
     ActionSheetIOS.showShareActionSheetWithOptions(
       {
@@ -82,6 +84,7 @@ class BufferContainer extends React.Component<Props, State> {
       () => null
     );
   }
+
   handleOnPress(type, text) {
     console.log(type, text);
     if (type === "channel") {
@@ -178,7 +181,7 @@ class BufferContainer extends React.Component<Props, State> {
           parseArgs={this.parseArgs}
         />
         <View style={styles.bottomBox}>
-          <TextInput
+          <UndoTextInput
             style={styles.inputBox}
             value={textValue}
             onChangeText={this.handleChangeText}
