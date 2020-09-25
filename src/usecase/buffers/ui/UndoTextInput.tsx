@@ -1,37 +1,28 @@
-import * as React from "react";
+import * as React from 'react';
 import { TextInput } from 'react-native';
 
 type Props = React.ComponentProps<typeof TextInput>;
 
-export default class UndoTextInput extends React.PureComponent<Props> {
-  constructor(props: Props) {
-    super(props)
-    this.value = props.value;
-  }
+const UndoTextInput = (props: Props): JSX.Element => {
+  const { value, onChangeText, ...rest } = props;
+  const lastValue = React.useRef(value);
+  const textInput = React.useRef<TextInput>(null);
 
-  textInput: TextInput;
-  value: string;
+  const handleChangeText = (textValue: string) => {
+    lastValue.current = textValue;
+    onChangeText(textValue);
+  };
 
-  componentDidUpdate() {
-    const { value } = this.props;
-    if (value !== this.value) {
-      this.textInput.setNativeProps({ text: value })
-      this.value = value;
+  React.useEffect(() => {
+    if (value !== lastValue.current) {
+      textInput.current.setNativeProps({ text: value });
+      lastValue.current = value;
     }
-  }
+  });
 
-  handleChangeText = (textValue: string) => {
-    this.value = textValue;
-    this.props.onChangeText(textValue);
-  }
+  return (
+    <TextInput {...rest} ref={textInput} onChangeText={handleChangeText} />
+  );
+};
 
-  render() {
-    const { value, onChangeText, ...rest } = this.props;
-    return (
-        <TextInput {...rest}
-          ref={input => this.textInput = input}
-          onChangeText={this.handleChangeText}
-      />
-    );
-  }
-}
+export default UndoTextInput;
