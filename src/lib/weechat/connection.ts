@@ -1,5 +1,5 @@
-import { WeeChatProtocol } from "./parser";
-import { transformToReduxAction } from "./action_transformer";
+import { WeeChatProtocol } from './parser';
+import { transformToReduxAction } from './action_transformer';
 
 const protocol = new WeeChatProtocol();
 
@@ -10,8 +10,8 @@ export default class WeechatConnection {
   ssl: boolean;
   compressed: boolean;
   websocket: WebSocket;
-  onSuccess: (conn: WeechatConnection) => any;
-  onError: (reconnect: boolean) => any;
+  onSuccess: (conn: WeechatConnection) => void;
+  onError: (reconnect: boolean) => void;
   connected: boolean;
   reconnect: boolean;
 
@@ -23,11 +23,11 @@ export default class WeechatConnection {
 
   connect(
     host: string,
-    password: string = "",
+    password = '',
     ssl: boolean,
-    onSuccess: (conn: WeechatConnection) => any,
-    onError: (reconnect: boolean) => any
-  ) {
+    onSuccess: (conn: WeechatConnection) => void,
+    onError: (reconnect: boolean) => void
+  ): void {
     this.hostname = host;
     this.password = password;
     this.ssl = ssl;
@@ -37,40 +37,40 @@ export default class WeechatConnection {
     this.openSocket();
   }
 
-  openSocket() {
+  openSocket(): void {
     this.websocket = new WebSocket(
-      `${this.ssl ? "wss" : "ws"}://${this.hostname}/weechat`
+      `${this.ssl ? 'wss' : 'ws'}://${this.hostname}/weechat`
     );
 
     this.websocket.onopen = () => this.onopen();
-    this.websocket.onmessage = event => this.onmessage(event);
-    this.websocket.onerror = event => this.handleError(event);
+    this.websocket.onmessage = (event) => this.onmessage(event);
+    this.websocket.onerror = (event) => this.handleError(event);
     this.websocket.onclose = () => this.close();
   }
 
-  onopen() {
+  onopen(): void {
     this.send(
       `init password=${this.password},compression=${
-        this.compressed ? "zlib" : "off"
+        this.compressed ? 'zlib' : 'off'
       }\n`
     );
-    this.send("(version) info version");
+    this.send('(version) info version');
     this.connected = true;
     this.onSuccess(this);
   }
 
-  handleError(event) {
+  handleError(event: Event): void {
     console.log(event);
     this.reconnect = this.connected;
     this.onError(this.reconnect);
   }
 
-  close() {
+  close(): void {
     this.connected = false;
-    this.send("quit");
+    this.send('quit');
     this.websocket.close();
     this.dispatch({
-      type: "DISCONNECT"
+      type: 'DISCONNECT'
     });
 
     if (this.reconnect) {
@@ -79,10 +79,10 @@ export default class WeechatConnection {
     }
   }
 
-  onmessage(event) {
+  onmessage(event: WebSocketMessageEvent): void {
     const parsed = protocol.parse(event.data) as WeechatResponse<any>;
 
-    console.log("Parsed data:", parsed);
+    console.log('Parsed data:', parsed);
     try {
       const action = transformToReduxAction(parsed);
       if (action) {
@@ -93,8 +93,8 @@ export default class WeechatConnection {
     }
   }
 
-  send(data) {
-    console.log("Sending data:", data);
-    this.websocket.send(data + "\n");
+  send(data: string): void {
+    console.log('Sending data:', data);
+    this.websocket.send(data + '\n');
   }
 }

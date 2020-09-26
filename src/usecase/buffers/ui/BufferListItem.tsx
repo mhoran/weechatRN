@@ -1,48 +1,49 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   StyleSheet,
   Text,
+  TextStyle,
   TouchableHighlight,
   View
-} from "react-native";
+} from 'react-native';
 
 interface Props {
   buffer: WeechatBuffer;
   hotlist: Hotlist;
   currentBufferId: string;
-  onSelectBuffer: (b: WeechatBuffer) => any;
+  onSelectBuffer: (b: WeechatBuffer) => void;
 }
 
 export default class BufferListItem extends React.Component<Props> {
-  getBufferViewStyleFromProps = () => {
-    const { currentBufferId, buffer, hotlist} = this.props;
+  getBufferViewStyleFromProps = (): TextStyle => {
+    const { currentBufferId, buffer, hotlist } = this.props;
 
     if (currentBufferId === buffer.id) {
-      return { backgroundColor: "#f2777a" };
+      return { backgroundColor: '#f2777a' };
     } else if (hotlist.highlight > 0) {
-      return { backgroundColor: "#ffcf7f" };
+      return { backgroundColor: '#ffcf7f' };
     } else if (hotlist.sum > 0) {
-      return { backgroundColor: "#3b4252" };
+      return { backgroundColor: '#3b4252' };
     } else {
       return null;
     }
   };
 
-  getBufferTextStyleFromProps = () => {
-    const { currentBufferId, buffer, hotlist} = this.props;
+  getBufferTextStyleFromProps = (): TextStyle => {
+    const { currentBufferId, buffer, hotlist } = this.props;
 
     if (currentBufferId === buffer.id) {
-      return { color: "#fff" };
+      return { color: '#fff' };
     } else if (hotlist.highlight > 0) {
-      return { color: "#000" };
+      return { color: '#000' };
     } else if (hotlist.sum > 0) {
-      return { color: "#ebcb8b" };
+      return { color: '#ebcb8b' };
     } else {
       return null;
     }
   };
 
-  render() {
+  render(): JSX.Element {
     const { buffer, hotlist, onSelectBuffer } = this.props;
 
     return (
@@ -70,23 +71,23 @@ export default class BufferListItem extends React.Component<Props> {
       </TouchableHighlight>
     );
   }
-};
+}
 
 const styles = StyleSheet.create({
   listItem: {
     flex: 1,
     height: 40,
     paddingHorizontal: 20,
-    justifyContent: "center"
+    justifyContent: 'center'
   },
   listItemText: {
-    color: "#eee",
-    fontFamily: "Thonburi",
-    fontWeight: "bold",
+    color: '#eee',
+    fontFamily: 'Thonburi',
+    fontWeight: 'bold',
     fontSize: 15
   },
   row: {
-    flexDirection: "row"
+    flexDirection: 'row'
   },
   bufferName: {
     flex: 1

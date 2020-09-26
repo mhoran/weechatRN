@@ -1,15 +1,15 @@
-import * as React from "react";
+import * as React from 'react';
 
-import Default from "./themes/Default";
+import Default from './themes/Default';
 
 interface Props {
   line: WeechatLine;
-  onLongPress: (any) => any;
+  onLongPress: (line: WeechatLine) => void;
   parseArgs: any;
 }
 
 export default class BufferLine extends React.PureComponent<Props> {
-  render() {
+  render(): JSX.Element {
     const { line, onLongPress, parseArgs } = this.props;
 
     return (

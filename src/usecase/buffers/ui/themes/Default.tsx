@@ -1,25 +1,18 @@
-import * as React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import * as React from 'react';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-import ParsedText from "react-native-parsed-text";
-import {
-  renderWeechatFormat,
-} from "../../../../lib/weechat/color-formatter";
-import { formatDate } from "../../../../lib/helpers/date-formatter";
+import ParsedText from 'react-native-parsed-text';
+import { renderWeechatFormat } from '../../../../lib/weechat/color-formatter';
+import { formatDate } from '../../../../lib/helpers/date-formatter';
 
 interface Props {
   line: WeechatLine;
-  onLongPress: (any) => any;
+  onLongPress: (WeechatLine) => void;
   parseArgs: any;
 }
 
 export default class BufferLine extends React.Component<Props> {
-  render() {
+  render(): JSX.Element {
     const { line, onLongPress, parseArgs } = this.props;
     return (
       <TouchableHighlight onLongPress={() => onLongPress(line)}>
@@ -30,22 +23,20 @@ export default class BufferLine extends React.Component<Props> {
                 {renderWeechatFormat(line.prefix).map((props, index) => {
                   const { style, ...rest } = props;
                   return (
-                    <Text {...rest} key={index}
-                      style={ line.highlight ? styles.highlight : style }
+                    <Text
+                      {...rest}
+                      key={index}
+                      style={line.highlight ? styles.highlight : style}
                     />
-                  )
+                  );
                 })}
               </Text>
             </View>
-            <Text
-              style={[styles.text, styles.meta]}
-            >
+            <Text style={[styles.text, styles.meta]}>
               {formatDate(line.date)}
             </Text>
           </View>
-          <View
-            style={[styles.messageContainer]}
-          >
+          <View style={[styles.messageContainer]}>
             <Text style={styles.text}>
               {renderWeechatFormat(line.message).map((props, index) => (
                 <ParsedText {...props} key={index} parse={parseArgs} />
@@ -60,13 +51,13 @@ export default class BufferLine extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#2e3440",
+    backgroundColor: '#2e3440',
     paddingTop: 4,
     paddingBottom: 8,
     paddingHorizontal: 7
   },
   metaContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingBottom: 2
   },
   userContainer: {
@@ -77,15 +68,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5
   },
   text: {
-    fontFamily: "Menlo",
-    color: "#eee",
+    fontFamily: 'Menlo',
+    color: '#eee',
     fontSize: 12
   },
   meta: {
     fontSize: 10
   },
   highlight: {
-    backgroundColor: "magenta",
-    color: "yellow"
+    backgroundColor: 'magenta',
+    color: 'yellow'
   }
 });

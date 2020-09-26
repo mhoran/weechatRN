@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   View,
   SafeAreaView,
@@ -9,9 +9,9 @@ import {
   Switch,
   StatusBar,
   TouchableOpacity
-} from "react-native";
-import { connect } from "react-redux";
-import { StoreState } from "../../store";
+} from 'react-native';
+import { connect } from 'react-redux';
+import { StoreState } from '../../store';
 
 interface Props {
   onConnect: (hostname: string, password: string, ssl: boolean) => void;
@@ -39,7 +39,7 @@ class LoginForm extends React.Component<Props, State> {
 
   onPress = () => {
     this.props.dispatch({
-      type: "SET_CONNECTION_INFO",
+      type: 'SET_CONNECTION_INFO',
       hostname: this.state.hostname,
       password: this.state.password,
       ssl: this.state.ssl,
@@ -66,7 +66,7 @@ class LoginForm extends React.Component<Props, State> {
   };
 
   render() {
-    const { children, connecting } = this.props;
+    const { connecting } = this.props;
     const { hostname, password, ssl, filterBuffers } = this.state;
 
     return (
@@ -95,7 +95,7 @@ class LoginForm extends React.Component<Props, State> {
             value={password}
           />
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
           >
             <Text style={styles.text}>SSL</Text>
             <Switch
@@ -105,7 +105,7 @@ class LoginForm extends React.Component<Props, State> {
             />
           </View>
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
           >
             <Text style={styles.text}>Hide server buffers</Text>
             <Switch
@@ -142,18 +142,18 @@ export default connect((state: StoreState) => ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     flex: 1,
     padding: 20
   },
   header: {
-    textAlign: "center",
-    color: "#4157af",
+    textAlign: 'center',
+    color: '#4157af',
     fontSize: 20
   },
   text: {
     padding: 10,
-    color: "#4157af",
+    color: '#4157af',
     fontSize: 18
   },
   input: {
@@ -161,26 +161,26 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 2,
     fontSize: 18,
-    borderColor: "#4157af",
-    color: "#4157af"
+    borderColor: '#4157af',
+    color: '#4157af'
   },
   centeredButton: {
-    flexDirection: "row",
-    justifyContent: "center"
+    flexDirection: 'row',
+    justifyContent: 'center'
   },
   button: {
     borderWidth: 2,
-    borderColor: "#4157af",
+    borderColor: '#4157af',
     width: 200,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20
   },
   buttonText: {
-    textAlign: "center",
-    color: "#4157af",
-    fontWeight: "400",
+    textAlign: 'center',
+    color: '#4157af',
+    fontWeight: '400',
     fontSize: 18
   }
 });

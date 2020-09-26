@@ -1,20 +1,15 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import {
-  StyleSheet,
-  FlatList,
-  View,
-  ListRenderItem
-} from "react-native";
-import BufferListItem from "./BufferListItem";
-import { StoreState } from "../../../store";
-import { getHotlistForBufferId } from "../../../store/selectors";
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { StyleSheet, FlatList, View, ListRenderItem } from 'react-native';
+import BufferListItem from './BufferListItem';
+import { StoreState } from '../../../store';
+import { getHotlistForBufferId } from '../../../store/selectors';
 import { HotListState } from '../../../store/hotlists';
 
 interface Props {
   buffers: WeechatBuffer[];
   currentBufferId: string | null;
-  onSelectBuffer: (b: WeechatBuffer) => any;
+  onSelectBuffer: (b: WeechatBuffer) => void;
   hotlists: HotListState;
   filterBuffers: boolean;
 }
@@ -39,13 +34,15 @@ class BufferList extends React.Component<Props> {
     const { filterBuffers, hotlists } = this.props;
 
     if (filterBuffers) {
-      return buffer.local_variables.type != "server" &&
-          buffer.local_variables.type != null ||
-          hotlists[buffer.id] && hotlists[buffer.id].sum != 0;
+      return (
+        (buffer.local_variables.type != 'server' &&
+          buffer.local_variables.type != null) ||
+        (hotlists[buffer.id] && hotlists[buffer.id].sum != 0)
+      );
     } else {
       return true;
     }
-  }
+  };
 
   render() {
     const { buffers } = this.props;
@@ -72,7 +69,7 @@ export default connect((state: StoreState) => ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212"
+    backgroundColor: '#121212'
   },
   topbar: {
     height: 30

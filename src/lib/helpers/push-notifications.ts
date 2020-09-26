@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
-export const registerForPushNotificationsAsync = async () => {
+export const registerForPushNotificationsAsync = async (): Promise<void> => {
   const { status: existingStatus } = await Permissions.getAsync(
     Permissions.NOTIFICATIONS
   );
@@ -14,12 +14,16 @@ export const registerForPushNotificationsAsync = async () => {
     // install, so this will only ask on iOS
     await Permissions.askAsync(Permissions.NOTIFICATIONS);
   }
-}
+};
 
-export const getPushNotificationStatusAsync = async () => {
+export const getPushNotificationStatusAsync = async (): Promise<
+  string | undefined
+> => {
   let token;
   if (Constants.isDevice) {
-    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
@@ -32,4 +36,4 @@ export const getPushNotificationStatusAsync = async () => {
   }
 
   return token;
-}
+};

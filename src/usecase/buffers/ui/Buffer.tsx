@@ -1,22 +1,17 @@
-import * as React from "react";
-import {
-  StyleSheet,
-  FlatList,
-  ListRenderItem
-} from "react-native";
-import * as _ from "lodash";
+import * as React from 'react';
+import { FlatList, ListRenderItem } from 'react-native';
+import * as _ from 'lodash';
 
-import BufferLine from "./BufferLine";
+import BufferLine from './BufferLine';
 
 interface Props {
   lines: WeechatLine[];
-  onLongPress: () => any;
+  onLongPress: () => void;
   parseArgs: any;
   bufferId: string;
 }
 
-const keyExtractor = (line: WeechatLine, index: number) =>
-  _.last(line.pointers);
+const keyExtractor = (line: WeechatLine) => _.last(line.pointers);
 
 export default class Buffer extends React.PureComponent<Props> {
   renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
@@ -26,11 +21,12 @@ export default class Buffer extends React.PureComponent<Props> {
       <BufferLine line={item} onLongPress={onLongPress} parseArgs={parseArgs} />
     );
   };
-  render() {
-    const { lines, onLongPress, parseArgs } = this.props;
+
+  render(): JSX.Element {
+    const { lines } = this.props;
     return (
       <FlatList
-        data={lines.filter(line => line.displayed !== 0)}
+        data={lines.filter((line) => line.displayed !== 0)}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
@@ -39,23 +35,3 @@ export default class Buffer extends React.PureComponent<Props> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  topbar: {
-    height: 20,
-    backgroundColor: "#001"
-  },
-  bottomBox: {
-    height: 40,
-    paddingHorizontal: 10,
-    justifyContent: "center",
-    backgroundColor: "#aaa"
-  },
-  inputBox: {
-    height: 25,
-    paddingHorizontal: 5,
-    justifyContent: "center",
-    borderColor: "gray",
-    backgroundColor: "#fff"
-  }
-});

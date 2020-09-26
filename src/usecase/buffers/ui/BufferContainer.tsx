@@ -1,27 +1,25 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   StyleSheet,
   Linking,
   ActionSheetIOS,
   KeyboardAvoidingView,
-  TextInput,
   Image,
   View,
   Text,
   TouchableOpacity,
   LayoutAnimation
-} from "react-native";
+} from 'react-native';
 
-import { connect } from "react-redux";
-import * as _ from "lodash";
-import ParsedText from "react-native-parsed-text";
+import { connect } from 'react-redux';
+import ParsedText from 'react-native-parsed-text';
 
-import Buffer from "./Buffer";
-import { getParseArgs } from "../../../lib/helpers/parse-text-args";
-import { formatUrl } from "../../../lib/helpers/url-formatter";
-import { renderWeechatFormat } from "../../../lib/weechat/color-formatter";
-import { StoreState } from "../../../store";
-import UndoTextInput from "./UndoTextInput";
+import Buffer from './Buffer';
+import { getParseArgs } from '../../../lib/helpers/parse-text-args';
+import { formatUrl } from '../../../lib/helpers/url-formatter';
+import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
+import { StoreState } from '../../../store';
+import UndoTextInput from './UndoTextInput';
 
 interface Props {
   buffer: WeechatBuffer | null;
@@ -35,13 +33,13 @@ interface Props {
 interface State {
   showTabButton: boolean;
   textValue: string;
-  selection: {start: number, end: number};
+  selection: { start: number; end: number };
 }
 
 class BufferContainer extends React.Component<Props, State> {
   state = {
     showTabButton: false,
-    textValue: "",
+    textValue: '',
     selection: {
       start: 0,
       end: 0
@@ -87,7 +85,7 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleOnPress(type, text) {
     console.log(type, text);
-    if (type === "channel") {
+    if (type === 'channel') {
       // this.props.dispatch(changeCurrentBuffer(text));
     } else {
       Linking.openURL(formatUrl(type, text));
@@ -96,15 +94,15 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleChangeText = (textValue: string) => {
     this.tabCompleteInProgress = false;
-    this.setState({textValue});
+    this.setState({ textValue });
   };
 
   handleSubmit = () => {
     const { textValue } = this.state;
-    textValue.split("\n").forEach((line) => {
+    textValue.split('\n').forEach((line) => {
       this.props.sendMessage(line);
     });
-    this.handleChangeText("");
+    this.handleChangeText('');
   };
 
   tabCompleteNick = () => {
@@ -114,16 +112,16 @@ class BufferContainer extends React.Component<Props, State> {
     if (!this.tabCompleteInProgress) {
       this.tabCompleteWordEnd = selection.start;
 
-      this.tabCompleteWordStart = textValue.lastIndexOf(' ',
-        this.tabCompleteWordEnd - 1) + 1;
+      this.tabCompleteWordStart =
+        textValue.lastIndexOf(' ', this.tabCompleteWordEnd - 1) + 1;
 
-      if (this.tabCompleteWordStart == this.tabCompleteWordEnd)
-        return;
+      if (this.tabCompleteWordStart == this.tabCompleteWordEnd) return;
 
-      const prefix = textValue.substring(this.tabCompleteWordStart,
-        this.tabCompleteWordEnd).toLowerCase();
+      const prefix = textValue
+        .substring(this.tabCompleteWordStart, this.tabCompleteWordEnd)
+        .toLowerCase();
 
-      this.tabCompleteMatches = nicklist.filter(nick =>
+      this.tabCompleteMatches = nicklist.filter((nick) =>
         nick.name.toLowerCase().startsWith(prefix)
       );
       if (this.tabCompleteMatches.length == 0) {
@@ -132,32 +130,36 @@ class BufferContainer extends React.Component<Props, State> {
 
       this.tabCompleteIndex = 0;
     } else {
-      this.tabCompleteIndex = (this.tabCompleteIndex + 1) %
-        this.tabCompleteMatches.length;
+      this.tabCompleteIndex =
+        (this.tabCompleteIndex + 1) % this.tabCompleteMatches.length;
     }
 
     let nick = this.tabCompleteMatches[this.tabCompleteIndex].name;
     if (this.tabCompleteWordStart == 0) {
-      nick += ": ";
+      nick += ': ';
     }
 
     this.setState({
-      textValue: textValue.substring(0, this.tabCompleteWordStart) +
-        nick + textValue.substring(this.tabCompleteWordEnd)
+      textValue:
+        textValue.substring(0, this.tabCompleteWordStart) +
+        nick +
+        textValue.substring(this.tabCompleteWordEnd)
     });
     this.tabCompleteWordEnd = this.tabCompleteWordStart + nick.length;
     this.tabCompleteInProgress = true;
   };
 
   handleSelectionChange = ({ nativeEvent: { selection } }) => {
-    this.setState({ selection })
-  }
+    this.setState({ selection });
+  };
 
-  onLongPress = () => {};
+  onLongPress = () => {
+    // not implemented
+  };
 
   render() {
     const { bufferId, buffer, showTopic, lines } = this.props;
-    const { textValue, showTabButton, selection } = this.state;
+    const { textValue, showTabButton } = this.state;
 
     if (!bufferId) {
       return <View style={styles.container} />;
@@ -195,10 +197,10 @@ class BufferContainer extends React.Component<Props, State> {
           />
           {showTabButton && (
             <TouchableOpacity
-              style={{ alignItems: "center", width: 40 }}
+              style={{ alignItems: 'center', width: 40 }}
               onPress={this.tabCompleteNick}
             >
-              <Image source={require("../../icons/long-arrow-right.png")} />
+              <Image source={require('../../icons/long-arrow-right.png')} />
             </TouchableOpacity>
           )}
         </View>
@@ -216,17 +218,17 @@ const styles = StyleSheet.create({
   topbar: {
     height: 20,
     paddingHorizontal: 5,
-    backgroundColor: "#001"
+    backgroundColor: '#001'
   },
   link: {
-    textDecorationLine: "underline"
+    textDecorationLine: 'underline'
   },
   text: {
-    color: "#eee"
+    color: '#eee'
   },
   container: {
     flex: 1,
-    backgroundColor: "#222"
+    backgroundColor: '#222'
   },
   main: {
     paddingVertical: 20
@@ -234,17 +236,17 @@ const styles = StyleSheet.create({
   bottomBox: {
     paddingHorizontal: 10,
     paddingVertical: 7.5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#333"
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#333'
   },
   inputBox: {
     maxHeight: 60.5,
     padding: 5,
-    justifyContent: "center",
-    borderColor: "gray",
-    backgroundColor: "#fff",
+    justifyContent: 'center',
+    borderColor: 'gray',
+    backgroundColor: '#fff',
     flex: 1
   }
 });
