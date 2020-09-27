@@ -10,12 +10,12 @@ import {
 interface Props {
   buffer: WeechatBuffer;
   hotlist: Hotlist;
-  currentBufferId: string;
+  currentBufferId: string | null;
   onSelectBuffer: (b: WeechatBuffer) => void;
 }
 
 export default class BufferListItem extends React.Component<Props> {
-  getBufferViewStyleFromProps = (): TextStyle => {
+  getBufferViewStyleFromProps = (): TextStyle | null => {
     const { currentBufferId, buffer, hotlist } = this.props;
 
     if (currentBufferId === buffer.id) {
@@ -29,7 +29,7 @@ export default class BufferListItem extends React.Component<Props> {
     }
   };
 
-  getBufferTextStyleFromProps = (): TextStyle => {
+  getBufferTextStyleFromProps = (): TextStyle | null => {
     const { currentBufferId, buffer, hotlist } = this.props;
 
     if (currentBufferId === buffer.id) {

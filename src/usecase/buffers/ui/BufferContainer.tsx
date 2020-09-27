@@ -11,7 +11,7 @@ import {
   LayoutAnimation
 } from 'react-native';
 
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import ParsedText from 'react-native-parsed-text';
 
 import Buffer from './Buffer';
@@ -21,14 +21,21 @@ import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { StoreState } from '../../../store';
 import UndoTextInput from './UndoTextInput';
 
-interface Props {
+const connector = connect(
+  (state: StoreState, { bufferId }: { bufferId: string | null }) => ({
+    lines: (bufferId && state.lines[bufferId]) || [],
+    nicklist: (bufferId && state.nicklists[bufferId]) || []
+  })
+);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {
   buffer: WeechatBuffer | null;
-  lines: WeechatLine[];
-  nicklist: WeechatNicklist[];
-  bufferId: string;
+  bufferId: string | null;
   showTopic: boolean;
   sendMessage: (message: string) => void;
-}
+};
 
 interface State {
   showTabButton: boolean;
@@ -47,7 +54,7 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   tabCompleteInProgress = false;
-  tabCompleteMatches: WeechatNicklist[];
+  tabCompleteMatches: WeechatNicklist[] = [];
   tabCompleteIndex = 0;
   tabCompleteWordStart = 0;
   tabCompleteWordEnd = 0;
@@ -72,7 +79,7 @@ class BufferContainer extends React.Component<Props, State> {
     });
   }
 
-  handleOnLongPress(type, text) {
+  handleOnLongPress(type: string, text: string) {
     ActionSheetIOS.showShareActionSheetWithOptions(
       {
         url: formatUrl(type, text),
@@ -83,7 +90,7 @@ class BufferContainer extends React.Component<Props, State> {
     );
   }
 
-  handleOnPress(type, text) {
+  handleOnPress(type: string, text: string) {
     console.log(type, text);
     if (type === 'channel') {
       // this.props.dispatch(changeCurrentBuffer(text));
@@ -149,7 +156,11 @@ class BufferContainer extends React.Component<Props, State> {
     this.tabCompleteInProgress = true;
   };
 
-  handleSelectionChange = ({ nativeEvent: { selection } }) => {
+  handleSelectionChange = ({
+    nativeEvent: { selection }
+  }: {
+    nativeEvent: { selection: { start: number; end: number } };
+  }) => {
     this.setState({ selection });
   };
 
@@ -209,10 +220,7 @@ class BufferContainer extends React.Component<Props, State> {
   }
 }
 
-export default connect((state: StoreState, { bufferId }: Props) => ({
-  lines: state.lines[bufferId] || [],
-  nicklist: state.nicklists[bufferId] || []
-}))(BufferContainer);
+export default connector(BufferContainer);
 
 const styles = StyleSheet.create({
   topbar: {

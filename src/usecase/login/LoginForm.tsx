@@ -10,18 +10,23 @@ import {
   StatusBar,
   TouchableOpacity
 } from 'react-native';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { StoreState } from '../../store';
 
-interface Props {
+const connector = connect((state: StoreState) => ({
+  hostname: state.connection.hostname || '',
+  password: state.connection.password || '',
+  ssl: state.connection.ssl,
+  filterBuffers: state.connection.filterBuffers
+}));
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {
   onConnect: (hostname: string, password: string, ssl: boolean) => void;
   connecting: boolean;
-  hostname: string;
-  password: string;
-  ssl: boolean;
-  filterBuffers: boolean;
-  dispatch: (any) => void;
-}
+};
+
 interface State {
   hostname: string;
   password: string;
@@ -133,12 +138,7 @@ class LoginForm extends React.Component<Props, State> {
   }
 }
 
-export default connect((state: StoreState) => ({
-  hostname: state.connection.hostname,
-  password: state.connection.password,
-  ssl: state.connection.ssl,
-  filterBuffers: state.connection.filterBuffers
-}))(LoginForm);
+export default connector(LoginForm);
 
 const styles = StyleSheet.create({
   container: {

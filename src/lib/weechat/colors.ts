@@ -3,7 +3,7 @@
 /****************************/
 
 /* style options, foreground */
-export const cof = {
+export const cof: Record<string, Record<string, string>> = {
   separator: { color: "#68b5d4" },
   chat: { color: "#d9d9d9" },
   chat_time: { color: "#f7f7f7" },
@@ -46,7 +46,7 @@ export const cof = {
 };
 
 /* style options, background */
-export const cob = {
+export const cob: Record<string, Record<string, string>> = {
   separator: {},
   chat: {},
   chat_time: { color: "#999" },
@@ -85,7 +85,7 @@ export const cob = {
 };
 
 /* WeeChat colors, foreground */
-export const cwf = {
+export const cwf: Record<string, string> = {
   default: "#d9d9d9",
   black: "#000000",
   darkgray: "#5d5d5d",
@@ -106,7 +106,7 @@ export const cwf = {
 };
 
 /* WeeChat colors, background */
-export const cwb = {
+export const cwb: Record<string, string> = {
   default: "transparent",
   black: "#000000",
   darkgray: "#5d5d5d",
@@ -127,7 +127,7 @@ export const cwb = {
 };
 
 /* extended colors, foreground */
-export const cef = {
+export const cef: Record<string, string> = {
   "0": "#000000" /* 000 Black */,
   "1": "#c0656e" /* 001 DarkRed */,
   "2": "#00cd00" /* 002 DarkGreen */,
@@ -386,7 +386,7 @@ export const cef = {
   "255": "#eeeeee" /* 255 Grey93 */
 };
 /* extended colors, background */
-export const ceb = {
+export const ceb: Record<string, string> = {
   "0": "#000000" /* 000 Black */,
   "1": "#c0656e" /* 001 DarkRed */,
   "2": "#00cd00" /* 002 DarkGreen */,

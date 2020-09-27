@@ -1,12 +1,13 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import LoginForm from "./login/LoginForm";
-import { StoreState } from "../store";
+import * as React from 'react';
+import { connect } from 'react-redux';
+import LoginForm from './login/LoginForm';
+import { StoreState } from '../store';
 
 interface Props {
   connecting: boolean;
   connected: boolean;
   onConnect: (hostname: string, password: string, ssl: boolean) => void;
+  children: React.ReactNode;
 }
 
 class ConnectionGate extends React.Component<Props> {

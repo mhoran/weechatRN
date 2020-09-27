@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   SafeAreaView,
   View,
@@ -9,28 +9,43 @@ import {
   Keyboard,
   Dimensions,
   Platform
-} from "react-native";
-import { connect } from "react-redux";
-import * as _ from "lodash";
+} from 'react-native';
+import { connect, ConnectedProps } from 'react-redux';
+import * as _ from 'lodash';
 
 import DrawerLayout from 'react-native-drawer-layout-polyfill';
 
-import BufferContainer from "./buffers/ui/BufferContainer";
-import BufferList from "./buffers/ui/BufferList";
-import { StoreState } from "../store";
-import { registerForPushNotificationsAsync } from "../lib/helpers/push-notifications"
+import BufferContainer from './buffers/ui/BufferContainer';
+import BufferList from './buffers/ui/BufferList';
+import { StoreState } from '../store';
+import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 
-interface Props {
-  buffers: { [key: string]: WeechatBuffer };
-  currentBufferId: string | null;
-  currentBuffer: WeechatBuffer | null;
-  hasHighlights: boolean;
+const connector = connect((state: StoreState) => {
+  const currentBufferId = state.app.currentBufferId;
+  const currentBuffer =
+    (currentBufferId && state.buffers[currentBufferId]) || null;
+
+  const numHighlights = _.values(state.hotlists).reduce(
+    (sum, hlist) => sum + hlist.highlight,
+    0
+  );
+
+  return {
+    buffers: state.buffers,
+    currentBufferId: currentBuffer && currentBufferId,
+    currentBuffer,
+    hasHighlights: numHighlights > 0
+  };
+});
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {
   disconnect: () => void;
   fetchBufferInfo: (bufferId: string) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
   clearHotlistForBuffer: (fullBufferName: string) => void;
-  dispatch: (any) => void;
-}
+};
 
 interface State {
   showTopic: boolean;
@@ -50,11 +65,11 @@ class App extends React.Component<Props, State> {
     const smallerAxisSize = Math.min(height, width);
     const isLandscape = width > height;
     const isTablet = smallerAxisSize >= 600;
-    const appBarHeight = Platform.OS === 'ios' ? isLandscape ? 32 : 44 : 56;
+    const appBarHeight = Platform.OS === 'ios' ? (isLandscape ? 32 : 44) : 56;
     const maxWidth = isTablet ? 320 : 280;
 
     return Math.min(smallerAxisSize - appBarHeight, maxWidth);
-  }
+  };
 
   state: State = {
     showTopic: false,
@@ -67,7 +82,7 @@ class App extends React.Component<Props, State> {
     this.drawer.closeDrawer();
     if (currentBufferId !== buffer.id) {
       this.props.dispatch({
-        type: "CHANGE_CURRENT_BUFFER",
+        type: 'CHANGE_CURRENT_BUFFER',
         bufferId: buffer.id
       });
       this.props.clearHotlistForBuffer(buffer.full_name);
@@ -76,7 +91,7 @@ class App extends React.Component<Props, State> {
   };
 
   toggleShowTopic = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       showTopic: !state.showTopic
     }));
   };
@@ -96,7 +111,7 @@ class App extends React.Component<Props, State> {
     if (this.state.drawerWidth !== this.drawerWidth()) {
       this.setState({ drawerWidth: this.drawerWidth() });
     }
-  }
+  };
 
   componentDidMount() {
     Dimensions.addEventListener('change', this.updateWidth);
@@ -134,7 +149,7 @@ class App extends React.Component<Props, State> {
 
     const sidebar = () => (
       <BufferList
-        buffers={_.orderBy(_.values(buffers), ["number"])}
+        buffers={_.orderBy(_.values(buffers), ['number'])}
         currentBufferId={currentBufferId}
         onSelectBuffer={this.changeCurrentBuffer}
       />
@@ -143,11 +158,12 @@ class App extends React.Component<Props, State> {
     return (
       <View style={styles.container}>
         <DrawerLayout
-          ref={ d => (this.drawer = d) }
+          ref={(d: DrawerLayout) => (this.drawer = d)}
           renderNavigationView={sidebar}
           keyboardDismissMode={'on-drag'}
           drawerWidth={drawerWidth}
-          useNativeAnimations={true}>
+          useNativeAnimations={true}
+        >
           <SafeAreaView style={styles.container}>
             <View style={styles.topbar}>
               <View style={styles.channels}>
@@ -159,7 +175,7 @@ class App extends React.Component<Props, State> {
                     style={[
                       styles.channelsButtonText,
                       hasHighlights && {
-                        color: "#ffcf7f"
+                        color: '#ffcf7f'
                       }
                     ]}
                   >
@@ -177,7 +193,7 @@ class App extends React.Component<Props, State> {
                   style={styles.channelsButton}
                   onPress={this.props.disconnect}
                 >
-                  <Image source={require("./icons/eject.png")} />
+                  <Image source={require('./icons/eject.png')} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -194,29 +210,14 @@ class App extends React.Component<Props, State> {
   }
 }
 
-export default connect((state: StoreState) => {
-  const currentBufferId = state.app.currentBufferId;
-  const currentBuffer = currentBufferId && state.buffers[currentBufferId];
-
-  const numHighlights = _.values(state.hotlists).reduce(
-    (sum, hlist) => sum + hlist.highlight,
-    0
-  );
-
-  return {
-    buffers: state.buffers,
-    currentBufferId: currentBuffer && currentBufferId,
-    currentBuffer,
-    hasHighlights: numHighlights > 0
-  };
-})(App);
+export default connector(App);
 
 const styles = StyleSheet.create({
   topbar: {
-    flexDirection: "row",
-    backgroundColor: "#333",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    backgroundColor: '#333',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingBottom: 10
   },
   channels: {
@@ -228,20 +229,20 @@ const styles = StyleSheet.create({
     width: 40
   },
   channelsButtonText: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 20,
-    fontFamily: "Gill Sans",
-    color: "#eee",
-    fontWeight: "bold"
+    fontFamily: 'Gill Sans',
+    color: '#eee',
+    fontWeight: 'bold'
   },
   topbarText: {
-    color: "#eee",
-    fontFamily: "Thonburi",
-    fontWeight: "bold",
+    color: '#eee',
+    fontFamily: 'Thonburi',
+    fontWeight: 'bold',
     fontSize: 15
   },
   container: {
     flex: 1,
-    backgroundColor: "#333"
+    backgroundColor: '#333'
   }
 });

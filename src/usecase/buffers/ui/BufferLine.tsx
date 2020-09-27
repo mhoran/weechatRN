@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { ParseShape } from 'react-native-parsed-text';
 
 import Default from './themes/Default';
 
 interface Props {
   line: WeechatLine;
   onLongPress: (line: WeechatLine) => void;
-  parseArgs: any;
+  parseArgs: ParseShape[];
 }
 
 export default class BufferLine extends React.PureComponent<Props> {

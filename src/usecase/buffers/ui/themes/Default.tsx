@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-import ParsedText from 'react-native-parsed-text';
+import ParsedText, { ParseShape } from 'react-native-parsed-text';
 import { renderWeechatFormat } from '../../../../lib/weechat/color-formatter';
 import { formatDate } from '../../../../lib/helpers/date-formatter';
 
 interface Props {
   line: WeechatLine;
-  onLongPress: (WeechatLine) => void;
-  parseArgs: any;
+  onLongPress: (line: WeechatLine) => void;
+  parseArgs: ParseShape[];
 }
 
 export default class BufferLine extends React.Component<Props> {
