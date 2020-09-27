@@ -1,4 +1,5 @@
 // http://weechat.org/files/doc/devel/weechat_dev.en.html#color_codes_in_strings
+'use strict';
 
 /**
  * WeeChat protocol handling.
@@ -7,7 +8,7 @@
  * protocol. It's independent from the communication layer and thus
  * may be used with any network mechanism.
  */
-export const WeeChatProtocol = function() {
+export const WeeChatProtocol = function () {
   // specific parsing for each object type
   this._types = {
     chr: this._getChar,
@@ -38,73 +39,73 @@ export const WeeChatProtocol = function() {
  * WeeChat colors names.
  */
 WeeChatProtocol._weeChatColorsNames = [
-  "default",
-  "black",
-  "darkgray",
-  "red",
-  "lightred",
-  "green",
-  "lightgreen",
-  "brown",
-  "yellow",
-  "blue",
-  "lightblue",
-  "magenta",
-  "lightmagenta",
-  "cyan",
-  "lightcyan",
-  "gray",
-  "white"
+  'default',
+  'black',
+  'darkgray',
+  'red',
+  'lightred',
+  'green',
+  'lightgreen',
+  'brown',
+  'yellow',
+  'blue',
+  'lightblue',
+  'magenta',
+  'lightmagenta',
+  'cyan',
+  'lightcyan',
+  'gray',
+  'white'
 ];
 
 /**
  * Style options names.
  */
 WeeChatProtocol._colorsOptionsNames = [
-  "separator",
-  "chat",
-  "chat_time",
-  "chat_time_delimiters",
-  "chat_prefix_error",
-  "chat_prefix_network",
-  "chat_prefix_action",
-  "chat_prefix_join",
-  "chat_prefix_quit",
-  "chat_prefix_more",
-  "chat_prefix_suffix",
-  "chat_buffer",
-  "chat_server",
-  "chat_channel",
-  "chat_nick",
-  "chat_nick_self",
-  "chat_nick_other",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "invalid",
-  "chat_host",
-  "chat_delimiters",
-  "chat_highlight",
-  "chat_read_marker",
-  "chat_text_found",
-  "chat_value",
-  "chat_prefix_buffer",
-  "chat_tags",
-  "chat_inactive_window",
-  "chat_inactive_buffer",
-  "chat_prefix_buffer_inactive_buffer",
-  "chat_nick_offline",
-  "chat_nick_offline_highlight",
-  "chat_nick_prefix",
-  "chat_nick_suffix",
-  "emphasis",
-  "chat_day_change"
+  'separator',
+  'chat',
+  'chat_time',
+  'chat_time_delimiters',
+  'chat_prefix_error',
+  'chat_prefix_network',
+  'chat_prefix_action',
+  'chat_prefix_join',
+  'chat_prefix_quit',
+  'chat_prefix_more',
+  'chat_prefix_suffix',
+  'chat_buffer',
+  'chat_server',
+  'chat_channel',
+  'chat_nick',
+  'chat_nick_self',
+  'chat_nick_other',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'invalid',
+  'chat_host',
+  'chat_delimiters',
+  'chat_highlight',
+  'chat_read_marker',
+  'chat_text_found',
+  'chat_value',
+  'chat_prefix_buffer',
+  'chat_tags',
+  'chat_inactive_window',
+  'chat_inactive_buffer',
+  'chat_prefix_buffer_inactive_buffer',
+  'chat_nick_offline',
+  'chat_nick_offline_highlight',
+  'chat_nick_prefix',
+  'chat_nick_suffix',
+  'emphasis',
+  'chat_day_change'
 ];
 
 /**
@@ -112,10 +113,10 @@ WeeChatProtocol._colorsOptionsNames = [
  *
  * @return Default color
  */
-WeeChatProtocol._getDefaultColor = function() {
+WeeChatProtocol._getDefaultColor = function () {
   return {
-    type: "weechat",
-    name: "default"
+    type: 'weechat',
+    name: 'default'
   };
 };
 
@@ -124,7 +125,7 @@ WeeChatProtocol._getDefaultColor = function() {
  *
  * @return Default attributes
  */
-WeeChatProtocol._getDefaultAttributes = function() {
+WeeChatProtocol._getDefaultAttributes = function () {
   return {
     name: null,
     override: {
@@ -141,7 +142,7 @@ WeeChatProtocol._getDefaultAttributes = function() {
  *
  * @return Default style
  */
-WeeChatProtocol._getDefaultStyle = function() {
+WeeChatProtocol._getDefaultStyle = function () {
   return {
     fgColor: WeeChatProtocol._getDefaultColor(),
     bgColor: WeeChatProtocol._getDefaultColor(),
@@ -155,7 +156,7 @@ WeeChatProtocol._getDefaultStyle = function() {
  * @param color Color object to clone
  * @return Cloned color object
  */
-WeeChatProtocol._cloneColor = function(color) {
+WeeChatProtocol._cloneColor = function (color) {
   var clone = {};
 
   for (var key in color) {
@@ -171,7 +172,7 @@ WeeChatProtocol._cloneColor = function(color) {
  * @param attrs Attributes object to clone
  * @return Cloned attributes object
  */
-WeeChatProtocol._cloneAttrs = function(attrs) {
+WeeChatProtocol._cloneAttrs = function (attrs) {
   var clone = {};
 
   clone.name = attrs.name;
@@ -189,19 +190,19 @@ WeeChatProtocol._cloneAttrs = function(attrs) {
  * @param ch Character of attribute
  * @return Name of attribute
  */
-WeeChatProtocol._attrNameFromChar = function(ch) {
+WeeChatProtocol._attrNameFromChar = function (ch) {
   var chars = {
     // WeeChat protocol
-    "*": "b",
-    "!": "r",
-    "/": "i",
-    _: "u",
+    '*': 'b',
+    '!': 'r',
+    '/': 'i',
+    _: 'u',
 
     // some extension often used (IRC?)
-    "\x01": "b",
-    "\x02": "r",
-    "\x03": "i",
-    "\x04": "u"
+    '\x01': 'b',
+    '\x02': 'r',
+    '\x03': 'i',
+    '\x04': 'u'
   };
 
   if (ch in chars) {
@@ -217,12 +218,12 @@ WeeChatProtocol._attrNameFromChar = function(ch) {
  * @param str String of attribute characters
  * @return Attributes object (null if unchanged)
  */
-WeeChatProtocol._attrsFromStr = function(str) {
+WeeChatProtocol._attrsFromStr = function (str) {
   var attrs = WeeChatProtocol._getDefaultAttributes();
 
   for (var i = 0; i < str.length; ++i) {
     var ch = str.charAt(i);
-    if (ch === "|") {
+    if (ch === '|') {
       // means keep attributes, so unchanged
       return null;
     }
@@ -242,7 +243,7 @@ WeeChatProtocol._attrsFromStr = function(str) {
  * @param str Color string (e.g., "05" or "00134")
  * @return Color object
  */
-WeeChatProtocol._getColorObj = function(str) {
+WeeChatProtocol._getColorObj = function (str) {
   if (str.length === 2) {
     var code = parseInt(str);
     if (code > 16) {
@@ -250,14 +251,14 @@ WeeChatProtocol._getColorObj = function(str) {
       return WeeChatProtocol._getDefaultColor();
     } else {
       return {
-        type: "weechat",
+        type: 'weechat',
         name: WeeChatProtocol._weeChatColorsNames[code]
       };
     }
   } else {
     var codeStr = str.substring(1);
     return {
-      type: "ext",
+      type: 'ext',
       name: parseInt(codeStr).toString()
     };
   }
@@ -275,13 +276,13 @@ WeeChatProtocol._getColorObj = function(str) {
  *          attrs: Attributes (null if unchanged)
  *          text: Plain text element
  */
-WeeChatProtocol._getStyle = function(txt) {
+WeeChatProtocol._getStyle = function (txt) {
   var matchers = [
     {
       // color option
       //   STD
       regex: /^(\d{2})/,
-      fn: function(m) {
+      fn: function (m) {
         var ret = {};
         var optionCode = parseInt(m[1]);
 
@@ -295,7 +296,7 @@ WeeChatProtocol._getStyle = function(txt) {
         }
         var optionName = WeeChatProtocol._colorsOptionsNames[optionCode];
         ret.fgColor = {
-          type: "option",
+          type: 'option',
           name: optionName
         };
         ret.bgColor = WeeChatProtocol._cloneColor(ret.fgColor);
@@ -311,7 +312,7 @@ WeeChatProtocol._getStyle = function(txt) {
       // ncurses pair
       //   EXT
       regex: /^@(\d{5})/,
-      fn: function(m) {
+      fn: function (m) {
         // unimplemented case
         return {
           fgColor: null,
@@ -325,7 +326,7 @@ WeeChatProtocol._getStyle = function(txt) {
       //   "F" + (A)STD
       //   "F" + (A)EXT
       regex: /^F(?:([*!\/_|]*)(\d{2})|@([\x01\x02\x03\x04*!\/_|]*)(\d{5}))/,
-      fn: function(m) {
+      fn: function (m) {
         var ret = {
           bgColor: null
         };
@@ -346,7 +347,7 @@ WeeChatProtocol._getStyle = function(txt) {
       //   "B" + STD
       //   "B" + EXT
       regex: /^B(\d{2}|@\d{5})/,
-      fn: function(m) {
+      fn: function (m) {
         return {
           fgColor: null,
           bgColor: WeeChatProtocol._getColorObj(m[1]),
@@ -360,8 +361,9 @@ WeeChatProtocol._getStyle = function(txt) {
       //   "*" + (A)STD + "," + EXT
       //   "*" + (A)EXT + "," + STD
       //   "*" + (A)EXT + "," + EXT
-      regex: /^\*(?:([\x01\x02\x03\x04*!\/_|]*)(\d{2})|@([\x01\x02\x03\x04*!\/_|]*)(\d{5})),(\d{2}|@\d{5})/,
-      fn: function(m) {
+      // WeeChat 2.6+ use a tilde (~) instead of a comma (,) so recognise both
+      regex: /^\*(?:([\x01\x02\x03\x04*!\/_|]*)(\d{2})|@([\x01\x02\x03\x04*!\/_|]*)(\d{5}))[,~](\d{2}|@\d{5})/,
+      fn: function (m) {
         var ret = {};
 
         if (m[2]) {
@@ -381,7 +383,7 @@ WeeChatProtocol._getStyle = function(txt) {
       //   "*" + (A)STD
       //   "*" + (A)EXT
       regex: /^\*([\x01\x02\x03\x04*!\/_|]*)(\d{2}|@\d{5})/,
-      fn: function(m) {
+      fn: function (m) {
         return {
           fgColor: WeeChatProtocol._getColorObj(m[2]),
           bgColor: null,
@@ -393,16 +395,16 @@ WeeChatProtocol._getStyle = function(txt) {
       // emphasis
       //   "E"
       regex: /^E/,
-      fn: function(m) {
+      fn: function (m) {
         var ret = {};
 
         ret.fgColor = {
-          type: "option",
-          name: "emphasis"
+          type: 'option',
+          name: 'emphasis'
         };
         ret.bgColor = WeeChatProtocol._cloneColor(ret.fgColor);
         ret.attrs = {
-          name: "emphasis",
+          name: 'emphasis',
           override: {}
         };
 
@@ -418,7 +420,7 @@ WeeChatProtocol._getStyle = function(txt) {
     attrs: null,
     text: txt
   };
-  matchers.some(function(matcher) {
+  matchers.some(function (matcher) {
     var m = txt.match(matcher.regex);
     if (m) {
       ret = matcher.fn(m);
@@ -439,10 +441,10 @@ WeeChatProtocol._getStyle = function(txt) {
  * @param rawText Raw text to transform
  * @return Array of text elements
  */
-WeeChatProtocol.rawText2Rich = function(rawText) {
+WeeChatProtocol.rawText2Rich = function (rawText) {
   /* This is subtle, but JavaScript adds the token to the output list
-           * when it's surrounded by capturing parentheses.
-           */
+   * when it's surrounded by capturing parentheses.
+   */
   var parts = rawText.split(/(\x19|\x1a|\x1b|\x1c)/);
 
   // no colors/attributes
@@ -465,7 +467,7 @@ WeeChatProtocol.rawText2Rich = function(rawText) {
   var curAttrsOnlyFalseOverrides = true;
 
   return parts
-    .map(function(p) {
+    .map(function (p) {
       if (p.length === 0) {
         return null;
       }
@@ -514,7 +516,7 @@ WeeChatProtocol.rawText2Rich = function(rawText) {
         var orideVal = curSpecialToken === 0x1a;
 
         // set attribute override if we don't have to keep all of them
-        if (firstChar !== "|") {
+        if (firstChar !== '|') {
           var orideName = WeeChatProtocol._attrNameFromChar(firstChar);
           if (orideName) {
             // known attribute
@@ -533,8 +535,8 @@ WeeChatProtocol.rawText2Rich = function(rawText) {
       }
 
       /* As long as attributes are only false overrides, without any option
-               * name, it's safe to remove them.
-               */
+       * name, it's safe to remove them.
+       */
       if (curAttrsOnlyFalseOverrides && curAttrs.name === null) {
         var allReset = true;
         for (var attr in curAttrs.override) {
@@ -558,7 +560,7 @@ WeeChatProtocol.rawText2Rich = function(rawText) {
         text: text
       };
     })
-    .filter(function(p) {
+    .filter(function (p) {
       return p !== null;
     });
 };
@@ -569,8 +571,8 @@ WeeChatProtocol.rawText2Rich = function(rawText) {
  * @param uia Unsigned integer array
  * @return Decoded string
  */
-WeeChatProtocol._uia2s = function(uia) {
-  if (!uia.length || uia[0] === 0) return "";
+WeeChatProtocol._uia2s = function (uia) {
+  if (!uia.length || uia[0] === 0) return '';
 
   try {
     var encodedString = String.fromCharCode.apply(null, uia),
@@ -579,9 +581,9 @@ WeeChatProtocol._uia2s = function(uia) {
   } catch (exception) {
     // Replace all non-ASCII bytes with "?" if the string couldn't be
     // decoded as UTF-8.
-    var s = "";
+    var s = '';
     for (var i = 0, n = uia.length; i < n; i++) {
-      s += uia[i] < 0x80 ? String.fromCharCode(uia[i]) : "?";
+      s += uia[i] < 0x80 ? String.fromCharCode(uia[i]) : '?';
     }
     return s;
   }
@@ -594,7 +596,7 @@ WeeChatProtocol._uia2s = function(uia) {
  * @param override Overriding parameters
  * @return Merged parameters
  */
-WeeChatProtocol._mergeParams = function(defaults, override) {
+WeeChatProtocol._mergeParams = function (defaults, override) {
   for (var v in override) {
     defaults[v] = override[v];
   }
@@ -610,45 +612,105 @@ WeeChatProtocol._mergeParams = function(defaults, override) {
  * @param parts Command parts
  * @return Formatted command string
  */
-WeeChatProtocol._formatCmd = function(id, name, parts) {
+WeeChatProtocol._formatCmd = function (id, name, parts) {
   var cmdIdName;
   var cmd;
 
-  cmdIdName = id !== null ? "(" + id + ") " : "";
+  cmdIdName = id !== null ? '(' + id + ') ' : '';
   cmdIdName += name;
   parts.unshift(cmdIdName);
-  cmd = parts.join(" ");
-  cmd += "\n";
+  cmd = parts.join(' ');
+  cmd += '\n';
 
-  cmd.replace(/[\r\n]+$/g, "").split("\n");
+  cmd.replace(/[\r\n]+$/g, '').split('\n');
 
   return cmd;
 };
 
 /**
- * Formats an init command.
+ * Formats a handshake command.
  *
  * @param params Parameters:
- *            password: password (optional)
+ *            password: list of supported hash algorithms, colon separated (optional)
  *            compression: compression ('off' or 'zlib') (optional)
- * @return Formatted init command string
+ * @return Formatted handshake command string
  */
-WeeChatProtocol.formatInit = function(params) {
+//https://weechat.org/files/doc/stable/weechat_relay_protocol.en.html#command_handshake
+WeeChatProtocol.formatHandshake = function (params) {
   var defaultParams = {
-    password: null,
-    compression: "zlib"
+    password_hash_algo: 'pbkdf2+sha512',
+    compression: 'zlib'
   };
   var keys = [];
   var parts = [];
 
   params = WeeChatProtocol._mergeParams(defaultParams, params);
-  keys.push("compression=" + params.compression);
-  if (params.password !== null) {
-    keys.push("password=" + params.password);
-  }
-  parts.push(keys.join(","));
 
-  return WeeChatProtocol._formatCmd(null, "init", parts);
+  if (params.compression !== null) {
+    keys.push('compression=' + params.compression);
+  }
+
+  if (params.password_hash_algo !== null) {
+    keys.push('password_hash_algo=' + params.password_hash_algo);
+  }
+
+  parts.push(keys.join(','));
+
+  return WeeChatProtocol._formatCmd(null, 'handshake', parts);
+};
+
+/**
+ * Formats an init command for weechat versions < 2.9
+ *
+ * @param params Parameters:
+ *            password: password (optional)
+ *            compression: compression ('off' or 'zlib') (optional)
+ *            totp: One Time Password (optional)
+ * @return Formatted init command string
+ */
+WeeChatProtocol.formatInitPre29 = function (params) {
+  var defaultParams = {
+    password: null,
+    compression: 'zlib',
+    totp: null
+  };
+  var keys = [];
+  var parts = [];
+
+  params = WeeChatProtocol._mergeParams(defaultParams, params);
+  keys.push('compression=' + params.compression);
+  if (params.password !== null) {
+    keys.push('password=' + params.password);
+  }
+  if (params.totp !== null) {
+    keys.push('totp=' + params.totp);
+  }
+  parts.push(keys.join(','));
+
+  return WeeChatProtocol._formatCmd(null, 'init', parts);
+};
+
+/**
+ * Formats an init command for weechat versions >= 2.9
+ *
+ * @param params Parameters:
+ *            password_hash: hash of password with method and salt
+ *            totp: One Time Password (can be null)
+ * @return Formatted init command string
+ */
+WeeChatProtocol.formatInit29 = function (password_hash, totp) {
+  var keys = [];
+  var parts = [];
+
+  if (totp != null) {
+    keys.push('totp=' + totp);
+  }
+  if (password_hash !== null) {
+    keys.push('password_hash=' + password_hash);
+  }
+  parts.push(keys.join(','));
+
+  return WeeChatProtocol._formatCmd(null, 'init', parts);
 };
 
 /**
@@ -660,7 +722,7 @@ WeeChatProtocol.formatInit = function(params) {
  *            keys: array of keys (optional)
  * @return Formatted hdata command string
  */
-WeeChatProtocol.formatHdata = function(params) {
+WeeChatProtocol.formatHdata = function (params) {
   var defaultParams = {
     id: null,
     keys: null
@@ -670,10 +732,10 @@ WeeChatProtocol.formatHdata = function(params) {
   params = WeeChatProtocol._mergeParams(defaultParams, params);
   parts.push(params.path);
   if (params.keys !== null) {
-    parts.push(params.keys.join(","));
+    parts.push(params.keys.join(','));
   }
 
-  return WeeChatProtocol._formatCmd(params.id, "hdata", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'hdata', parts);
 };
 
 /**
@@ -684,7 +746,7 @@ WeeChatProtocol.formatHdata = function(params) {
  *            name: info name (mandatory)
  * @return Formatted info command string
  */
-WeeChatProtocol.formatInfo = function(params) {
+WeeChatProtocol.formatInfo = function (params) {
   var defaultParams = {
     id: null
   };
@@ -693,7 +755,7 @@ WeeChatProtocol.formatInfo = function(params) {
   params = WeeChatProtocol._mergeParams(defaultParams, params);
   parts.push(params.name);
 
-  return WeeChatProtocol._formatCmd(params.id, "info", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'info', parts);
 };
 
 /**
@@ -706,7 +768,7 @@ WeeChatProtocol.formatInfo = function(params) {
  *            arguments: optional
  * @return Formatted infolist command string
  */
-WeeChatProtocol.formatInfolist = function(params) {
+WeeChatProtocol.formatInfolist = function (params) {
   var defaultParams = {
     id: null,
     pointer: null,
@@ -723,7 +785,7 @@ WeeChatProtocol.formatInfolist = function(params) {
     parts.push(params.args);
   }
 
-  return WeeChatProtocol._formatCmd(params.id, "infolist", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'infolist', parts);
 };
 
 /**
@@ -734,7 +796,7 @@ WeeChatProtocol.formatInfolist = function(params) {
  *            buffer: buffer name (optional)
  * @return Formatted nicklist command string
  */
-WeeChatProtocol.formatNicklist = function(params) {
+WeeChatProtocol.formatNicklist = function (params) {
   var defaultParams = {
     id: null,
     buffer: null
@@ -746,7 +808,7 @@ WeeChatProtocol.formatNicklist = function(params) {
     parts.push(params.buffer);
   }
 
-  return WeeChatProtocol._formatCmd(params.id, "nicklist", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'nicklist', parts);
 };
 
 /**
@@ -758,7 +820,7 @@ WeeChatProtocol.formatNicklist = function(params) {
  *            data: input data (mandatory)
  * @return Formatted input command string
  */
-WeeChatProtocol.formatInput = function(params) {
+WeeChatProtocol.formatInput = function (params) {
   var defaultParams = {
     id: null
   };
@@ -768,7 +830,34 @@ WeeChatProtocol.formatInput = function(params) {
   parts.push(params.buffer);
   parts.push(params.data);
 
-  return WeeChatProtocol._formatCmd(params.id, "input", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'input', parts);
+};
+
+/**
+ * Formats a completion command.
+ * https://weechat.org/files/doc/stable/weechat_relay_protocol.en.html#command_completion
+ * @param params Parameters:
+ *            id: command ID (optional)
+ *            buffer: target buffer (mandatory)
+ *            position: position for completion in string (optional)
+ *            data: input data (optional)
+ * @return Formatted input command string
+ */
+WeeChatProtocol.formatCompletion = function (params) {
+  var defaultParams = {
+    id: null,
+    position: -1
+  };
+  var parts = [];
+
+  params = WeeChatProtocol._mergeParams(defaultParams, params);
+  parts.push(params.buffer);
+  parts.push(params.position);
+  if (params.data) {
+    parts.push(params.data);
+  }
+
+  return WeeChatProtocol._formatCmd(params.id, 'completion', parts);
 };
 
 /**
@@ -777,7 +866,7 @@ WeeChatProtocol.formatInput = function(params) {
  * @param params Parameters (see _formatSync and _formatDesync)
  * @return Formatted sync/desync command string
  */
-WeeChatProtocol._formatSyncDesync = function(cmdName, params) {
+WeeChatProtocol._formatSyncDesync = function (cmdName, params) {
   var defaultParams = {
     id: null,
     buffers: null,
@@ -787,9 +876,9 @@ WeeChatProtocol._formatSyncDesync = function(cmdName, params) {
 
   params = WeeChatProtocol._mergeParams(defaultParams, params);
   if (params.buffers !== null) {
-    parts.push(params.buffers.join(","));
+    parts.push(params.buffers.join(','));
     if (params.options !== null) {
-      parts.push(params.options.join(","));
+      parts.push(params.options.join(','));
     }
   }
 
@@ -805,8 +894,8 @@ WeeChatProtocol._formatSyncDesync = function(cmdName, params) {
  *            options: array of options (optional)
  * @return Formatted sync command string
  */
-WeeChatProtocol.formatSync = function(params) {
-  return WeeChatProtocol._formatSyncDesync("sync", params);
+WeeChatProtocol.formatSync = function (params) {
+  return WeeChatProtocol._formatSyncDesync('sync', params);
 };
 
 /**
@@ -818,8 +907,8 @@ WeeChatProtocol.formatSync = function(params) {
  *            options: array of options (optional)
  * @return Formatted desync command string
  */
-WeeChatProtocol.formatDesync = function(params) {
-  return WeeChatProtocol._formatSyncDesync("desync", params);
+WeeChatProtocol.formatDesync = function (params) {
+  return WeeChatProtocol._formatSyncDesync('desync', params);
 };
 
 /**
@@ -829,7 +918,7 @@ WeeChatProtocol.formatDesync = function(params) {
  *            id: command ID (optional)
  * @return Formatted test command string
  */
-WeeChatProtocol.formatTest = function(params) {
+WeeChatProtocol.formatTest = function (params) {
   var defaultParams = {
     id: null
   };
@@ -837,7 +926,7 @@ WeeChatProtocol.formatTest = function(params) {
 
   params = WeeChatProtocol._mergeParams(defaultParams, params);
 
-  return WeeChatProtocol._formatCmd(params.id, "test", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'test', parts);
 };
 
 /**
@@ -845,8 +934,8 @@ WeeChatProtocol.formatTest = function(params) {
  *
  * @return Formatted quit command string
  */
-WeeChatProtocol.formatQuit = function() {
-  return WeeChatProtocol._formatCmd(null, "quit", []);
+WeeChatProtocol.formatQuit = function () {
+  return WeeChatProtocol._formatCmd(null, 'quit', []);
 };
 
 /**
@@ -857,7 +946,7 @@ WeeChatProtocol.formatQuit = function() {
  *            args: array of custom arguments (optional)
  * @return Formatted ping command string
  */
-WeeChatProtocol.formatPing = function(params) {
+WeeChatProtocol.formatPing = function (params) {
   var defaultParams = {
     id: null,
     args: null
@@ -866,10 +955,10 @@ WeeChatProtocol.formatPing = function(params) {
 
   params = WeeChatProtocol._mergeParams(defaultParams, params);
   if (params.args !== null) {
-    parts.push(params.args.join(" "));
+    parts.push(params.args.join(' '));
   }
 
-  return WeeChatProtocol._formatCmd(params.id, "ping", parts);
+  return WeeChatProtocol._formatCmd(params.id, 'ping', parts);
 };
 
 WeeChatProtocol.prototype = {
@@ -879,8 +968,8 @@ WeeChatProtocol.prototype = {
    *
    * @param type Message type to display
    */
-  _warnUnimplemented: function(type) {
-    console.log("Warning: " + type + " message parsing is not implemented");
+  _warnUnimplemented: function (type) {
+    console.log('Warning: ' + type + ' message parsing is not implemented');
   },
 
   /**
@@ -889,7 +978,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Type
    */
-  _getType: function() {
+  _getType: function () {
     var t = this._getSlice(3);
 
     if (!t) {
@@ -905,7 +994,7 @@ WeeChatProtocol.prototype = {
    * @param type Message type
    * @return Data value
    */
-  _runType: function(type) {
+  _runType: function (type) {
     var cb = this._types[type];
     var boundCb = cb.bind(this);
 
@@ -917,7 +1006,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Number as a string
    */
-  _getStrNumber: function() {
+  _getStrNumber: function () {
     var len = this._getByte();
     var str = this._getSlice(len);
 
@@ -930,7 +1019,7 @@ WeeChatProtocol.prototype = {
    * @param obj Object
    * @return Passed object
    */
-  _strDirect: function(obj) {
+  _strDirect: function (obj) {
     return obj;
   },
 
@@ -940,7 +1029,7 @@ WeeChatProtocol.prototype = {
    * @param obj Object to call toString() on
    * @return String value of object
    */
-  _strToString: function(obj) {
+  _strToString: function (obj) {
     return obj.toString();
   },
 
@@ -952,7 +1041,7 @@ WeeChatProtocol.prototype = {
    * @param type Message type
    * @return String value of object
    */
-  _objToString: function(obj, type) {
+  _objToString: function (obj, type) {
     var cb = this._typesStr[type];
     var boundCb = cb.bind(this);
 
@@ -964,7 +1053,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Info object
    */
-  _getInfo: function() {
+  _getInfo: function () {
     var info = {};
     info.key = this._getString();
     info.value = this._getString();
@@ -977,28 +1066,28 @@ WeeChatProtocol.prototype = {
    *
    * @return Hdata object
    */
-  _getHdata: function() {
+  _getHdata: function () {
     var self = this;
     var paths;
     var count;
     var objs = [];
     var hpath = this._getString();
 
-    var keys = this._getString().split(",");
-    paths = hpath.split("/");
+    var keys = this._getString().split(',');
+    paths = hpath.split('/');
     count = this._getInt();
 
-    keys = keys.map(function(key) {
-      return key.split(":");
+    keys = keys.map(function (key) {
+      return key.split(':');
     });
 
     function runType() {
       var tmp = {};
 
-      tmp.pointers = paths.map(function(path) {
+      tmp.pointers = paths.map(function (path) {
         return self._getPointer();
       });
-      keys.forEach(function(key) {
+      keys.forEach(function (key) {
         tmp[key[0]] = self._runType(key[1]);
       });
       objs.push(tmp);
@@ -1016,7 +1105,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Pointer value
    */
-  _getPointer: function() {
+  _getPointer: function () {
     return this._getStrNumber();
   },
 
@@ -1025,7 +1114,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Time value (Date)
    */
-  _getTime: function() {
+  _getTime: function () {
     var str = this._getStrNumber();
 
     return new Date(parseInt(str, 10) * 1000);
@@ -1036,7 +1125,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Integer value
    */
-  _getInt: function() {
+  _getInt: function () {
     var parsedData = new Uint8Array(this._getSlice(4));
 
     return (
@@ -1052,7 +1141,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Byte value (integer)
    */
-  _getByte: function() {
+  _getByte: function () {
     var parsedData = new Uint8Array(this._getSlice(1));
 
     return parsedData[0];
@@ -1063,7 +1152,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Character (string)
    */
-  _getChar: function() {
+  _getChar: function () {
     return this._getByte();
   },
 
@@ -1072,7 +1161,7 @@ WeeChatProtocol.prototype = {
    *
    * @return String value
    */
-  _getString: function() {
+  _getString: function () {
     var l = this._getInt();
 
     if (l > 0) {
@@ -1082,7 +1171,7 @@ WeeChatProtocol.prototype = {
       return WeeChatProtocol._uia2s(parsedData);
     }
 
-    return "";
+    return '';
   },
 
   /**
@@ -1090,7 +1179,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Header object
    */
-  _getHeader: function() {
+  _getHeader: function () {
     var len = this._getInt();
     var comp = this._getByte();
 
@@ -1105,7 +1194,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Message ID (string)
    */
-  _getId: function() {
+  _getId: function () {
     return this._getString();
   },
 
@@ -1114,7 +1203,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Object value
    */
-  _getObject: function() {
+  _getObject: function () {
     var self = this;
     var type = this._getType();
 
@@ -1131,7 +1220,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Hash table
    */
-  _getHashTable: function() {
+  _getHashTable: function () {
     var self = this;
     var typeKeys, typeValues, count;
     var dict = {};
@@ -1155,7 +1244,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Array
    */
-  _getArray: function() {
+  _getArray: function () {
     var self = this;
     var type;
     var count;
@@ -1177,7 +1266,7 @@ WeeChatProtocol.prototype = {
    *
    * @return Array
    */
-  _getInfolist: function() {
+  _getInfolist: function () {
     var self = this;
     var name;
     var count;
@@ -1207,7 +1296,7 @@ WeeChatProtocol.prototype = {
    * @param length Number of bytes to read
    * @return Sliced array
    */
-  _getSlice: function(length) {
+  _getSlice: function (length) {
     if (this.dataAt + length > this._data.byteLength) {
       return null;
     }
@@ -1224,7 +1313,7 @@ WeeChatProtocol.prototype = {
    *
    * @param data Current data
    */
-  _setData: function(data) {
+  _setData: function (data) {
     this._data = data;
   },
 
@@ -1234,8 +1323,8 @@ WeeChatProtocol.prototype = {
    * @param id Command ID
    * @param command previously formatted command
    */
-  setId: function(id, command) {
-    return "(" + id + ") " + command;
+  setId: function (id, command) {
+    return '(' + id + ') ' + command;
   },
 
   /**
@@ -1244,7 +1333,7 @@ WeeChatProtocol.prototype = {
    * @param data Message data (ArrayBuffer)
    * @return Message value
    */
-  parse: function(data, optionsValues) {
+  parse: function (data, optionsValues) {
     var self = this;
 
     this._setData(data);
