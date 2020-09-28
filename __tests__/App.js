@@ -5,8 +5,6 @@ import App from '../src/usecase/App';
 import { render } from '../src/test-utils';
 
 it('renders correctly', () => {
-  jest.mock('react-native/Libraries/Animated/src/NativeAnimatedHelper');
-
   const tree = render(<App />, {
     initialState: {
       buffers: {

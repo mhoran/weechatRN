@@ -2,7 +2,7 @@ import { combineReducers, createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import buffers, { BufferState } from './buffers';
 import lines, { LineState } from './lines';
@@ -61,7 +61,10 @@ export const reducer = combineReducers({
 });
 
 export const store = createStore(
-  persistReducer({ storage, key: 'state', whitelist: ['connection'] }, reducer),
+  persistReducer(
+    { storage: AsyncStorage, key: 'state', whitelist: ['connection'] },
+    reducer
+  ),
   composeWithDevTools(applyMiddleware(thunk))
 );
 
