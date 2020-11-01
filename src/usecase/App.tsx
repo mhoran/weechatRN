@@ -15,7 +15,7 @@ import * as _ from 'lodash';
 
 import DrawerLayout from 'react-native-drawer-layout-polyfill';
 
-import BufferContainer from './buffers/ui/BufferContainer';
+import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import { StoreState } from '../store';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
@@ -197,9 +197,8 @@ class App extends React.Component<Props, State> {
                 </TouchableOpacity>
               </View>
             </View>
-            <BufferContainer
+            <BufferGate
               showTopic={showTopic}
-              buffer={currentBuffer}
               sendMessage={this.sendMessage}
               bufferId={currentBufferId}
             />

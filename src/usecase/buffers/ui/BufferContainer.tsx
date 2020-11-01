@@ -22,17 +22,17 @@ import { StoreState } from '../../../store';
 import UndoTextInput from './UndoTextInput';
 
 const connector = connect(
-  (state: StoreState, { bufferId }: { bufferId: string | null }) => ({
-    lines: (bufferId && state.lines[bufferId]) || [],
-    nicklist: (bufferId && state.nicklists[bufferId]) || []
+  (state: StoreState, { bufferId }: { bufferId: string }) => ({
+    lines: state.lines[bufferId] || [],
+    nicklist: state.nicklists[bufferId] || [],
+    buffer: state.buffers[bufferId]
   })
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
-  buffer: WeechatBuffer | null;
-  bufferId: string | null;
+  bufferId: string;
   showTopic: boolean;
   sendMessage: (message: string) => void;
 };
@@ -172,10 +172,6 @@ class BufferContainer extends React.Component<Props, State> {
     const { bufferId, buffer, showTopic, lines } = this.props;
     const { textValue, showTabButton } = this.state;
 
-    if (!bufferId) {
-      return <View style={styles.container} />;
-    }
-
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         {showTopic && (
@@ -222,7 +218,7 @@ class BufferContainer extends React.Component<Props, State> {
 
 export default connector(BufferContainer);
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   topbar: {
     height: 20,
     paddingHorizontal: 5,
