@@ -1,4 +1,3 @@
-import { omit } from "lodash";
 import { getHotlistForBufferId } from "./selectors";
 
 export type HotListState = { [key: string]: Hotlist };
@@ -9,12 +8,14 @@ export default (state: HotListState = initialState, action): HotListState => {
   switch (action.type) {
     case "FETCH_HOTLISTS":
       if (action.currentBufferId) {
-          return omit(action.payload, action.currentBufferId);
+        return Object.fromEntries(Object.entries(<HotListState> action.payload)
+          .filter(([bufferId]) => bufferId !== action.currentBufferId));
       }
 
       return action.payload;
     case "CHANGE_CURRENT_BUFFER":
-      return omit(state, action.bufferId);
+      return Object.fromEntries(Object.entries(state)
+        .filter(([bufferId]) => bufferId !== action.bufferId));
     case "BUFFER_LINE_ADDED": {
       if (action.bufferId === action.currentBufferId) {
         return state;

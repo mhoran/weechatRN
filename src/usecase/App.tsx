@@ -11,7 +11,6 @@ import {
   Platform
 } from 'react-native';
 import { connect, ConnectedProps } from 'react-redux';
-import * as _ from 'lodash';
 
 import DrawerLayout from 'react-native-drawer-layout-polyfill';
 
@@ -25,7 +24,7 @@ const connector = connect((state: StoreState) => {
   const currentBuffer =
     (currentBufferId && state.buffers[currentBufferId]) || null;
 
-  const numHighlights = _.values(state.hotlists).reduce(
+  const numHighlights = Object.values(state.hotlists).reduce(
     (sum, hlist) => sum + hlist.highlight,
     0
   );
@@ -149,7 +148,7 @@ class App extends React.Component<Props, State> {
 
     const sidebar = () => (
       <BufferList
-        buffers={_.orderBy(_.values(buffers), ['number'])}
+        buffers={Object.values(buffers).sort((a, b) => a.number - b.number)}
         currentBufferId={currentBufferId}
         onSelectBuffer={this.changeCurrentBuffer}
       />

@@ -1,5 +1,3 @@
-import { omit } from "lodash";
-
 export type NicklistState = { [key: string]: WeechatNicklist[] };
 
 const initialState: NicklistState = {};
@@ -26,8 +24,8 @@ export default (state: NicklistState = initialState, action): NicklistState => {
       };
     }
     case "BUFFER_CLOSED": {
-      const newState = omit(state, action.bufferId);
-      return newState;
+      return Object.fromEntries(Object.entries(state)
+        .filter(([bufferId]) => bufferId !== action.bufferId));
     }
     default:
       return state;

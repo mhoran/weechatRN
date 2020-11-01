@@ -1,5 +1,3 @@
-import { omit } from "lodash";
-
 export type BufferState = { [key: string]: WeechatBuffer };
 
 const initialState: BufferState = {};
@@ -10,7 +8,8 @@ export default (state: BufferState = initialState, action): BufferState => {
       return action.payload;
     }
     case "BUFFER_CLOSED": {
-      return omit(state, action.bufferId);
+      return Object.fromEntries(Object.entries(state)
+        .filter(([bufferId]) => bufferId !== action.bufferId));
     }
     case "BUFFER_OPENED": {
       return {

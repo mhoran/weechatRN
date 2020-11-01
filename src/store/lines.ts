@@ -1,5 +1,3 @@
-import { omit } from "lodash";
-
 export type LineState = { [key: string]: WeechatLine[] };
 
 const initialState: LineState = {};
@@ -12,8 +10,8 @@ export default (state: LineState = initialState, action): LineState => {
         [action.bufferId]: action.payload
       };
     case "BUFFER_CLOSED": {
-      const newState = omit(state, action.bufferId);
-      return newState;
+      return Object.fromEntries(Object.entries(state)
+        .filter(([bufferId]) => bufferId !== action.bufferId));
     }
     case "BUFFER_LINE_ADDED":
       return {
