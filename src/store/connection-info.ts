@@ -12,7 +12,7 @@ const initialState: ConnectionInfo = {
   filterBuffers: true
 };
 
-export default (state: ConnectionInfo = initialState, action) => {
+export default (state: ConnectionInfo = initialState, action): ConnectionInfo => {
   switch (action.type) {
     case "SET_CONNECTION_INFO":
       return {
