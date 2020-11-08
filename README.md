@@ -32,6 +32,8 @@ All examples below uses `example.com` as hostname, and `5555` as port number, bu
 /set relay.network.password <your secret password>
 ```
 
+Note that weechatRN requires the relay to be configured with the "weechat" protocol, not the "irc" protocol.
+
 ### Webserver configuration (probably not needed):
 
 If you need to proxy though another host and happen to be using Caddy as your webserver, you can use my config file below:
