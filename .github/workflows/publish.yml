@@ -18,7 +18,10 @@ jobs:
           expo-username: ${{secrets.EXPO_CLI_USERNAME}}
           expo-password: ${{secrets.EXPO_CLI_PASSWORD}}
       - run: yarn install
-      - run: expo build:ios --non-interactive --apple-id ${{secrets.EXPO_APPLE_ID}}
+      - run: expo build:ios --non-interactive
+        env:
+          EXPO_APPLE_ID: ${{secrets.EXPO_APPLE_ID}}
+          EXPO_APPLE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
       - run: curl -O `expo url:ipa`
       - run: gem install fastlane -N
       - run: fastlane pilot upload
