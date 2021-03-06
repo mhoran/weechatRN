@@ -16,6 +16,7 @@
     "js-sha256": "^0.9.0",
     "react": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.0.tar.gz",
+    "react-native-drawer-layout": "https://github.com/mhoran/react-native-drawer-layout#91a2476",
     "react-native-drawer-layout-polyfill": "^2.0.0",
     "react-native-parsed-text": "^0.0.22",
     "react-redux": "^7.2.0",
@@ -24,10 +25,10 @@
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "~7.9.0",
+    "@babel/core": "^7.13.8",
     "@testing-library/react-native": "^7.0.2",
     "@types/jest": "^26.0.14",
-    "@types/react": "~16.9.35",
+    "@types/react":"~16.9.35",
     "@types/react-native": "~0.63.2",
     "@types/react-redux": "^7.1.9",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
@@ -43,7 +44,7 @@
     "redux-devtools-extension": "^2.13.8",
     "ts-jest": "^26.4.0",
     "tslib": "^2.0.1",
-    "typescript": "~4.0.0"
+    "typescript": "^4.2.3"
   },
   "resolutions": {
     "react-native-drawer-layout-polyfill/react-native-drawer-layout": "https://github.com/mhoran/react-native-drawer-layout#91a2476"

@@ -9,7 +9,7 @@ module.exports = {
   globals: {
     'ts-jest': {
       babelConfig: true,
-      tsConfig: {
+      tsconfig: {
         strict: false
       }
     }
