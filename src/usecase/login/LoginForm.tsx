@@ -89,6 +89,7 @@ class LoginForm extends React.Component<Props, State> {
             placeholder="Hostname"
             onChangeText={this.setHostname}
             value={hostname}
+            autoCorrect={false}
           />
           <TextInput
             style={styles.input}
