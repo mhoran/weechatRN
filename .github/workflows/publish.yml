@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - uses: expo/expo-github-action@v5
+      - uses: expo/expo-github-action@v6
         with:
           expo-version: 4.x
           expo-username: ${{secrets.EXPO_CLI_USERNAME}}
