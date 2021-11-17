@@ -38,11 +38,11 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: binary
-          path: *.ipa
+          path: '*.ipa'
   publish-to-testflight:
     name: Publish to TestFlight
     runs-on: macos-latest
-    needs: [build-app, download-binary]
+    needs: [build-app, fetch-binary]
     steps:
       - uses: actions/checkout@v2
       - name: Download binary from artifacts
