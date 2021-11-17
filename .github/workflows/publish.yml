@@ -34,6 +34,17 @@ jobs:
     needs: build-app
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          cache: yarn
+      - name: Set up Expo
+        uses: expo/expo-github-action@v6
+        with:
+          expo-version: 4.x
+          username: ${{secrets.EXPO_CLI_USERNAME}}
+          password: ${{secrets.EXPO_CLI_PASSWORD}}
       - name: Download from Expo
         run: curl -O `expo url:ipa`
       - name: Upload binary as artifact
