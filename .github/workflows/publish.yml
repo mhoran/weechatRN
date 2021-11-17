@@ -3,11 +3,12 @@ name: Publish to TestFlight
 on:
   release:
     types: [created]
+  workflow_dispatch:
 
 jobs:
   build-app:
     name: Build iOS app
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node
@@ -19,6 +20,7 @@ jobs:
         uses: expo/expo-github-action@v6
         with:
           expo-version: 4.x
+          expo-cache: true
           username: ${{secrets.EXPO_CLI_USERNAME}}
           password: ${{secrets.EXPO_CLI_PASSWORD}}
       - run: yarn install
@@ -28,7 +30,7 @@ jobs:
           EXPO_APPLE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
   fetch-binary:
     name: Fetch binary
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: build-app
     steps:
       - uses: actions/checkout@v2
