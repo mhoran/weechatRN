@@ -6,51 +6,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-app:
-    name: Build iOS app
+  build-and-upload-app:
+    name: Build and upload iOS app
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
           cache: yarn
       - name: Set up Expo
-        uses: expo/expo-github-action@v6
+        uses: expo/expo-github-action@v7
         with:
-          expo-version: 4.x
+          expo-version: latest
+          eas-version: latest
           expo-cache: true
-          username: ${{secrets.EXPO_CLI_USERNAME}}
-          password: ${{secrets.EXPO_CLI_PASSWORD}}
+          token: ${{secrets.EXPO_TOKEN}}
       - run: yarn install
-      - run: expo build:ios --non-interactive
+      - run: eas build -p ios --non-interactive
+      - run: eas submit -p ios --latest --profile production --non-interactive
         env:
-          EXPO_APPLE_ID: ${{secrets.EXPO_APPLE_ID}}
           EXPO_APPLE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
-      - name: Download from Expo
-        run: curl -O `expo url:ipa`
-      - name: Upload binary as artifact
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: binary
-          path: '*.ipa'
-  publish-to-testflight:
-    name: Publish to TestFlight
-    runs-on: macos-latest
-    needs: build-app
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download binary from artifacts
-        uses: actions/download-artifact@v2.0.10
-        with:
-          name: binary
-      - name: Install fastlane
-        run: gem install fastlane -N
-      - name: Upload to fastlane
-        run: fastlane pilot upload
-        env:
-            FASTLANE_USER: ${{secrets.EXPO_APPLE_ID}}
-            FASTLANE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
-            FASTLANE_SESSION: ${{secrets.FASTLANE_SESSION}}
-            FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD}}
