@@ -1,4 +1,4 @@
-jest.mock('react-native/Libraries/Animated/src/NativeAnimatedHelper');
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 jest.mock('redux-persist', () => {
   const real = jest.requireActual('redux-persist');

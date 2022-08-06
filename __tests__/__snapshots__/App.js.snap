@@ -30,6 +30,7 @@ exports[`renders correctly 1`] = `
     }
   >
     <View
+      collapsable={false}
       style={
         Object {
           "flex": 1,
@@ -66,6 +67,7 @@ exports[`renders correctly 1`] = `
           >
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -103,6 +105,7 @@ exports[`renders correctly 1`] = `
           </View>
           <View
             accessible={true}
+            collapsable={false}
             focusable={true}
             onClick={[Function]}
             onResponderGrant={[Function]}
@@ -137,6 +140,7 @@ exports[`renders correctly 1`] = `
           >
             <View
               accessible={true}
+              collapsable={false}
               focusable={false}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -172,6 +176,7 @@ exports[`renders correctly 1`] = `
     </View>
     <View
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -196,6 +201,7 @@ exports[`renders correctly 1`] = `
     />
     <View
       accessibilityViewIsModal={false}
+      collapsable={false}
       style={
         Object {
           "backgroundColor": undefined,
@@ -242,16 +248,12 @@ exports[`renders correctly 1`] = `
               },
             ]
           }
-          disableVirtualization={false}
           getItem={[Function]}
           getItemCount={[Function]}
-          horizontal={false}
-          initialNumToRender={10}
           keyExtractor={[Function]}
-          maxToRenderPerBatch={10}
           onContentSizeChange={[Function]}
-          onEndReachedThreshold={2}
           onLayout={[Function]}
+          onMomentumScrollBegin={[Function]}
           onMomentumScrollEnd={[Function]}
           onScroll={[Function]}
           onScrollBeginDrag={[Function]}
@@ -266,9 +268,7 @@ exports[`renders correctly 1`] = `
               "flex": 1,
             }
           }
-          updateCellsBatchingPeriod={50}
           viewabilityConfigCallbackPairs={Array []}
-          windowSize={21}
         >
           <View>
             <View
