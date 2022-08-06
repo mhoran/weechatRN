@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Keyboard,
   Dimensions,
-  Platform
+  Platform,
+  EmitterSubscription
 } from 'react-native';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -53,6 +54,7 @@ interface State {
 
 class App extends React.Component<Props, State> {
   drawer: DrawerLayout;
+  dimensionsListener: EmitterSubscription | undefined;
 
   drawerWidth = () => {
     /*
@@ -113,7 +115,7 @@ class App extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    Dimensions.addEventListener('change', this.updateWidth);
+    this.dimensionsListener = Dimensions.addEventListener('change', this.updateWidth);
 
     const { currentBufferId, fetchBufferInfo } = this.props;
     if (currentBufferId) {
@@ -126,7 +128,7 @@ class App extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    Dimensions.removeEventListener('change', this.updateWidth);
+    this.dimensionsListener?.remove();
   }
 
   componentDidUpdate(prevProps: Props) {
