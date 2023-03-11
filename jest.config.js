@@ -1,18 +1,5 @@
-const { defaults: tsjPreset } = require('ts-jest/presets');
-
 module.exports = {
   preset: 'jest-expo',
-  transform: {
-    ...tsjPreset.transform
-  },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  globals: {
-    'ts-jest': {
-      babelConfig: true,
-      tsconfig: {
-        strict: false
-      }
-    }
-  },
+  transformIgnorePatterns: ["node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"],
   setupFiles: ['./jest.setup.js']
 };
