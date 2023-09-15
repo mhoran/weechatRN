@@ -18,7 +18,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.14",
+    "version": "1.0.15",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
