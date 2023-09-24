@@ -29,7 +29,9 @@ export const getPushNotificationStatusAsync = async (): Promise<
     if (finalStatus !== 'granted') {
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+    token = (await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    })).data;
   }
 
   return token;
