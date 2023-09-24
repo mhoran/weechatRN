@@ -5,7 +5,7 @@ weechat.register("WeechatRN", "mhoran", "1.0", "MIT",
         "WeechatRN push notification plugin", "", "")
 
 # Plugin options
-# /set plugins.var.python.weechatrn.push_token
+# /set plugins.var.python.WeechatRN.push_token
 script_options = {
     "push_token": ""
 }
@@ -26,11 +26,11 @@ hook = weechat.hook_command("weechatrn", "", "", "", "", "weechatrn_cb", "")
 
 # Reset in-memory push token on config change.
 def config_cb(data, option, value):
-    if option == "plugins.var.python.weechatrn.push_token":
+    if option == "plugins.var.python.WeechatRN.push_token":
         script_options["push_token"] = value
     return weechat.WEECHAT_RC_OK
 
-weechat.hook_config("plugins.var.python.weechatrn.*", "config_cb", "")
+weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
 
 # Only notify for PMs or highlights if message is not tagged with notify_none
 # (ignores messages from ourselves).
