@@ -4,11 +4,12 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import WeechatConnection from '../lib/weechat/connection';
-import { store, persistor } from '../store';
+import { persistor, store } from '../store';
 
+import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
 import App from './App';
 import ConnectionGate from './ConnectionGate';
-import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
+import Buffer from './buffers/ui/Buffer';
 
 interface State {
   connecting: boolean;
@@ -61,7 +62,7 @@ export default class WeechatNative extends React.Component<null, State> {
     );
   };
 
-  fetchBufferInfo = (bufferId: string, numLines = 50): void => {
+  fetchBufferInfo = (bufferId: string, numLines = Buffer.DEFAULT_LINE_INCREMENT): void => {
     if (this.connection) {
       this.connection.send(
         `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`

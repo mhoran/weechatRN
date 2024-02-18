@@ -1,24 +1,24 @@
 import * as React from 'react';
 import {
-  SafeAreaView,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Keyboard,
   Dimensions,
+  EmitterSubscription,
+  Image,
+  Keyboard,
   Platform,
-  EmitterSubscription
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 
 import { Drawer } from 'react-native-drawer-layout';
 
+import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
+import { StoreState } from '../store';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
-import { StoreState } from '../store';
-import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -42,7 +42,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
   disconnect: () => void;
-  fetchBufferInfo: (bufferId: string) => void;
+  fetchBufferInfo: (bufferId: string, numLines?: number) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
   clearHotlistForBuffer: (fullBufferName: string) => void;
 };
@@ -99,12 +99,12 @@ class App extends React.Component<Props, State> {
   };
 
   openDrawer = () => {
-    this.setState((state) => ({drawerOpen: true}));
+    this.setState((state) => ({ drawerOpen: true }));
     Keyboard.dismiss();
   };
 
   closeDrawer = () => {
-    this.setState((state) => ({drawerOpen: false}));
+    this.setState((state) => ({ drawerOpen: false }));
   };
 
   sendMessage = (message: string) => {
@@ -165,7 +165,7 @@ class App extends React.Component<Props, State> {
           open={this.state.drawerOpen}
           renderDrawerContent={sidebar}
           keyboardDismissMode={'on-drag'}
-          drawerStyle={{width: drawerWidth}}
+          drawerStyle={{ width: drawerWidth }}
           onOpen={this.openDrawer}
           onClose={this.closeDrawer}
         >
@@ -206,6 +206,7 @@ class App extends React.Component<Props, State> {
               showTopic={showTopic}
               sendMessage={this.sendMessage}
               bufferId={currentBufferId}
+              fetchMoreLines={(lines: number) => { this.props.fetchBufferInfo(currentBufferId, lines) }}
             />
           </SafeAreaView>
         </Drawer>

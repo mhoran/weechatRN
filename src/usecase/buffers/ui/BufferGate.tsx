@@ -6,6 +6,7 @@ type Props = {
   bufferId: string | null;
   showTopic: boolean;
   sendMessage: (message: string) => void;
+  fetchMoreLines: (lines: number) => void;
 };
 
 const BufferGate = (props: Props): JSX.Element => {
