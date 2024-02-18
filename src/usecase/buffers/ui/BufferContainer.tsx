@@ -1,24 +1,24 @@
 import * as React from 'react';
 import {
-  StyleSheet,
-  Linking,
   ActionSheetIOS,
-  KeyboardAvoidingView,
   Image,
-  View,
+  KeyboardAvoidingView,
+  LayoutAnimation,
+  Linking,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  LayoutAnimation
+  View
 } from 'react-native';
 
-import { connect, ConnectedProps } from 'react-redux';
 import ParsedText from 'react-native-parsed-text';
+import { connect, ConnectedProps } from 'react-redux';
 
-import Buffer from './Buffer';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { StoreState } from '../../../store';
+import Buffer from './Buffer';
 import UndoTextInput from './UndoTextInput';
 
 const connector = connect(
@@ -35,6 +35,7 @@ type Props = PropsFromRedux & {
   bufferId: string;
   showTopic: boolean;
   sendMessage: (message: string) => void;
+  fetchMoreLines: (lines: number) => void;
 };
 
 interface State {
@@ -188,6 +189,7 @@ class BufferContainer extends React.Component<Props, State> {
           lines={lines}
           onLongPress={this.onLongPress}
           parseArgs={this.parseArgs}
+          fetchMoreLines={this.props.fetchMoreLines}
         />
         <View style={styles.bottomBox}>
           <UndoTextInput
