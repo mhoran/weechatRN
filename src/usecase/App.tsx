@@ -50,6 +50,7 @@ type Props = PropsFromRedux & {
 interface State {
   showTopic: boolean;
   drawerWidth: number;
+  drawerOpen: boolean;
 }
 
 class App extends React.Component<Props, State> {
