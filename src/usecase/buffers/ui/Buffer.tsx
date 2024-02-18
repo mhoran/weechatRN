@@ -23,6 +23,8 @@ const keyExtractor = (line: WeechatLine) =>
 export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
 
+  linesList = React.createRef<FlatList>();
+
   state = {
     desiredLines: Buffer.DEFAULT_LINE_INCREMENT,
     bufferId: this.props.bufferId,
@@ -34,6 +36,13 @@ export default class Buffer extends React.PureComponent<Props, State> {
     else
       return null;
   };
+
+  componentDidUpdate(prevProps: Props) {
+    const { bufferId } = this.props;
+    if (bufferId !== prevProps.bufferId) {
+      this.linesList.current?.scrollToOffset({ animated: false, offset: 0 });
+    }
+  }
 
   renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
     const { onLongPress, parseArgs } = this.props;
@@ -61,6 +70,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
     const { lines } = this.props;
     return (
       <FlatList
+        ref={this.linesList}
         data={lines.filter((line) => line.displayed !== 0)}
         inverted
         keyboardDismissMode="interactive"
