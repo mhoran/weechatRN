@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { connect, ConnectedProps } from 'react-redux';
 
-import DrawerLayout from 'react-native-drawer-layout-polyfill';
+import { Drawer } from 'react-native-drawer-layout';
 
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
@@ -53,7 +53,6 @@ interface State {
 }
 
 class App extends React.Component<Props, State> {
-  drawer: DrawerLayout;
   dimensionsListener: EmitterSubscription | undefined;
 
   drawerWidth = () => {
@@ -74,13 +73,14 @@ class App extends React.Component<Props, State> {
 
   state: State = {
     showTopic: false,
-    drawerWidth: this.drawerWidth()
+    drawerWidth: this.drawerWidth(),
+    drawerOpen: true
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer) => {
     const { currentBufferId, fetchBufferInfo } = this.props;
 
-    this.drawer.closeDrawer();
+    this.closeDrawer();
     if (currentBufferId !== buffer.id) {
       this.props.dispatch({
         type: 'CHANGE_CURRENT_BUFFER',
@@ -98,8 +98,12 @@ class App extends React.Component<Props, State> {
   };
 
   openDrawer = () => {
-    this.drawer.openDrawer();
+    this.setState((state) => ({drawerOpen: true}));
     Keyboard.dismiss();
+  };
+
+  closeDrawer = () => {
+    this.setState((state) => ({drawerOpen: false}));
   };
 
   sendMessage = (message: string) => {
@@ -120,8 +124,6 @@ class App extends React.Component<Props, State> {
     const { currentBufferId, fetchBufferInfo } = this.props;
     if (currentBufferId) {
       fetchBufferInfo(currentBufferId);
-    } else {
-      this.drawer.openDrawer();
     }
 
     registerForPushNotificationsAsync();
@@ -134,7 +136,7 @@ class App extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { currentBufferId } = this.props;
     if (currentBufferId !== prevProps.currentBufferId && !currentBufferId) {
-      this.drawer.openDrawer();
+      this.openDrawer();
     }
   }
 
@@ -158,12 +160,13 @@ class App extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <DrawerLayout
-          ref={(d: DrawerLayout) => (this.drawer = d)}
-          renderNavigationView={sidebar}
+        <Drawer
+          open={this.state.drawerOpen}
+          renderDrawerContent={sidebar}
           keyboardDismissMode={'on-drag'}
-          drawerWidth={drawerWidth}
-          useNativeAnimations={true}
+          drawerStyle={{width: drawerWidth}}
+          onOpen={this.openDrawer}
+          onClose={this.closeDrawer}
         >
           <SafeAreaView style={styles.container}>
             <View style={styles.topbar}>
@@ -204,7 +207,7 @@ class App extends React.Component<Props, State> {
               bufferId={currentBufferId}
             />
           </SafeAreaView>
-        </DrawerLayout>
+        </Drawer>
       </View>
     );
   }
