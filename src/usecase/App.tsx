@@ -99,12 +99,12 @@ class App extends React.Component<Props, State> {
   };
 
   openDrawer = () => {
-    this.setState((state) => ({ drawerOpen: true }));
+    this.setState(() => ({ drawerOpen: true }));
     Keyboard.dismiss();
   };
 
   closeDrawer = () => {
-    this.setState((state) => ({ drawerOpen: false }));
+    this.setState(() => ({ drawerOpen: false }));
   };
 
   sendMessage = (message: string) => {

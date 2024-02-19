@@ -59,7 +59,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
     return (
       <Button title="Load more lines" onPress={() => {
-        var desiredLines = this.state.desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
+        const desiredLines = this.state.desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
         this.props.fetchMoreLines(desiredLines);
         this.setState(() => ({ desiredLines }));
       }} />
