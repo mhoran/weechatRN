@@ -7,9 +7,9 @@ on:
   pull_request:
 
 jobs:
-  checkout-app:
-    name: Lint and test
+  defaults:
     runs-on: ubuntu-latest
+  install-dependencies:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node
@@ -18,7 +18,18 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
+  run-linter:
+    needs: install-dependencies
+    steps:
+      - uses: actions/checkout@v4
       - run: yarn lint
+  run-linter:
+    needs: install-dependencies
+    steps:
+      - uses: actions/checkout@v4
       - run: yarn prettier --check
+  run-linter:
+    needs: install-dependencies
+    steps:
+      - uses: actions/checkout@v4
       - run: yarn test
-        if: ${{ always() }}
