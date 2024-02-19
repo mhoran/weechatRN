@@ -23,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: yarn lint
-  run-linter:
+  run-prettier:
     needs: install-dependencies
     steps:
       - uses: actions/checkout@v4
       - run: yarn prettier --check
-  run-linter:
+  run-tests:
     needs: install-dependencies
     steps:
       - uses: actions/checkout@v4
