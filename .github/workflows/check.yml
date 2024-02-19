@@ -1,0 +1,23 @@
+name: Lint and test
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+
+jobs:
+  check:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+      - run: yarn install
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn prettier --check
