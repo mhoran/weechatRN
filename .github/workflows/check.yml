@@ -6,9 +6,10 @@ on:
       - "main"
   pull_request:
 
+defaults:
+  runs-on: ubuntu-latest
+
 jobs:
-  defaults:
-    runs-on: ubuntu-latest
   install-dependencies:
     steps:
       - uses: actions/checkout@v4
