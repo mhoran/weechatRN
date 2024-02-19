@@ -18,18 +18,6 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
-  lint:
-    needs: checkout-app
-    runs-on: ubuntu-latest
-    steps:
       - run: yarn lint
-  test:
-    needs: checkout-app
-    runs-on: ubuntu-latest
-    steps:
-      - run: yarn test
-  prettier:
-    needs: checkout-app
-    runs-on: ubuntu-latest
-    steps:
       - run: yarn prettier --check
+      - run: yarn test
