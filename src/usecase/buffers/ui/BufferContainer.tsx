@@ -7,6 +7,7 @@ import {
   Linking,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -19,7 +20,6 @@ import { formatUrl } from '../../../lib/helpers/url-formatter';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
-import UndoTextInput from './UndoTextInput';
 
 const connector = connect(
   (state: StoreState, { bufferId }: { bufferId: string }) => ({
@@ -40,14 +40,12 @@ type Props = PropsFromRedux & {
 
 interface State {
   showTabButton: boolean;
-  textValue: string;
   selection: { start: number; end: number };
 }
 
 class BufferContainer extends React.Component<Props, State> {
   state = {
     showTabButton: false,
-    textValue: '',
     selection: {
       start: 0,
       end: 0
@@ -59,6 +57,9 @@ class BufferContainer extends React.Component<Props, State> {
   tabCompleteIndex = 0;
   tabCompleteWordStart = 0;
   tabCompleteWordEnd = 0;
+
+  textInput = React.createRef<TextInput>();
+  textValue = '';
 
   parseArgs = getParseArgs(
     styles.link,
@@ -102,30 +103,30 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleChangeText = (textValue: string) => {
     this.tabCompleteInProgress = false;
-    this.setState({ textValue });
+    this.textValue = textValue;
   };
 
   handleSubmit = () => {
-    const { textValue } = this.state;
-    textValue.split('\n').forEach((line) => {
+    this.textValue.split('\n').forEach((line) => {
       this.props.sendMessage(line);
     });
     this.handleChangeText('');
+    this.textInput.current?.clear();
   };
 
   tabCompleteNick = () => {
-    const { textValue, selection } = this.state;
+    const { selection } = this.state;
     const { nicklist } = this.props;
 
     if (!this.tabCompleteInProgress) {
       this.tabCompleteWordEnd = selection.start;
 
       this.tabCompleteWordStart =
-        textValue.lastIndexOf(' ', this.tabCompleteWordEnd - 1) + 1;
+        this.textValue.lastIndexOf(' ', this.tabCompleteWordEnd - 1) + 1;
 
       if (this.tabCompleteWordStart == this.tabCompleteWordEnd) return;
 
-      const prefix = textValue
+      const prefix = this.textValue
         .substring(this.tabCompleteWordStart, this.tabCompleteWordEnd)
         .toLowerCase();
 
@@ -147,11 +148,11 @@ class BufferContainer extends React.Component<Props, State> {
       nick += ': ';
     }
 
-    this.setState({
-      textValue:
-        textValue.substring(0, this.tabCompleteWordStart) +
+    this.textInput.current?.setNativeProps({
+      text: (this.textValue =
+        this.textValue.substring(0, this.tabCompleteWordStart) +
         nick +
-        textValue.substring(this.tabCompleteWordEnd)
+        this.textValue.substring(this.tabCompleteWordEnd))
     });
     this.tabCompleteWordEnd = this.tabCompleteWordStart + nick.length;
     this.tabCompleteInProgress = true;
@@ -171,7 +172,7 @@ class BufferContainer extends React.Component<Props, State> {
 
   render() {
     const { bufferId, buffer, showTopic, lines } = this.props;
-    const { textValue, showTabButton } = this.state;
+    const { showTabButton } = this.state;
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -192,9 +193,9 @@ class BufferContainer extends React.Component<Props, State> {
           fetchMoreLines={this.props.fetchMoreLines}
         />
         <View style={styles.bottomBox}>
-          <UndoTextInput
+          <TextInput
+            ref={this.textInput}
             style={styles.inputBox}
-            value={textValue}
             onChangeText={this.handleChangeText}
             onFocus={() => this.handleOnFocus()}
             onBlur={() => this.handleOnBlur()}
