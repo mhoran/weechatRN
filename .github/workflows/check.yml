@@ -6,11 +6,9 @@ on:
       - "main"
   pull_request:
 
-defaults:
-  runs-on: ubuntu-latest
-
 jobs:
   install-dependencies:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node
@@ -20,16 +18,19 @@ jobs:
           cache: yarn
       - run: yarn install
   run-linter:
+    runs-on: ubuntu-latest
     needs: install-dependencies
     steps:
       - uses: actions/checkout@v4
       - run: yarn lint
   run-prettier:
+    runs-on: ubuntu-latest
     needs: install-dependencies
     steps:
       - uses: actions/checkout@v4
       - run: yarn prettier --check
   run-tests:
+    runs-on: ubuntu-latest
     needs: install-dependencies
     steps:
       - uses: actions/checkout@v4
