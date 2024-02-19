@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  install-dependencies:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,33 +16,18 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
+      - run: yarn test
   run-linter:
     runs-on: ubuntu-latest
-    needs: install-dependencies
+    needs: run-tests
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: yarn
+      - run: yarn install
       - run: yarn lint
   run-prettier:
     runs-on: ubuntu-latest
-    needs: install-dependencies
+    needs: run-tests
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: yarn
+      - run: yarn install
       - run: yarn prettier --check
-  run-tests:
-    runs-on: ubuntu-latest
-    needs: install-dependencies
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: yarn
-      - run: yarn test
