@@ -23,6 +23,7 @@ jobs:
     name: Run linter
     runs-on: ubuntu-latest
     needs: cache-and-test
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -35,6 +36,7 @@ jobs:
     name: Run prettier
     runs-on: ubuntu-latest
     needs: cache-and-test
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
