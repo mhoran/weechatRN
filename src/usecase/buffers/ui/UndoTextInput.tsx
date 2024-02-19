@@ -10,15 +10,15 @@ const UndoTextInput = (props: Props): JSX.Element => {
 
   const handleChangeText = (textValue: string) => {
     lastValue.current = textValue;
-    onChangeText(textValue);
+    onChangeText && onChangeText(textValue);
   };
 
   React.useEffect(() => {
     if (value !== lastValue.current) {
-      textInput.current.setNativeProps({ text: value });
       lastValue.current = value;
+      textInput.current?.setNativeProps({ text: value });
     }
-  });
+  }, [value]);
 
   return (
     <TextInput {...rest} ref={textInput} onChangeText={handleChangeText} />
