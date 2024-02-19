@@ -7,19 +7,22 @@ on:
   pull_request:
 
 jobs:
-  run-tests:
+  cache-and-test:
+    name: Cache and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Set up Node and cache dependencies
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: yarn
       - run: yarn install
       - run: yarn test
-  run-linter:
+  linter:
+    name: Run linter
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: cache-and-run
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,9 +31,10 @@ jobs:
           cache: yarn
       - run: yarn install
       - run: yarn lint
-  run-prettier:
+  prettier:
+    name: Run prettier
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: cache-and-run
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
