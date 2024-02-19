@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  check:
+  checkout-app:
     name: Lint and test
     runs-on: ubuntu-latest
     steps:
@@ -18,6 +18,15 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
+  lint:
+    needs: checkout-app
+    steps:
       - run: yarn lint
+  test:
+    needs: checkout-app
+    steps:
       - run: yarn test
+  prettier:
+    needs: checkout-app
+    steps:
       - run: yarn prettier --check
