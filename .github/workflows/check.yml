@@ -19,7 +19,6 @@ jobs:
           cache: yarn
       - run: yarn install
       - run: yarn lint
-        continue-on-error: true
       - run: yarn prettier --check
-        continue-on-error: true
       - run: yarn test
+        if: ${{ always() }}
