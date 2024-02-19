@@ -29,7 +29,6 @@ jobs:
         with:
           node-version: 18
           cache: yarn
-      - run: yarn install
       - run: yarn lint
   prettier:
     name: Run prettier
@@ -41,5 +40,4 @@ jobs:
         with:
           node-version: 18
           cache: yarn
-      - run: yarn install
       - run: yarn prettier src --check
