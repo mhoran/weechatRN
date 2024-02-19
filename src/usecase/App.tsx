@@ -75,7 +75,7 @@ class App extends React.Component<Props, State> {
   state: State = {
     showTopic: false,
     drawerWidth: this.drawerWidth(),
-    drawerOpen: true
+    drawerOpen: !this.props.currentBufferId
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer) => {
