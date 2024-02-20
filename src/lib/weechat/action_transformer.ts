@@ -14,7 +14,7 @@ const reduceToObjectByKey = <T, U>(
   mapFn: MapFn<T, U> = (a) => a
 ) => array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: mapFn(elem) }), {});
 
-export const transformToReduxAction = (data: WeechatResponse<any>) => {
+export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
   switch (data.id) {
     // Weechat internal events starts with "_"
     case '_nicklist_diff': {
@@ -53,6 +53,24 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
       }
 
       return null;
+    }
+    case '_buffer_cleared': {
+      const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;
+      const fullName = object.content[0].full_name;
+
+      return (dispatch, getState) => {
+        const state: StoreState = getState();
+        const buffer = Object.values(state.buffers).find(
+          (buffer: WeechatBuffer) => buffer.full_name == fullName
+        );
+
+        if (!buffer) return undefined;
+
+        dispatch({
+          type: 'BUFFER_CLEARED',
+          bufferId: buffer.id
+        });
+      };
     }
     case '_buffer_line_added': {
       const object = data.objects[0] as WeechatObject<WeechatLine[]>;
@@ -178,6 +196,7 @@ export const transformToReduxAction = (data: WeechatResponse<any>) => {
     }
     case 'lines': {
       const object = data.objects[0] as WeechatObject<WeechatLine[]>;
+      if (!object.content[0]) return undefined;
       return {
         type: 'FETCH_LINES',
         bufferId: object.content[0].buffer,
