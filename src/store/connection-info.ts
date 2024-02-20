@@ -12,16 +12,25 @@ const initialState: ConnectionInfo = {
   filterBuffers: true
 };
 
-export default (state: ConnectionInfo = initialState, action): ConnectionInfo => {
+export default (
+  state: ConnectionInfo = initialState,
+  action: {
+    type: string;
+    hostname: string;
+    password: string;
+    ssl: boolean;
+    filterBuffers: boolean;
+  }
+): ConnectionInfo => {
   switch (action.type) {
-    case "SET_CONNECTION_INFO":
+    case 'SET_CONNECTION_INFO':
       return {
         hostname: action.hostname,
         password: action.password,
         ssl: action.ssl,
         filterBuffers: action.filterBuffers
       };
-    case "CLEAR_CONNECTION_INFO":
+    case 'CLEAR_CONNECTION_INFO':
       return initialState;
     default:
       return state;

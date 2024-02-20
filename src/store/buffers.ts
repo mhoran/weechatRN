@@ -2,41 +2,47 @@ export type BufferState = { [key: string]: WeechatBuffer };
 
 const initialState: BufferState = {};
 
-export default (state: BufferState = initialState, action): BufferState => {
+export default (
+  state: BufferState = initialState,
+  action: { type: string; bufferId: string; payload: unknown }
+): BufferState => {
   switch (action.type) {
-    case "FETCH_BUFFERS": {
-      return action.payload;
+    case 'FETCH_BUFFERS': {
+      return action.payload as BufferState;
     }
-    case "BUFFER_CLOSED": {
-      return Object.fromEntries(Object.entries(state)
-        .filter(([bufferId]) => bufferId !== action.bufferId));
+    case 'BUFFER_CLOSED': {
+      return Object.fromEntries(
+        Object.entries(state).filter(
+          ([bufferId]) => bufferId !== action.bufferId
+        )
+      );
     }
-    case "BUFFER_OPENED": {
+    case 'BUFFER_OPENED': {
       return {
         ...state,
-        [action.bufferId]: action.payload
+        [action.bufferId]: action.payload as WeechatBuffer
       };
     }
-    case "BUFFER_LOCALVAR_UPDATE": {
+    case 'BUFFER_LOCALVAR_UPDATE': {
       return {
         ...state,
         [action.bufferId]: {
           ...state[action.bufferId],
           local_variables: {
             ...state[action.bufferId].local_variables,
-            ...action.payload.local_variables
+            ...(action.payload as WeechatBuffer).local_variables
           }
         }
       };
     }
-    case "BUFFER_LOCALVAR_REMOVE": {
+    case 'BUFFER_LOCALVAR_REMOVE': {
       if (state[action.bufferId]) {
         return {
           ...state,
           [action.bufferId]: {
             ...state[action.bufferId],
             local_variables: {
-              ...action.payload.local_variables
+              ...(action.payload as WeechatBuffer).local_variables
             }
           }
         };
@@ -44,13 +50,13 @@ export default (state: BufferState = initialState, action): BufferState => {
         return state;
       }
     }
-    case "BUFFER_RENAMED": {
+    case 'BUFFER_RENAMED': {
       return {
         ...state,
         [action.bufferId]: {
           ...state[action.bufferId],
-          full_name: action.payload.full_name,
-          short_name: action.payload.short_name
+          full_name: (action.payload as WeechatBuffer).full_name,
+          short_name: (action.payload as WeechatBuffer).short_name
         }
       };
     }
