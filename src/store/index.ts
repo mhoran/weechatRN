@@ -29,7 +29,10 @@ const initialState: AppState = {
   currentBufferId: null
 };
 
-const app = (state: AppState = initialState, action) => {
+const app = (
+  state: AppState = initialState,
+  action: { type: string; bufferId: string }
+) => {
   switch (action.type) {
     case 'DISCONNECT':
       return {

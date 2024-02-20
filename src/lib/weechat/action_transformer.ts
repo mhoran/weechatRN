@@ -1,10 +1,5 @@
 import { StoreState } from '../../store';
 
-export type WeechatReduxAction = {
-  type: string;
-  payload: any;
-};
-
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
 
@@ -58,7 +53,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;
       const fullName = object.content[0].full_name;
 
-      return (dispatch, getState) => {
+      return (
+        dispatch: (action: object) => void,
+        getState: () => StoreState
+      ) => {
         const state: StoreState = getState();
         const buffer = Object.values(state.buffers).find(
           (buffer: WeechatBuffer) => buffer.full_name == fullName
@@ -76,7 +74,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const object = data.objects[0] as WeechatObject<WeechatLine[]>;
       const line = object.content[0];
 
-      return (dispatch, getState) => {
+      return (
+        dispatch: (action: object) => void,
+        getState: () => StoreState
+      ) => {
         const state: StoreState = getState();
 
         dispatch({
@@ -144,7 +145,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
     case 'hotlist': {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
 
-      return (dispatch, getState) => {
+      return (
+        dispatch: (action: object) => void,
+        getState: () => StoreState
+      ) => {
         const state: StoreState = getState();
 
         dispatch({

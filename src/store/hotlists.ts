@@ -1,22 +1,36 @@
-import { getHotlistForBufferId } from "./selectors";
+import { getHotlistForBufferId } from './selectors';
 
 export type HotListState = { [key: string]: Hotlist };
 
 const initialState: HotListState = {};
 
-export default (state: HotListState = initialState, action): HotListState => {
+export default (
+  state: HotListState = initialState,
+  action: {
+    type: string;
+    currentBufferId: string;
+    payload: unknown;
+    bufferId: string;
+  }
+): HotListState => {
   switch (action.type) {
-    case "FETCH_HOTLISTS":
+    case 'FETCH_HOTLISTS':
       if (action.currentBufferId) {
-        return Object.fromEntries(Object.entries(<HotListState> action.payload)
-          .filter(([bufferId]) => bufferId !== action.currentBufferId));
+        return Object.fromEntries(
+          Object.entries(<HotListState>action.payload).filter(
+            ([bufferId]) => bufferId !== action.currentBufferId
+          )
+        );
       }
 
-      return action.payload;
-    case "CHANGE_CURRENT_BUFFER":
-      return Object.fromEntries(Object.entries(state)
-        .filter(([bufferId]) => bufferId !== action.bufferId));
-    case "BUFFER_LINE_ADDED": {
+      return action.payload as HotListState;
+    case 'CHANGE_CURRENT_BUFFER':
+      return Object.fromEntries(
+        Object.entries(state).filter(
+          ([bufferId]) => bufferId !== action.bufferId
+        )
+      );
+    case 'BUFFER_LINE_ADDED': {
       if (action.bufferId === action.currentBufferId) {
         return state;
       }
@@ -26,9 +40,8 @@ export default (state: HotListState = initialState, action): HotListState => {
         ...getHotlistForBufferId(state, action.bufferId)
       };
 
-      const shouldNotify = (tag) => (
-        tag != "irc_smart_filter" && tag != "notify_none"
-      );
+      const shouldNotify = (tag: string) =>
+        tag != 'irc_smart_filter' && tag != 'notify_none';
       if (payload.tags_array.every(shouldNotify)) {
         if (payload.highlight !== 0) {
           hotlist.highlight++;
