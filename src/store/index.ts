@@ -32,6 +32,8 @@ export type StoreState = {
   nicklists: NicklistState;
 };
 
+export type AppDispatch = typeof store.dispatch;
+
 const initialState: AppState = {
   connected: false,
   currentBufferId: null

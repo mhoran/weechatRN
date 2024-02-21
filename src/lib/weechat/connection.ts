@@ -1,13 +1,11 @@
 import { WeeChatProtocol } from './parser';
 import { transformToReduxAction } from './action_transformer';
-import { StoreState } from '../../store';
-import { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
+import { AppDispatch } from '../../store';
 
 const protocol = new WeeChatProtocol();
 
 export default class WeechatConnection {
-  dispatch: ThunkDispatch<StoreState, undefined, AnyAction>;
+  dispatch: AppDispatch;
   hostname: string;
   password: string;
   ssl: boolean = true;
@@ -19,7 +17,7 @@ export default class WeechatConnection {
   reconnect: boolean;
 
   constructor(
-    dispatch: ThunkDispatch<StoreState, undefined, AnyAction>,
+    dispatch: AppDispatch,
     host: string,
     password: string,
     ssl: boolean,
