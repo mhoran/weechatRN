@@ -86,18 +86,8 @@ export const store = configureStore({
           PAUSE,
           PERSIST,
           PURGE,
-          REGISTER,
-          // The following actions send the raw relay payload to the reducer,
-          // which may contain non-serializable data.
-          // FIXME: actions should be serializable.
-          'FETCH_HOTLISTS',
-          'FETCH_LINES',
-          'BUFFER_LINE_ADDED'
-        ],
-        // The following state entries contain the raw relay payload which may
-        // contain non-serializable data. The data is not persisted.
-        // FIXME: state should be serializable.
-        ignoredPaths: [/^lines\.*'/, /^hotlists\./, /^lines\./]
+          REGISTER
+        ]
       }
     })
 });

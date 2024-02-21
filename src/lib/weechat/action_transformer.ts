@@ -71,7 +71,9 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       };
     }
     case '_buffer_line_added': {
-      const object = data.objects[0] as WeechatObject<WeechatLine[]>;
+      const object = data.objects[0] as WeechatObject<
+        Record<string, unknown>[]
+      >;
       const line = object.content[0];
 
       return (
@@ -79,12 +81,17 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         getState: () => StoreState
       ) => {
         const state: StoreState = getState();
+        const { date, date_printed, ...restLine } = line;
 
         dispatch({
           type: 'BUFFER_LINE_ADDED',
           bufferId: line.buffer,
           currentBufferId: state.app.currentBufferId,
-          payload: line
+          payload: {
+            ...restLine,
+            date: (<Date>date).toISOString(),
+            date_printed: (<Date>date_printed).toISOString()
+          }
         });
       };
     }
@@ -156,10 +163,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
           payload: reduceToObjectByKey(
             object.content,
             (hotlist) => hotlist.buffer,
-            (h) => {
-              const [, message, privmsg, highlight] = h.count;
+            ({ buffer, count }) => {
+              const [, message, privmsg, highlight] = count;
               const sum = message + privmsg + highlight;
-              return { ...h, message, privmsg, highlight, sum };
+              return { buffer, message, privmsg, highlight, sum };
             }
           ),
           currentBufferId: state.app.currentBufferId
@@ -199,12 +206,21 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       };
     }
     case 'lines': {
-      const object = data.objects[0] as WeechatObject<WeechatLine[]>;
+      const object = data.objects[0] as WeechatObject<
+        Record<string, unknown>[]
+      >;
       if (!object.content[0]) return undefined;
       return {
         type: 'FETCH_LINES',
         bufferId: object.content[0].buffer,
-        payload: object.content
+        payload: object.content.map((line) => {
+          const { date, date_printed, ...restLine } = line;
+          return {
+            ...restLine,
+            date: (<Date>date).toISOString(),
+            date_printed: (<Date>date_printed).toISOString()
+          };
+        })
       };
     }
     default:
