@@ -1,7 +1,7 @@
 // test-utils.js
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react-native';
-import { createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import { reducer } from '../src/store';
@@ -9,8 +9,8 @@ import { reducer } from '../src/store';
 function render(
   ui,
   {
-    initialState,
-    store = createStore(reducer, initialState),
+    preloadedState = {},
+    store = configureStore({ reducer, preloadedState }),
     ...renderOptions
   } = {}
 ) {

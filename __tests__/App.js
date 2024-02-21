@@ -6,7 +6,7 @@ import { render } from '../src/test-utils';
 
 it('renders correctly', () => {
   const tree = render(<App />, {
-    initialState: {
+    preloadedState: {
       buffers: {
         1: {
           id: '1',
