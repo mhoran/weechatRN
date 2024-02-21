@@ -1,39 +1,41 @@
 import { WeeChatProtocol } from './parser';
 import { transformToReduxAction } from './action_transformer';
+import { StoreState } from '../../store';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
 
 const protocol = new WeeChatProtocol();
 
 export default class WeechatConnection {
-  dispatch: any;
+  dispatch: ThunkDispatch<StoreState, undefined, AnyAction>;
   hostname: string;
   password: string;
-  ssl: boolean;
-  compressed: boolean;
-  websocket: WebSocket;
+  ssl: boolean = true;
+  compressed: boolean = false;
+  websocket?: WebSocket;
   onSuccess: (conn: WeechatConnection) => void;
   onError: (reconnect: boolean) => void;
   connected: boolean;
   reconnect: boolean;
 
-  constructor(dispatch) {
-    this.dispatch = dispatch;
-    this.websocket = null;
-    this.reconnect = this.connected = false;
-  }
-
-  connect(
+  constructor(
+    dispatch: ThunkDispatch<StoreState, undefined, AnyAction>,
     host: string,
-    password = '',
+    password: string,
     ssl: boolean,
     onSuccess: (conn: WeechatConnection) => void,
     onError: (reconnect: boolean) => void
-  ): void {
+  ) {
+    this.dispatch = dispatch;
     this.hostname = host;
     this.password = password;
     this.ssl = ssl;
     this.onSuccess = onSuccess;
     this.onError = onError;
+    this.reconnect = this.connected = false;
+  }
 
+  connect(): void {
     this.openSocket();
   }
 
@@ -68,7 +70,7 @@ export default class WeechatConnection {
   close(): void {
     this.connected = false;
     this.send('quit');
-    this.websocket.close();
+    this.websocket?.close();
     this.dispatch({
       type: 'DISCONNECT'
     });
@@ -80,7 +82,7 @@ export default class WeechatConnection {
   }
 
   onmessage(event: WebSocketMessageEvent): void {
-    const parsed = protocol.parse(event.data) as WeechatResponse<any>;
+    const parsed = protocol.parse(event.data) as WeechatResponse<unknown>;
 
     console.log('Parsed data:', parsed);
     try {
@@ -94,6 +96,7 @@ export default class WeechatConnection {
   }
 
   send(data: string): void {
+    if (!this.websocket) return;
     console.log('Sending data:', data);
     this.websocket.send(data + '\n');
   }

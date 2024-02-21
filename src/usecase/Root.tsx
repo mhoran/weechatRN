@@ -20,11 +20,10 @@ export default class WeechatNative extends React.Component<null, State> {
     connecting: false
   };
 
-  connection: WeechatConnection;
+  connection?: WeechatConnection;
 
   constructor(props: null) {
     super(props);
-    this.connection = new WeechatConnection(store.dispatch);
   }
 
   setNotificationToken = async (): Promise<void> => {
@@ -48,21 +47,26 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   disconnect = (): void => {
-    this.connection.close();
+    this.connection && this.connection.close();
   };
 
   onConnect = (hostname: string, password: string, ssl: boolean): void => {
     this.setState({ connecting: true });
-    this.connection.connect(
+    this.connection = new WeechatConnection(
+      store.dispatch,
       hostname,
       password,
       ssl,
       this.onConnectionSuccess,
       this.onConnectionError
     );
+    this.connection.connect();
   };
 
-  fetchBufferInfo = (bufferId: string, numLines = Buffer.DEFAULT_LINE_INCREMENT): void => {
+  fetchBufferInfo = (
+    bufferId: string,
+    numLines = Buffer.DEFAULT_LINE_INCREMENT
+  ): void => {
     if (this.connection) {
       this.connection.send(
         `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`

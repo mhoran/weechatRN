@@ -31,7 +31,7 @@ const initialState: AppState = {
 
 const app = (
   state: AppState = initialState,
-  action: { type: string; bufferId: string }
+  action: { type: string; bufferId?: string }
 ) => {
   switch (action.type) {
     case 'DISCONNECT':
