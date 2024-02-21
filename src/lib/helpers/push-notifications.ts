@@ -18,9 +18,8 @@ export const getPushNotificationStatusAsync = async (): Promise<
 > => {
   let token;
   if (Constants.isDevice) {
-    const {
-      status: existingStatus
-    } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -29,9 +28,11 @@ export const getPushNotificationStatusAsync = async (): Promise<
     if (finalStatus !== 'granted') {
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig.extra.eas.projectId,
-    })).data;
+    token = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig!.extra!.eas.projectId
+      })
+    ).data;
   }
 
   return token;

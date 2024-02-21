@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { ConnectedProps, connect } from 'react-redux';
 
@@ -110,6 +110,7 @@ class App extends React.Component<Props, State> {
   sendMessage = (message: string) => {
     const { currentBuffer, sendMessageToBuffer } = this.props;
 
+    if (!currentBuffer) return;
     sendMessageToBuffer(currentBuffer.full_name, message);
   };
 
@@ -120,7 +121,10 @@ class App extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.dimensionsListener = Dimensions.addEventListener('change', this.updateWidth);
+    this.dimensionsListener = Dimensions.addEventListener(
+      'change',
+      this.updateWidth
+    );
 
     const { currentBufferId, fetchBufferInfo } = this.props;
     if (currentBufferId) {
@@ -142,12 +146,8 @@ class App extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      buffers,
-      currentBufferId,
-      currentBuffer,
-      hasHighlights
-    } = this.props;
+    const { buffers, currentBufferId, currentBuffer, hasHighlights } =
+      this.props;
 
     const { showTopic, drawerWidth } = this.state;
 
@@ -206,7 +206,10 @@ class App extends React.Component<Props, State> {
               showTopic={showTopic}
               sendMessage={this.sendMessage}
               bufferId={currentBufferId}
-              fetchMoreLines={(lines: number) => { this.props.fetchBufferInfo(currentBufferId, lines) }}
+              fetchMoreLines={(lines: number) => {
+                currentBufferId &&
+                  this.props.fetchBufferInfo(currentBufferId, lines);
+              }}
             />
           </SafeAreaView>
         </Drawer>

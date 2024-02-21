@@ -1,4 +1,4 @@
-import { TextStyle, TextProperties } from 'react-native';
+import { TextStyle, TextProps } from 'react-native';
 
 import { WeeChatProtocol } from './parser';
 import { ceb, cwb, cob, cef, cwf, cof } from './colors';
@@ -6,7 +6,7 @@ import { ceb, cwb, cob, cef, cwf, cof } from './colors';
 type AttributedStringNode = {
   attrs: {
     name: string | null;
-    override: any;
+    override: Record<string, boolean>;
   };
   bgColor: WeechatColorAttribute;
   fgColor: WeechatColorAttribute;
@@ -42,7 +42,7 @@ const getFgColor = (
   }
 };
 
-export const renderWeechatFormat = (input: string): TextProperties[] => {
+export const renderWeechatFormat = (input: string): TextProps[] => {
   const formattedNode = WeeChatProtocol.rawText2Rich(
     input
   ) as AttributedStringNode[];
