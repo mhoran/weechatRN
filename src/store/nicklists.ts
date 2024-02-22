@@ -30,11 +30,8 @@ export default (
       };
     }
     case 'BUFFER_CLOSED': {
-      return Object.fromEntries(
-        Object.entries(state).filter(
-          ([bufferId]) => bufferId !== action.bufferId
-        )
-      );
+      const { [action.bufferId]: _, ...rest } = state;
+      return rest;
     }
     default:
       return state;

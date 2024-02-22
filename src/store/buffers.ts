@@ -11,11 +11,8 @@ export default (
       return action.payload as BufferState;
     }
     case 'BUFFER_CLOSED': {
-      return Object.fromEntries(
-        Object.entries(state).filter(
-          ([bufferId]) => bufferId !== action.bufferId
-        )
-      );
+      const { [action.bufferId]: _, ...rest } = state;
+      return rest;
     }
     case 'BUFFER_OPENED': {
       return {
