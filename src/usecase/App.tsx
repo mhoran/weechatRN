@@ -168,6 +168,7 @@ class App extends React.Component<Props, State> {
           drawerStyle={{ width: drawerWidth }}
           onOpen={this.openDrawer}
           onClose={this.closeDrawer}
+          swipeEdgeWidth={60}
         >
           <SafeAreaView style={styles.container}>
             <View style={styles.topbar}>
