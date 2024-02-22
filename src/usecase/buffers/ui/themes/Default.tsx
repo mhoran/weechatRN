@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Menlo',
     color: '#eee',
-    fontSize: 12
+    fontSize: 14
   },
   meta: {
-    fontSize: 10
+    fontSize: 12
   },
   highlight: {
     backgroundColor: 'magenta',
