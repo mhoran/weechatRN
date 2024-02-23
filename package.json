@@ -21,6 +21,7 @@
     "react-native-gesture-handler": "~2.14.0",
     "react-native-parsed-text": "^0.0.22",
     "react-native-reanimated": "~3.6.2",
+    "react-native-safe-area-context": "4.8.2",
     "react-redux": "^8.0.2",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",

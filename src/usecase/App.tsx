@@ -5,15 +5,18 @@ import {
   Image,
   Keyboard,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import { ConnectedProps, connect } from 'react-redux';
-
 import { Drawer } from 'react-native-drawer-layout';
+import {
+  SafeAreaProvider,
+  SafeAreaView,
+  SafeAreaInsetsContext
+} from 'react-native-safe-area-context';
+import { ConnectedProps, connect } from 'react-redux';
 
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
@@ -160,61 +163,74 @@ class App extends React.Component<Props, State> {
     );
 
     return (
-      <View style={styles.container}>
-        <Drawer
-          open={this.state.drawerOpen}
-          renderDrawerContent={sidebar}
-          keyboardDismissMode={'on-drag'}
-          drawerStyle={{ width: drawerWidth }}
-          onOpen={this.openDrawer}
-          onClose={this.closeDrawer}
-          swipeEdgeWidth={60}
-        >
-          <SafeAreaView style={styles.container}>
-            <View style={styles.topbar}>
-              <View style={styles.channels}>
-                <TouchableOpacity
-                  style={styles.channelsButton}
-                  onPress={this.openDrawer}
-                >
-                  <Text
-                    style={[
-                      styles.channelsButtonText,
-                      hasHighlights && {
-                        color: '#ffcf7f'
-                      }
-                    ]}
-                  >
-                    #
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity onPress={this.toggleShowTopic}>
-                <Text style={styles.topbarText}>
-                  {currentBuffer && currentBuffer.short_name}
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.channels}>
-                <TouchableOpacity
-                  style={styles.channelsButton}
-                  onPress={this.props.disconnect}
-                >
-                  <Image source={require('./icons/eject.png')} />
-                </TouchableOpacity>
-              </View>
+      <SafeAreaProvider>
+        <SafeAreaInsetsContext.Consumer>
+          {(insets) => (
+            <View style={styles.container}>
+              <Drawer
+                open={this.state.drawerOpen}
+                renderDrawerContent={sidebar}
+                keyboardDismissMode={'on-drag'}
+                drawerStyle={{
+                  width: drawerWidth + (insets?.left || 0),
+                  backgroundColor: '#121212',
+                  paddingTop: insets?.top,
+                  paddingBottom: insets?.bottom,
+                  paddingLeft: insets?.left
+                }}
+                onOpen={this.openDrawer}
+                onClose={this.closeDrawer}
+                swipeEdgeWidth={60}
+                drawerPosition={'left'}
+              >
+                <SafeAreaView style={styles.container}>
+                  <View style={styles.topbar}>
+                    <View style={styles.channels}>
+                      <TouchableOpacity
+                        style={styles.channelsButton}
+                        onPress={this.openDrawer}
+                      >
+                        <Text
+                          style={[
+                            styles.channelsButtonText,
+                            hasHighlights && {
+                              color: '#ffcf7f'
+                            }
+                          ]}
+                        >
+                          #
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity onPress={this.toggleShowTopic}>
+                      <Text style={styles.topbarText}>
+                        {currentBuffer && currentBuffer.short_name}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.channels}>
+                      <TouchableOpacity
+                        style={styles.channelsButton}
+                        onPress={this.props.disconnect}
+                      >
+                        <Image source={require('./icons/eject.png')} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <BufferGate
+                    showTopic={showTopic}
+                    sendMessage={this.sendMessage}
+                    bufferId={currentBufferId}
+                    fetchMoreLines={(lines: number) => {
+                      currentBufferId &&
+                        this.props.fetchBufferInfo(currentBufferId, lines);
+                    }}
+                  />
+                </SafeAreaView>
+              </Drawer>
             </View>
-            <BufferGate
-              showTopic={showTopic}
-              sendMessage={this.sendMessage}
-              bufferId={currentBufferId}
-              fetchMoreLines={(lines: number) => {
-                currentBufferId &&
-                  this.props.fetchBufferInfo(currentBufferId, lines);
-              }}
-            />
-          </SafeAreaView>
-        </Drawer>
-      </View>
+          )}
+        </SafeAreaInsetsContext.Consumer>
+      </SafeAreaProvider>
     );
   }
 }

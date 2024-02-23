@@ -71,7 +71,15 @@ exports[`renders correctly 1`] = `
             }
           }
         >
-          <RCTSafeAreaView
+          <RNCSafeAreaView
+            edges={
+              {
+                "bottom": "additive",
+                "left": "additive",
+                "right": "additive",
+                "top": "additive",
+              }
+            }
             style={
               {
                 "backgroundColor": "#333",
@@ -255,7 +263,7 @@ exports[`renders correctly 1`] = `
                 }
               }
             />
-          </RCTSafeAreaView>
+          </RNCSafeAreaView>
         </View>
         <View
           accessibilityElementsHidden={false}
@@ -340,9 +348,12 @@ exports[`renders correctly 1`] = `
         removeClippedSubviews={false}
         style={
           {
-            "backgroundColor": "white",
+            "backgroundColor": "#121212",
             "bottom": 0,
             "maxWidth": "100%",
+            "paddingBottom": 0,
+            "paddingLeft": 0,
+            "paddingTop": 0,
             "position": "absolute",
             "top": 0,
             "transform": [
@@ -363,13 +374,6 @@ exports[`renders correctly 1`] = `
             }
           }
         >
-          <View
-            style={
-              {
-                "height": 30,
-              }
-            }
-          />
           <RCTScrollView
             data={
               [

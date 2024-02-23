@@ -7,3 +7,7 @@ jest.mock('redux-persist', () => {
       .mockImplementation((config, reducers) => reducers)
   };
 });
+
+import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
+
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);

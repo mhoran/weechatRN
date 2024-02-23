@@ -49,7 +49,6 @@ class BufferList extends React.Component<Props> {
 
     return (
       <View style={styles.container}>
-        <View style={styles.topbar} />
         <FlatList
           style={styles.container}
           data={buffers.filter(this.visibleBuffer)}
@@ -70,8 +69,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212'
-  },
-  topbar: {
-    height: 30
   }
 });
