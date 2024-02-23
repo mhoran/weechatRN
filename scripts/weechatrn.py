@@ -7,7 +7,8 @@ weechat.register("WeechatRN", "mhoran", "1.0", "MIT",
 # Plugin options
 # /set plugins.var.python.WeechatRN.push_token
 script_options = {
-    "push_token": ""
+    "push_token": "",
+    "notify_current_buffer": "on"
 }
 
 for option, default_value in script_options.items():
@@ -28,6 +29,8 @@ hook = weechat.hook_command("weechatrn", "", "", "", "", "weechatrn_cb", "")
 def config_cb(data, option, value):
     if option == "plugins.var.python.WeechatRN.push_token":
         script_options["push_token"] = value
+    if option == "plugins.var.python.WeechatRN.notify_current_buffer":
+        script_options["notify_current_buffer"] = value
     return weechat.WEECHAT_RC_OK
 
 weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
@@ -43,7 +46,9 @@ def priv_msg_cb(data, buffer, date, tags, displayed, highlight, prefix,
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
     if is_pm:
         send_push(title="Private message from %s" % prefix, body=body)
-    elif int(highlight) and weechat.current_buffer() != buffer:
+    elif int(highlight) and (weechat.config_string_to_boolean(
+        script_options["notify_current_buffer"]) or
+        weechat.current_buffer() != buffer):
         buffer_name = (weechat.buffer_get_string(buffer, "short_name") or
                 weechat.buffer_get_string(buffer, "name"))
         send_push(title="Highlight in %s" % buffer_name, body=body)
