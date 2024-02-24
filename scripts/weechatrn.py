@@ -42,13 +42,16 @@ def priv_msg_cb(data, buffer, date, tags, displayed, highlight, prefix,
     if "notify_none" in tags.split(","):
         return weechat.WEECHAT_RC_OK
 
+    if (not weechat.config_string_to_boolean(
+        script_options["notify_current_buffer"]) and
+        weechat.current_buffer() == buffer):
+        return weechat.WEECHAT_RC_OK
+
     body = u"<%s> %s" % (prefix, message)
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
     if is_pm:
         send_push(title="Private message from %s" % prefix, body=body)
-    elif int(highlight) and (weechat.config_string_to_boolean(
-        script_options["notify_current_buffer"]) or
-        weechat.current_buffer() != buffer):
+    elif int(highlight):
         buffer_name = (weechat.buffer_get_string(buffer, "short_name") or
                 weechat.buffer_get_string(buffer, "name"))
         send_push(title="Highlight in %s" % buffer_name, body=body)
