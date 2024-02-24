@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import {
   FLUSH,
@@ -59,10 +59,16 @@ const app = (
         ...state,
         currentBufferId: action.bufferId
       };
+    case 'UPGRADE': {
+      const { currentBufferId, ...rest } = state;
+      return rest;
+    }
     default:
       return state;
   }
 };
+
+const listenerMiddleware = createListenerMiddleware();
 
 export const reducer = combineReducers({
   app,
@@ -91,7 +97,7 @@ export const store = configureStore({
           REGISTER
         ]
       }
-    })
+    }).prepend(listenerMiddleware.middleware)
 });
 
 export const persistor = persistStore(store);

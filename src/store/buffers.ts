@@ -57,6 +57,8 @@ export default (
         }
       };
     }
+    case 'UPGRADE':
+      return initialState;
     default:
       return state;
   }

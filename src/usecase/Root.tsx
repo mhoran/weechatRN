@@ -10,6 +10,7 @@ import { getPushNotificationStatusAsync } from '../lib/helpers/push-notification
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
+import { addListener } from '@reduxjs/toolkit';
 
 interface State {
   connecting: boolean;
@@ -24,6 +25,16 @@ export default class WeechatNative extends React.Component<null, State> {
 
   constructor(props: null) {
     super(props);
+    store.dispatch(
+      addListener({
+        predicate: (action) => {
+          return action.type === 'UPGRADE';
+        },
+        effect: () => {
+          this.disconnect();
+        }
+      })
+    );
   }
 
   setNotificationToken = async (): Promise<void> => {

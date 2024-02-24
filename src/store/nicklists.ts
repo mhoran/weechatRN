@@ -33,6 +33,8 @@ export default (
       const { [action.bufferId]: _, ...rest } = state;
       return rest;
     }
+    case 'UPGRADE':
+      return initialState;
     default:
       return state;
   }

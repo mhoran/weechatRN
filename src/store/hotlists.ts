@@ -51,6 +51,8 @@ export default (
         [action.bufferId]: hotlist
       };
     }
+    case 'UPGRADE':
+      return initialState;
     default:
       return state;
   }
