@@ -30,6 +30,8 @@ export default (
           ...(state[action.bufferId] || [])
         ]
       };
+    case 'UPGRADE':
+      return initialState;
     default:
       return state;
   }

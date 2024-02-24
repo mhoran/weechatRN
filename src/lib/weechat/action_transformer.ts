@@ -143,6 +143,9 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         bufferId: buffer.id
       };
     }
+    case '_upgrade': {
+      return { type: 'UPGRADE' };
+    }
     case 'hotlist': {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
 
