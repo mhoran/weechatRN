@@ -12,25 +12,18 @@ import {
   persistStore
 } from 'redux-persist';
 
-import buffers, { BufferState } from './buffers';
-import connection, { ConnectionInfo } from './connection-info';
-import hotlists, { HotListState } from './hotlists';
-import lines, { LineState } from './lines';
-import nicklists, { NicklistState } from './nicklists';
+import buffers from './buffers';
+import connection from './connection-info';
+import hotlists from './hotlists';
+import lines from './lines';
+import nicklists from './nicklists';
 
 type AppState = {
   connected: boolean;
   currentBufferId: string | null;
 };
 
-export type StoreState = {
-  app: AppState;
-  connection: ConnectionInfo;
-  buffers: BufferState;
-  lines: LineState;
-  hotlists: HotListState;
-  nicklists: NicklistState;
-};
+export type StoreState = ReturnType<typeof reducer>;
 
 export type AppDispatch = typeof store.dispatch;
 
@@ -41,8 +34,8 @@ const initialState: AppState = {
 
 const app = (
   state: AppState = initialState,
-  action: { type: string; bufferId?: string }
-) => {
+  action: { type: string; bufferId: string }
+): AppState => {
   switch (action.type) {
     case 'DISCONNECT':
       return {
@@ -60,8 +53,7 @@ const app = (
         currentBufferId: action.bufferId
       };
     case 'UPGRADE': {
-      const { currentBufferId, ...rest } = state;
-      return rest;
+      return { ...state, currentBufferId: null };
     }
     default:
       return state;

@@ -232,7 +232,7 @@ exports[`renders correctly 1`] = `
                   }
                   accessible={true}
                   collapsable={false}
-                  focusable={false}
+                  focusable={true}
                   onClick={[Function]}
                   onResponderGrant={[Function]}
                   onResponderMove={[Function]}
@@ -378,12 +378,23 @@ exports[`renders correctly 1`] = `
             data={
               [
                 {
-                  "full_name": "irc.freenode.#weechat",
-                  "id": "1",
+                  "full_name": "irc.libera.#weechat",
+                  "hidden": 0,
+                  "id": "8578d9c00",
                   "local_variables": {
+                    "channel": "#weechat",
+                    "name": "libera.#weechat",
+                    "plugin": "irc",
                     "type": "channel",
                   },
+                  "notify": 3,
+                  "number": 2,
+                  "pointers": [
+                    "8578d9c00",
+                  ],
                   "short_name": "#weechat",
+                  "title": "",
+                  "type": 0,
                 },
               ]
             }
