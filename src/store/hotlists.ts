@@ -51,7 +51,10 @@ export default (
         [action.bufferId]: hotlist
       };
     }
-    // FIXME: missing BUFFER_CLOSED
+    case 'BUFFER_CLOSED': {
+      const { [action.bufferId]: _, ...rest } = state;
+      return rest;
+    }
     case 'FETCH_BUFFERS_REMOVED': {
       return Object.fromEntries(
         Object.entries(state).filter(

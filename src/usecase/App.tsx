@@ -35,7 +35,7 @@ const connector = connect((state: StoreState) => {
 
   return {
     buffers: state.buffers,
-    currentBufferId: currentBuffer && currentBufferId,
+    currentBufferId,
     currentBuffer,
     hasHighlights: numHighlights > 0
   };

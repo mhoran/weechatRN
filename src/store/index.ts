@@ -52,9 +52,8 @@ const app = (
         ...state,
         currentBufferId: action.bufferId
       };
-    case 'FETCH_BUFFERS_REMOVED': {
-      return { ...state, currentBufferId: null };
-    }
+    case 'BUFFER_CLOSED':
+    case 'FETCH_BUFFERS_REMOVED':
     case 'UPGRADE': {
       return { ...state, currentBufferId: null };
     }
