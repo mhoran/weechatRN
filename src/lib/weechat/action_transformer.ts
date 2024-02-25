@@ -182,13 +182,22 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
     case 'buffers': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
 
-      return {
-        type: 'FETCH_BUFFERS',
-        payload: reduceToObjectByKey(
+      return (dispatch: AppDispatch, getState: () => StoreState) => {
+        const { buffers } = getState();
+        const newBuffers = reduceToObjectByKey(
           object.content,
           (buffer) => buffer.pointers[0],
           (buf) => ({ ...buf, id: buf.pointers[0] })
-        )
+        );
+        const removed = Object.keys(buffers).filter((buffer) => {
+          return !(buffer in newBuffers);
+        });
+
+        dispatch({
+          type: 'FETCH_BUFFERS',
+          payload: newBuffers
+        });
+        dispatch({ type: 'FETCH_BUFFERS_REMOVED', payload: removed });
       };
     }
     case 'version': {

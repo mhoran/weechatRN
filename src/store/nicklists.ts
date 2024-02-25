@@ -33,6 +33,13 @@ export default (
       const { [action.bufferId]: _, ...rest } = state;
       return rest;
     }
+    case 'FETCH_BUFFERS_REMOVED': {
+      return Object.fromEntries(
+        Object.entries(state).filter(
+          ([bufferId]) => !(action.payload as string[]).includes(bufferId)
+        )
+      );
+    }
     case 'UPGRADE':
       return initialState;
     default:

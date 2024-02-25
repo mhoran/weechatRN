@@ -30,6 +30,13 @@ export default (
           ...(state[action.bufferId] || [])
         ]
       };
+    case 'FETCH_BUFFERS_REMOVED': {
+      return Object.fromEntries(
+        Object.entries(state).filter(
+          ([bufferId]) => !(action.payload as string[]).includes(bufferId)
+        )
+      );
+    }
     case 'UPGRADE':
       return initialState;
     default:
