@@ -3,7 +3,7 @@ name: Lint and test
 on:
   push:
     branches:
-      - "main"
+      - main
   pull_request:
 
 jobs:
@@ -55,4 +55,4 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
-      - run: yarn prettier src --check
+      - run: yarn prettier . --check
