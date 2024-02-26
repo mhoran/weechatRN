@@ -45,7 +45,35 @@ describe('transformToReduxAction', () => {
 
       expect(store.getState().app.currentBufferId).toBeNull();
     });
+
+    it('preserves currentBufferId if the buffer is still open', () => {
+      const preloadedState = {
+        buffers: {
+          '8578d9c00': {} as WeechatBuffer,
+          '83a41cd80': {} as WeechatBuffer
+        },
+        app: { currentBufferId: '8578d9c00', connected: true }
+      };
+      const store = configureStore({ reducer, preloadedState });
+
+      const action = transformToReduxAction({
+        id: 'buffers',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ pointers: ['8578d9c00'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().app.currentBufferId).toEqual('8578d9c00');
+    });
   });
+
   describe('on _buffer_closing', () => {
     it('removes references to buffers that have been closed', () => {
       const preloadedState = {
@@ -73,6 +101,7 @@ describe('transformToReduxAction', () => {
       expect(action).toBeDefined();
 
       store.dispatch(action!);
+
       expect(store.getState().buffers).not.toHaveProperty('83a41cd80');
       expect(store.getState().buffers).toHaveProperty('8578d9c00');
 
@@ -86,6 +115,34 @@ describe('transformToReduxAction', () => {
       expect(store.getState().lines).toHaveProperty('8578d9c00');
 
       expect(store.getState().app.currentBufferId).toBeNull();
+    });
+
+    it('preserves currentBufferId if the buffer is still open', () => {
+      const preloadedState = {
+        buffers: {
+          '8578d9c00': {} as WeechatBuffer,
+          '83a41cd80': {} as WeechatBuffer
+        },
+        lines: { '8578d9c00': [], '83a41cd80': [] },
+        app: { currentBufferId: '83a41cd80', connected: true }
+      };
+      const store = configureStore({ reducer, preloadedState });
+
+      const action = transformToReduxAction({
+        id: '_buffer_closing',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ pointers: ['8578d9c00'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().app.currentBufferId).toEqual('83a41cd80');
     });
   });
 });

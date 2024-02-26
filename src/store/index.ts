@@ -53,7 +53,22 @@ const app = (
         currentBufferId: action.bufferId
       };
     case 'BUFFER_CLOSED':
+      return {
+        ...state,
+        currentBufferId:
+          action.bufferId === state.currentBufferId
+            ? null
+            : state.currentBufferId
+      };
     case 'FETCH_BUFFERS_REMOVED':
+      return {
+        ...state,
+        currentBufferId:
+          state.currentBufferId &&
+          action.payload.includes(state.currentBufferId)
+            ? null
+            : state.currentBufferId
+      };
     case 'UPGRADE': {
       return { ...state, currentBufferId: null };
     }
