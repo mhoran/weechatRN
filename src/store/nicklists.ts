@@ -1,10 +1,12 @@
+import { AnyAction } from 'redux';
+
 export type NicklistState = { [key: string]: WeechatNicklist[] };
 
 const initialState: NicklistState = {};
 
 export default (
   state: NicklistState = initialState,
-  action: { type: string; payload: unknown; bufferId: string }
+  action: AnyAction
 ): NicklistState => {
   switch (action.type) {
     case 'FETCH_NICKLIST':

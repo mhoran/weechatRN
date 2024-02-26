@@ -1,3 +1,4 @@
+import { AnyAction } from 'redux';
 import { getHotlistForBufferId } from './selectors';
 
 export type HotListState = { [key: string]: Hotlist };
@@ -6,12 +7,7 @@ const initialState: HotListState = {};
 
 export default (
   state: HotListState = initialState,
-  action: {
-    type: string;
-    currentBufferId: string;
-    payload: unknown;
-    bufferId: string;
-  }
+  action: AnyAction
 ): HotListState => {
   switch (action.type) {
     case 'FETCH_HOTLISTS':

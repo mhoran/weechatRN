@@ -1,3 +1,5 @@
+import { AnyAction } from 'redux';
+
 export type ConnectionInfo = {
   hostname: string | null;
   password: string | null;
@@ -14,13 +16,7 @@ const initialState: ConnectionInfo = {
 
 export default (
   state: ConnectionInfo = initialState,
-  action: {
-    type: string;
-    hostname: string;
-    password: string;
-    ssl: boolean;
-    filterBuffers: boolean;
-  }
+  action: AnyAction
 ): ConnectionInfo => {
   switch (action.type) {
     case 'SET_CONNECTION_INFO':

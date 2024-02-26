@@ -1,10 +1,12 @@
+import { AnyAction } from 'redux';
+
 export type BufferState = { [key: string]: WeechatBuffer };
 
 const initialState: BufferState = {};
 
 export default (
   state: BufferState = initialState,
-  action: { type: string; bufferId: string; payload: unknown }
+  action: AnyAction
 ): BufferState => {
   switch (action.type) {
     case 'FETCH_BUFFERS': {

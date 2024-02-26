@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
+import { AnyAction, combineReducers } from 'redux';
 import {
   FLUSH,
   PAUSE,
@@ -32,10 +32,7 @@ const initialState: AppState = {
   currentBufferId: null
 };
 
-const app = (
-  state: AppState = initialState,
-  action: { type: string; bufferId: string }
-): AppState => {
+const app = (state: AppState = initialState, action: AnyAction): AppState => {
   switch (action.type) {
     case 'DISCONNECT':
       return {

@@ -1,10 +1,12 @@
+import { AnyAction } from 'redux';
+
 export type LineState = { [key: string]: WeechatLine[] };
 
 const initialState: LineState = {};
 
 export default (
   state: LineState = initialState,
-  action: { type: string; bufferId: string; payload: unknown }
+  action: AnyAction
 ): LineState => {
   switch (action.type) {
     case 'FETCH_LINES':
