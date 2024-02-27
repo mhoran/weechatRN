@@ -15,6 +15,7 @@ export default class WeechatConnection {
   onError: (reconnect: boolean) => void;
   connected: boolean;
   reconnect: boolean;
+  authenticating: boolean;
 
   constructor(
     dispatch: AppDispatch,
@@ -30,7 +31,7 @@ export default class WeechatConnection {
     this.ssl = ssl;
     this.onSuccess = onSuccess;
     this.onError = onError;
-    this.reconnect = this.connected = false;
+    this.reconnect = this.connected = this.authenticating = false;
   }
 
   connect(): void {
@@ -49,14 +50,14 @@ export default class WeechatConnection {
   }
 
   onopen(): void {
+    this.authenticating = true;
+
     this.send(
       `init password=${this.password},compression=${
         this.compressed ? 'zlib' : 'off'
       }\n`
     );
     this.send('(version) info version');
-    this.connected = true;
-    this.onSuccess(this);
   }
 
   handleError(event: Event): void {
@@ -66,6 +67,11 @@ export default class WeechatConnection {
   }
 
   close(): void {
+    if (this.authenticating) {
+      this.onError(false);
+      return;
+    }
+
     this.connected = false;
     this.send('quit');
     this.websocket?.close();
@@ -81,6 +87,12 @@ export default class WeechatConnection {
 
   onmessage(event: WebSocketMessageEvent): void {
     const parsed = protocol.parse(event.data) as WeechatResponse<unknown>;
+
+    if (parsed.id == 'version') {
+      this.authenticating = false;
+      this.connected = true;
+      this.onSuccess(this);
+    }
 
     console.log('Parsed data:', parsed);
     try {
