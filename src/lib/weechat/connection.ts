@@ -57,7 +57,7 @@ export default class WeechatConnection {
     this.websocket.onopen = () => this.onopen();
     this.websocket.onmessage = (event) => this.onmessage(event);
     this.websocket.onerror = (event) => this.handleError(event);
-    this.websocket.onclose = () => this.close();
+    this.websocket.onclose = () => this.handleClose();
   }
 
   onopen(): void {
@@ -77,15 +77,13 @@ export default class WeechatConnection {
     this.onError(this.reconnect, ConnectionError.Socket);
   }
 
-  close(): void {
+  handleClose(): void {
     if (this.authenticating) {
       this.onError(false, ConnectionError.Authentication);
       return;
     }
 
     this.connected = false;
-    this.send('quit');
-    this.websocket?.close();
     this.dispatch({
       type: 'DISCONNECT'
     });
@@ -94,6 +92,11 @@ export default class WeechatConnection {
       this.reconnect = false;
       this.openSocket();
     }
+  }
+
+  close(): void {
+    this.send('quit');
+    this.websocket?.close();
   }
 
   onmessage(event: WebSocketMessageEvent): void {
