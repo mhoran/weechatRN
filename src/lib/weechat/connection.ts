@@ -4,6 +4,11 @@ import { AppDispatch } from '../../store';
 
 const protocol = new WeeChatProtocol();
 
+export enum ConnectionError {
+  Socket = 1,
+  Authentication
+}
+
 export default class WeechatConnection {
   dispatch: AppDispatch;
   hostname: string;
@@ -12,7 +17,10 @@ export default class WeechatConnection {
   compressed: boolean = false;
   websocket?: WebSocket;
   onSuccess: (conn: WeechatConnection) => void;
-  onError: (reconnect: boolean) => void;
+  onError: (
+    reconnect: boolean,
+    connectionError: ConnectionError | null
+  ) => void;
   connected: boolean;
   reconnect: boolean;
   authenticating: boolean;
@@ -23,7 +31,10 @@ export default class WeechatConnection {
     password: string,
     ssl: boolean,
     onSuccess: (conn: WeechatConnection) => void,
-    onError: (reconnect: boolean) => void
+    onError: (
+      reconnect: boolean,
+      connectionError: ConnectionError | null
+    ) => void
   ) {
     this.dispatch = dispatch;
     this.hostname = host;
@@ -63,12 +74,12 @@ export default class WeechatConnection {
   handleError(event: Event): void {
     console.log(event);
     this.reconnect = this.connected;
-    this.onError(this.reconnect);
+    this.onError(this.reconnect, ConnectionError.Socket);
   }
 
   close(): void {
     if (this.authenticating) {
-      this.onError(false);
+      this.onError(false, ConnectionError.Authentication);
       return;
     }
 

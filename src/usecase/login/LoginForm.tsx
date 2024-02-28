@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { connect, ConnectedProps } from 'react-redux';
 import { StoreState } from '../../store';
+import { ConnectionError } from '../../lib/weechat/connection';
 
 const connector = connect((state: StoreState) => ({
   hostname: state.connection.hostname || '',
@@ -25,6 +26,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
   onConnect: (hostname: string, password: string, ssl: boolean) => void;
   connecting: boolean;
+  connectionError: ConnectionError | null;
 };
 
 interface State {
@@ -68,6 +70,15 @@ class LoginForm extends React.Component<Props, State> {
 
   setFilterBuffers = (filterBuffers: boolean) => {
     this.setState({ filterBuffers });
+  };
+
+  connectionErrorToMessage = (connectionError: ConnectionError) => {
+    switch (connectionError) {
+      case ConnectionError.Authentication:
+        return 'Failed to authenticate with weechat relay. Check password.';
+      case ConnectionError.Socket:
+        return 'Failed to connect to weechat relay. Check hostname and SSL configuration.';
+    }
   };
 
   render() {
@@ -119,6 +130,15 @@ class LoginForm extends React.Component<Props, State> {
               value={filterBuffers}
               onValueChange={this.setFilterBuffers}
             />
+          </View>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            {this.props.connectionError && (
+              <Text style={[styles.text, { color: 'red' }]}>
+                {this.connectionErrorToMessage(this.props.connectionError)}
+              </Text>
+            )}
           </View>
           <View style={styles.centeredButton}>
             <TouchableOpacity

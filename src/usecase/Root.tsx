@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import WeechatConnection from '../lib/weechat/connection';
+import WeechatConnection, { ConnectionError } from '../lib/weechat/connection';
 import { persistor, store } from '../store';
 
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
@@ -14,11 +14,13 @@ import { addListener } from '@reduxjs/toolkit';
 
 interface State {
   connecting: boolean;
+  connectionError: ConnectionError | null;
 }
 
 export default class WeechatNative extends React.Component<null, State> {
   state: State = {
-    connecting: false
+    connecting: false,
+    connectionError: null
   };
 
   connection?: WeechatConnection;
@@ -53,8 +55,14 @@ export default class WeechatNative extends React.Component<null, State> {
     this.setNotificationToken();
   };
 
-  onConnectionError = (reconnect: boolean): void => {
-    this.setState({ connecting: reconnect });
+  onConnectionError = (
+    reconnect: boolean,
+    connectionError: ConnectionError | null
+  ): void => {
+    this.setState({
+      connecting: reconnect,
+      connectionError: this.state.connecting ? connectionError : null
+    });
   };
 
   disconnect = (): void => {
@@ -62,7 +70,7 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   onConnect = (hostname: string, password: string, ssl: boolean): void => {
-    this.setState({ connecting: true });
+    this.setState({ connecting: true, connectionError: null });
     this.connection = new WeechatConnection(
       store.dispatch,
       hostname,
@@ -100,12 +108,16 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   render(): JSX.Element {
-    const { connecting } = this.state;
+    const { connecting, connectionError } = this.state;
 
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <ConnectionGate connecting={connecting} onConnect={this.onConnect}>
+          <ConnectionGate
+            connecting={connecting}
+            connectionError={connectionError}
+            onConnect={this.onConnect}
+          >
             <StatusBar barStyle="light-content" />
             <App
               disconnect={this.disconnect}
