@@ -5,7 +5,7 @@ type Props = React.ComponentProps<typeof TextInput>;
 
 const UndoTextInput = (props: Props): JSX.Element => {
   const { value, onChangeText, ...rest } = props;
-  const lastValue = React.useRef(value);
+  const lastValue = React.useRef<string>();
   const textInput = React.useRef<TextInput>(null);
 
   const handleChangeText = (textValue: string) => {
