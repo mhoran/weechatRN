@@ -226,6 +226,11 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         })
       };
     }
+    case 'last_read_lines': {
+      const object = data.objects[0] as WeechatObject<unknown>;
+
+      return { type: 'LAST_READ_LINES', payload: object.content };
+    }
     default:
       console.log('unhandled event!', data.id, data);
       return undefined;

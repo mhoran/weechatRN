@@ -47,7 +47,10 @@ type Props = PropsFromRedux & {
   disconnect: () => void;
   fetchBufferInfo: (bufferId: string, numLines?: number) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
-  clearHotlistForBuffer: (fullBufferName: string) => void;
+  clearHotlistForBuffer: (
+    currentBufferId: string | null,
+    bufferId: string
+  ) => void;
 };
 
 interface State {
@@ -90,7 +93,7 @@ class App extends React.Component<Props, State> {
         type: 'CHANGE_CURRENT_BUFFER',
         bufferId: buffer.id
       });
-      this.props.clearHotlistForBuffer(buffer.full_name);
+      this.props.clearHotlistForBuffer(currentBufferId, buffer.id);
       fetchBufferInfo(buffer.id);
     }
   };

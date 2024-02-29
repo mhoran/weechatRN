@@ -4,7 +4,7 @@ interface WeechatResponse<T> {
   objects: WeechatObject<T>[];
 }
 
-type WeechatObjectTypeId = "hda" | "inf";
+type WeechatObjectTypeId = 'hda' | 'inf';
 
 interface WeechatObject<T> {
   type: WeechatObjectTypeId;
@@ -27,6 +27,7 @@ interface WeechatBuffer {
   title: string;
   hidden: number;
   type: number;
+  last_read_line?: string;
 }
 
 interface WeechatHotlist {

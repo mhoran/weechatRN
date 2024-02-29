@@ -187,6 +187,7 @@ class BufferContainer extends React.Component<Props, State> {
         <Buffer
           bufferId={bufferId}
           lines={lines}
+          lastReadLine={buffer.last_read_line}
           onLongPress={this.onLongPress}
           parseArgs={this.parseArgs}
           fetchMoreLines={this.props.fetchMoreLines}

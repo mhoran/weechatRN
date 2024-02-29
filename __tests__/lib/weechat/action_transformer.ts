@@ -175,4 +175,41 @@ describe('transformToReduxAction', () => {
       expect(store.getState().app.currentBufferId).toEqual('83a41cd80');
     });
   });
+
+  describe('on last_read_lines', () => {
+    it('merges the last read line with buffer state', () => {
+      const preloadedState = {
+        buffers: {
+          '83d204d80': { full_name: 'irc.libera.#weechat' } as WeechatBuffer
+        }
+      };
+      const store = configureStore({ reducer, preloadedState });
+
+      const action = transformToReduxAction({
+        id: 'last_read_lines',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                buffer: '83d204d80',
+                pointers: ['83d204d80', '83c016280', '838a65900', '83c000420']
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toMatchObject({
+        '83d204d80': {
+          full_name: 'irc.libera.#weechat',
+          last_read_line: '83c000420'
+        }
+      });
+    });
+  });
 });

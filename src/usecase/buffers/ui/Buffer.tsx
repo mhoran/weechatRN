@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { Button, FlatList, ListRenderItem } from 'react-native';
+import { Button, FlatList, ListRenderItem, View } from 'react-native';
 
 import { ParseShape } from 'react-native-parsed-text';
+import { cef } from '../../../lib/weechat/colors';
 import BufferLine from './BufferLine';
 
 interface Props {
   lines: WeechatLine[];
+  lastReadLine?: string;
   onLongPress: () => void;
   parseArgs: ParseShape[];
   bufferId: string;
@@ -27,14 +29,16 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   state = {
     desiredLines: Buffer.DEFAULT_LINE_INCREMENT,
-    bufferId: this.props.bufferId,
-  }
+    bufferId: this.props.bufferId
+  };
 
   static getDerivedStateFromProps = (props: Props, state: State) => {
     if (props.bufferId !== state.bufferId)
-      return { desiredLines: Buffer.DEFAULT_LINE_INCREMENT, bufferId: props.bufferId };
-    else
-      return null;
+      return {
+        desiredLines: Buffer.DEFAULT_LINE_INCREMENT,
+        bufferId: props.bufferId
+      };
+    else return null;
   };
 
   componentDidUpdate(prevProps: Props) {
@@ -46,25 +50,36 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
     const { onLongPress, parseArgs } = this.props;
+    const marker = item.pointers.at(-1) === this.props.lastReadLine;
 
     return (
-      <BufferLine line={item} onLongPress={onLongPress} parseArgs={parseArgs} />
+      <>
+        {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
+        <BufferLine
+          line={item}
+          onLongPress={onLongPress}
+          parseArgs={parseArgs}
+        />
+      </>
     );
   };
 
   renderMoreLinesButton = () => {
     const { lines } = this.props;
-    if (lines.length < this.state.desiredLines)
-      return;
+    if (lines.length < this.state.desiredLines) return;
 
     return (
-      <Button title="Load more lines" onPress={() => {
-        const desiredLines = this.state.desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
-        this.props.fetchMoreLines(desiredLines);
-        this.setState(() => ({ desiredLines }));
-      }} />
+      <Button
+        title="Load more lines"
+        onPress={() => {
+          const desiredLines =
+            this.state.desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
+          this.props.fetchMoreLines(desiredLines);
+          this.setState(() => ({ desiredLines }));
+        }}
+      />
     );
-  }
+  };
 
   render(): JSX.Element {
     const { lines } = this.props;
@@ -76,7 +91,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
-        ListFooterComponent={this.renderMoreLinesButton} />
+        ListFooterComponent={this.renderMoreLinesButton}
+      />
     );
   }
 }

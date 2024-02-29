@@ -59,6 +59,21 @@ export default (
         }
       };
     }
+    case 'LAST_READ_LINES': {
+      const s = (
+        action.payload as [{ buffer: string; pointers: [string] }]
+      ).reduce((s, { buffer, pointers }) => {
+        return {
+          ...s,
+          [buffer]: {
+            ...state[buffer],
+            last_read_line: pointers.at(-1)
+          }
+        };
+      }, state);
+
+      return s;
+    }
     case 'UPGRADE':
       return initialState;
     default:
