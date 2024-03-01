@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, View } from 'react-native';
 
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 import { cef } from '../../../lib/weechat/colors';
 import BufferLine from './BufferLine';
@@ -19,10 +20,16 @@ const keyExtractor = (line: WeechatLine) =>
   line.pointers[line.pointers.length - 1];
 
 const Header = (props: {
+  bufferId: string;
   lines: number;
   fetchMoreLines: (lines: number) => void;
 }) => {
-  const [desiredLines, setDesiredLines] = React.useState(props.lines);
+  const [desiredLines, setDesiredLines] = useState(
+    Buffer.DEFAULT_LINE_INCREMENT
+  );
+  useEffect(() => {
+    setDesiredLines(Buffer.DEFAULT_LINE_INCREMENT);
+  }, [props.bufferId]);
 
   if (props.lines < desiredLines) return;
 
@@ -69,7 +76,7 @@ export default class Buffer extends React.PureComponent<Props> {
   };
 
   render(): JSX.Element {
-    const { lines } = this.props;
+    const { bufferId, lines, fetchMoreLines } = this.props;
     return (
       <FlashList
         ref={this.linesList}
@@ -80,8 +87,9 @@ export default class Buffer extends React.PureComponent<Props> {
         renderItem={this.renderBuffer}
         ListFooterComponent={
           <Header
+            bufferId={bufferId}
             lines={lines.length}
-            fetchMoreLines={this.props.fetchMoreLines}
+            fetchMoreLines={fetchMoreLines}
           />
         }
         estimatedItemSize={44}
