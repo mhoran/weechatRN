@@ -12,23 +12,25 @@ interface Props {
   connectionError: ConnectionError | null;
 }
 
-class ConnectionGate extends React.Component<Props> {
-  render() {
-    const { connecting, connected, children, onConnect, connectionError } =
-      this.props;
-    if (connected) {
-      return children;
-    } else {
-      return (
-        <LoginForm
-          connecting={connecting}
-          connectionError={connectionError}
-          onConnect={onConnect}
-        />
-      );
-    }
+const ConnectionGate: React.FC<Props> = ({
+  connecting,
+  connected,
+  children,
+  onConnect,
+  connectionError
+}) => {
+  if (connected) {
+    return children;
+  } else {
+    return (
+      <LoginForm
+        connecting={connecting}
+        connectionError={connectionError}
+        onConnect={onConnect}
+      />
+    );
   }
-}
+};
 
 export default connect((state: StoreState) => ({
   connected: state.app.connected
