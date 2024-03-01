@@ -123,7 +123,7 @@ export default class WeechatNative extends React.Component<null, State> {
       );
   };
 
-  render(): JSX.Element {
+  render() {
     const { connecting, connectionError } = this.state;
 
     return (

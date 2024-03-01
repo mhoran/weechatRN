@@ -43,7 +43,7 @@ export default class BufferListItem extends React.Component<Props> {
     }
   };
 
-  render(): JSX.Element {
+  render() {
     const { buffer, hotlist, onSelectBuffer } = this.props;
 
     return (

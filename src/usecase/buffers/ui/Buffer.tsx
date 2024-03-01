@@ -72,7 +72,7 @@ export default class Buffer extends React.PureComponent<Props> {
     );
   };
 
-  render(): JSX.Element {
+  render() {
     const { bufferId, lines, fetchMoreLines } = this.props;
     return (
       <FlashList
