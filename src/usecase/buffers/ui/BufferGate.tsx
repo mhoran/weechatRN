@@ -9,7 +9,7 @@ type Props = {
   fetchMoreLines: (lines: number) => void;
 };
 
-const BufferGate = (props: Props): JSX.Element => {
+const BufferGate: React.FC<Props> = (props: Props) => {
   if (props.bufferId) {
     return <BufferContainer {...props} bufferId={props.bufferId} />;
   } else {

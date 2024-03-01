@@ -18,26 +18,28 @@ interface Props {
 const keyExtractor = (line: WeechatLine) =>
   line.pointers[line.pointers.length - 1];
 
-const Header = (props: {
+interface HeaderProps {
   bufferId: string;
   lines: number;
   fetchMoreLines: (lines: number) => void;
-}) => {
+}
+
+const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
   const [desiredLines, setDesiredLines] = useState(
     Buffer.DEFAULT_LINE_INCREMENT
   );
   useEffect(() => {
     setDesiredLines(Buffer.DEFAULT_LINE_INCREMENT);
-  }, [props.bufferId]);
+  }, [bufferId]);
 
-  if (props.lines < desiredLines) return;
+  if (lines < desiredLines) return;
 
   return (
     <Button
       title="Load more lines"
       onPress={() => {
         const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
-        props.fetchMoreLines(next);
+        fetchMoreLines(next);
         setDesiredLines(next);
       }}
     />
