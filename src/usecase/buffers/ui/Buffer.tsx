@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { Button, View } from 'react-native';
+import { Button } from 'react-native';
 
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
-import { cef } from '../../../lib/weechat/colors';
 import BufferLine from './BufferLine';
 
 interface Props {
@@ -62,16 +61,12 @@ export default class Buffer extends React.PureComponent<Props> {
     const marker = item.pointers.at(-1) === lastReadLine;
 
     return (
-      <>
-        {item.displayed !== 0 && (
-          <BufferLine
-            line={item}
-            onLongPress={onLongPress}
-            parseArgs={parseArgs}
-          />
-        )}
-        {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
-      </>
+      <BufferLine
+        line={item}
+        onLongPress={onLongPress}
+        parseArgs={parseArgs}
+        marker={marker}
+      />
     );
   };
 
