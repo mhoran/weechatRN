@@ -49,17 +49,19 @@ export default class Buffer extends React.PureComponent<Props, State> {
   }
 
   renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
-    const { onLongPress, parseArgs } = this.props;
-    const marker = item.pointers.at(-1) === this.props.lastReadLine;
+    const { onLongPress, parseArgs, lastReadLine } = this.props;
+    const marker = item.pointers.at(-1) === lastReadLine;
 
     return (
       <>
         {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
-        <BufferLine
-          line={item}
-          onLongPress={onLongPress}
-          parseArgs={parseArgs}
-        />
+        {item.displayed !== 0 && (
+          <BufferLine
+            line={item}
+            onLongPress={onLongPress}
+            parseArgs={parseArgs}
+          />
+        )}
       </>
     );
   };
@@ -86,7 +88,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
     return (
       <FlatList
         ref={this.linesList}
-        data={lines.filter((line) => line.displayed !== 0)}
+        data={lines}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
