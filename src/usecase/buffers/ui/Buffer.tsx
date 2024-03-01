@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Button, FlatList, ListRenderItem, View } from 'react-native';
+import { Button, View } from 'react-native';
 
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { ParseShape } from 'react-native-parsed-text';
 import { cef } from '../../../lib/weechat/colors';
 import BufferLine from './BufferLine';
@@ -25,7 +26,7 @@ const keyExtractor = (line: WeechatLine) =>
 export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
 
-  linesList = React.createRef<FlatList>();
+  linesList = React.createRef<FlashList<WeechatLine>>();
 
   state = {
     desiredLines: Buffer.DEFAULT_LINE_INCREMENT,
@@ -54,7 +55,6 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
     return (
       <>
-        {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
         {item.displayed !== 0 && (
           <BufferLine
             line={item}
@@ -62,6 +62,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
             parseArgs={parseArgs}
           />
         )}
+        {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
       </>
     );
   };
@@ -86,7 +87,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   render(): JSX.Element {
     const { lines } = this.props;
     return (
-      <FlatList
+      <FlashList
         ref={this.linesList}
         data={lines}
         inverted
@@ -94,6 +95,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
         ListFooterComponent={this.renderMoreLinesButton}
+        estimatedItemSize={44}
       />
     );
   }
