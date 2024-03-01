@@ -66,19 +66,19 @@ class BufferContainer extends React.Component<Props, State> {
     this.handleOnLongPress
   );
 
-  handleOnFocus() {
+  handleOnFocus = () => {
     this.setState({
       showTabButton: true
     });
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  }
+  };
 
-  handleOnBlur() {
+  handleOnBlur = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.setState({
       showTabButton: false
     });
-  }
+  };
 
   handleOnLongPress(type: string, text: string) {
     ActionSheetIOS.showShareActionSheetWithOptions(
@@ -197,8 +197,8 @@ class BufferContainer extends React.Component<Props, State> {
             style={styles.inputBox}
             value={textValue}
             onChangeText={this.handleChangeText}
-            onFocus={() => this.handleOnFocus()}
-            onBlur={() => this.handleOnBlur()}
+            onFocus={this.handleOnFocus}
+            onBlur={this.handleOnBlur}
             onSelectionChange={this.handleSelectionChange}
             returnKeyType="send"
             blurOnSubmit={false}
