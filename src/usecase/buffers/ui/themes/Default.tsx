@@ -11,43 +11,42 @@ interface Props {
   parseArgs: ParseShape[];
 }
 
-export default class BufferLine extends React.Component<Props> {
-  render(): JSX.Element {
-    const { line, onLongPress, parseArgs } = this.props;
-    return (
-      <TouchableHighlight onLongPress={() => onLongPress(line)}>
-        <View style={[styles.container]}>
-          <View style={styles.metaContainer}>
-            <View style={styles.userContainer}>
-              <Text style={[styles.text, styles.meta]}>
-                {renderWeechatFormat(line.prefix).map((props, index) => {
-                  const { style, ...rest } = props;
-                  return (
-                    <Text
-                      {...rest}
-                      key={index}
-                      style={line.highlight ? styles.highlight : style}
-                    />
-                  );
-                })}
-              </Text>
-            </View>
+const BufferLine: React.FC<Props> = ({ line, onLongPress, parseArgs }) => {
+  return (
+    <TouchableHighlight onLongPress={() => onLongPress(line)}>
+      <View style={[styles.container]}>
+        <View style={styles.metaContainer}>
+          <View style={styles.userContainer}>
             <Text style={[styles.text, styles.meta]}>
-              {formatDate(line.date)}
+              {renderWeechatFormat(line.prefix).map((props, index) => {
+                const { style, ...rest } = props;
+                return (
+                  <Text
+                    {...rest}
+                    key={index}
+                    style={line.highlight ? styles.highlight : style}
+                  />
+                );
+              })}
             </Text>
           </View>
-          <View style={[styles.messageContainer]}>
-            <Text style={styles.text}>
-              {renderWeechatFormat(line.message).map((props, index) => (
-                <ParsedText {...props} key={index} parse={parseArgs} />
-              ))}
-            </Text>
-          </View>
+          <Text style={[styles.text, styles.meta]}>
+            {formatDate(line.date)}
+          </Text>
         </View>
-      </TouchableHighlight>
-    );
-  }
-}
+        <View style={[styles.messageContainer]}>
+          <Text style={styles.text}>
+            {renderWeechatFormat(line.message).map((props, index) => (
+              <ParsedText {...props} key={index} parse={parseArgs} />
+            ))}
+          </Text>
+        </View>
+      </View>
+    </TouchableHighlight>
+  );
+};
+
+export default BufferLine;
 
 const styles = StyleSheet.create({
   container: {
