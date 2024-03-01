@@ -193,11 +193,11 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
           return !(buffer in newBuffers);
         });
 
+        dispatch({ type: 'FETCH_BUFFERS_REMOVED', payload: removed });
         dispatch({
           type: 'FETCH_BUFFERS',
           payload: newBuffers
         });
-        dispatch({ type: 'FETCH_BUFFERS_REMOVED', payload: removed });
       };
     }
     case 'version': {

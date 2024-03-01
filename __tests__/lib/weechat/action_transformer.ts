@@ -1,6 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { reducer } from '../../../src/store';
+import { AnyAction, configureStore } from '@reduxjs/toolkit';
+import { StoreState, reducer } from '../../../src/store';
 import { transformToReduxAction } from '../../../src/lib/weechat/action_transformer';
+import { ThunkAction } from 'redux-thunk';
 
 describe('transformToReduxAction', () => {
   describe('on buffers', () => {
@@ -44,6 +45,35 @@ describe('transformToReduxAction', () => {
       expect(store.getState().lines).toHaveProperty('83a41cd80');
 
       expect(store.getState().app.currentBufferId).toBeNull();
+    });
+
+    it('first removes closed buffers, then updates buffers', () => {
+      const action = transformToReduxAction({
+        id: 'buffers',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: []
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      const thunk = action as ThunkAction<void, StoreState, void, AnyAction>;
+      const dispatch = jest.fn();
+      thunk(
+        dispatch,
+        jest.fn(() => ({ buffers: {} }) as StoreState)
+      );
+      expect(dispatch).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ type: 'FETCH_BUFFERS_REMOVED' })
+      );
+      expect(dispatch).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ type: 'FETCH_BUFFERS' })
+      );
     });
 
     it('preserves currentBufferId if the buffer is still open', () => {
