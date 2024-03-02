@@ -100,7 +100,7 @@ export default class WeechatConnection {
   }
 
   onmessage(event: WebSocketMessageEvent): void {
-    const parsed = protocol.parse(event.data) as WeechatResponse<unknown>;
+    const parsed = protocol.parse(event.data);
 
     if (parsed.id == 'version') {
       this.authenticating = false;

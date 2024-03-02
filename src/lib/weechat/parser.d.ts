@@ -1,5 +1,5 @@
 export class WeeChatProtocol {
-  static rawText2Rich(input);
+  static rawText2Rich(input: string): AttributedStringNode[];
 
-  parse(data, optionsValues?);
+  parse(data: ArrayBuffer): WeechatResponse<unknown>;
 }

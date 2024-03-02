@@ -20,6 +20,8 @@ import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
 import UndoTextInput from './UndoTextInput';
+import * as Clipboard from 'expo-clipboard';
+import { WeeChatProtocol } from '../../../lib/weechat/parser';
 
 const connector = connect(
   (state: StoreState, { bufferId }: { bufferId: string }) => ({
@@ -165,8 +167,23 @@ class BufferContainer extends React.Component<Props, State> {
     this.setState({ selection });
   };
 
-  onLongPress = () => {
-    // not implemented
+  onLongPress = (line: WeechatLine) => {
+    const formattedPrefix = WeeChatProtocol.rawText2Rich(line.prefix);
+    const prefix = formattedPrefix.map((node) => node.text);
+    const formattedMessage = WeeChatProtocol.rawText2Rich(line.message);
+    const message = formattedMessage.map((node) => node.text);
+
+    ActionSheetIOS.showActionSheetWithOptions(
+      { options: ['Copy', 'Cancel'], cancelButtonIndex: 2 },
+      () => {
+        const encloseNick =
+          line.tags_array.includes('irc_privmsg') &&
+          !line.tags_array.includes('irc_action');
+        Clipboard.setStringAsync(
+          `${encloseNick ? '<' : ''}${prefix.join('')}${encloseNick ? '>' : ''} ${message.join('')}`
+        );
+      }
+    );
   };
 
   render() {

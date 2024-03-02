@@ -9,7 +9,7 @@ import BufferLine from './BufferLine';
 interface Props {
   lines: WeechatLine[];
   lastReadLine?: string;
-  onLongPress: () => void;
+  onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
   bufferId: string;
   fetchMoreLines: (lines: number) => void;
