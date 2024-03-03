@@ -3,11 +3,13 @@ import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
 import { AnyAction, combineReducers } from 'redux';
 import {
   FLUSH,
+  MigrationManifest,
   PAUSE,
   PERSIST,
   PURGE,
   REGISTER,
   REHYDRATE,
+  createMigrate,
   persistReducer,
   persistStore
 } from 'redux-persist';
@@ -74,6 +76,26 @@ const app = (state: AppState = initialState, action: AnyAction): AppState => {
   }
 };
 
+// FIXME: https://github.com/rt2zz/redux-persist/issues/1065
+const migrations: MigrationManifest = {
+  0: (state) => {
+    if (!state) return;
+    const storeState = state as unknown as StoreState;
+    return {
+      ...state,
+      connection: {
+        ...storeState.connection,
+        mediaUploadOptions: {
+          url: '',
+          basicAuth: true,
+          username: '',
+          password: ''
+        }
+      }
+    };
+  }
+};
+
 const listenerMiddleware = createListenerMiddleware();
 
 export const reducer = combineReducers({
@@ -87,7 +109,15 @@ export const reducer = combineReducers({
 
 export const store = configureStore({
   reducer: persistReducer(
-    { storage: AsyncStorage, key: 'state', whitelist: ['connection'] },
+    {
+      storage: AsyncStorage,
+      key: 'state',
+      whitelist: ['connection'],
+      version: 0,
+      migrate: createMigrate(migrations, {
+        debug: false
+      })
+    },
     reducer
   ),
   middleware: (getDefaultMiddleware) =>

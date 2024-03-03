@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import LoginForm from './login/LoginForm';
 import { StoreState } from '../store';
 import { ConnectionError } from '../lib/weechat/connection';
+import SettingsNavigator from './settings/SettingsNavigator';
 
 interface Props {
   connecting: boolean;
@@ -23,7 +23,7 @@ const ConnectionGate: React.FC<Props> = ({
     return children;
   } else {
     return (
-      <LoginForm
+      <SettingsNavigator
         connecting={connecting}
         connectionError={connectionError}
         onConnect={onConnect}

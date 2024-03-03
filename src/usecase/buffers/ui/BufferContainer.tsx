@@ -22,12 +22,14 @@ import Buffer from './Buffer';
 import UndoTextInput from './UndoTextInput';
 import * as Clipboard from 'expo-clipboard';
 import { WeeChatProtocol } from '../../../lib/weechat/parser';
+import UploadButton from './UploadButton';
 
 const connector = connect(
   (state: StoreState, { bufferId }: { bufferId: string }) => ({
     lines: state.lines[bufferId] || [],
     nicklist: state.nicklists[bufferId] || [],
-    buffer: state.buffers[bufferId]
+    buffer: state.buffers[bufferId],
+    mediaUploadOptions: state.connection.mediaUploadOptions
   })
 );
 
@@ -159,6 +161,17 @@ class BufferContainer extends React.Component<Props, State> {
     this.tabCompleteInProgress = true;
   };
 
+  handleOnUpload = (url: string) => {
+    const { textValue, selection } = this.state;
+
+    this.setState({
+      textValue:
+        textValue.substring(0, selection.start) +
+        url.trim() +
+        textValue.substring(selection.start)
+    });
+  };
+
   handleSelectionChange = ({
     nativeEvent: { selection }
   }: {
@@ -187,7 +200,14 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   render() {
-    const { bufferId, buffer, showTopic, lines } = this.props;
+    const {
+      bufferId,
+      buffer,
+      showTopic,
+      lines,
+      fetchMoreLines,
+      mediaUploadOptions
+    } = this.props;
     const { textValue, showTabButton } = this.state;
 
     return (
@@ -207,7 +227,7 @@ class BufferContainer extends React.Component<Props, State> {
           lastReadLine={buffer.last_read_line}
           onLongPress={this.onLongPress}
           parseArgs={this.parseArgs}
-          fetchMoreLines={this.props.fetchMoreLines}
+          fetchMoreLines={fetchMoreLines}
         />
         <View style={styles.bottomBox}>
           <UndoTextInput
@@ -221,6 +241,11 @@ class BufferContainer extends React.Component<Props, State> {
             blurOnSubmit={false}
             onSubmitEditing={this.handleSubmit}
             enablesReturnKeyAutomatically={true}
+          />
+          <UploadButton
+            onUpload={this.handleOnUpload}
+            style={{ paddingHorizontal: 5 }}
+            uploadOptions={mediaUploadOptions}
           />
           {showTabButton && (
             <TouchableOpacity
