@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   ActionSheetIOS,
-  Image,
   KeyboardAvoidingView,
   LayoutAnimation,
   Linking,
@@ -14,14 +13,15 @@ import {
 import ParsedText from 'react-native-parsed-text';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { MaterialIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
+import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
 import UndoTextInput from './UndoTextInput';
-import * as Clipboard from 'expo-clipboard';
-import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import UploadButton from './UploadButton';
 
 const connector = connect(
@@ -244,15 +244,15 @@ class BufferContainer extends React.Component<Props, State> {
           />
           <UploadButton
             onUpload={this.handleOnUpload}
-            style={{ paddingHorizontal: 5 }}
+            style={styles.uploadButton}
             uploadOptions={mediaUploadOptions}
           />
           {showTabButton && (
             <TouchableOpacity
-              style={{ alignItems: 'center', width: 40 }}
+              style={styles.tabButton}
               onPress={this.tabCompleteNick}
             >
-              <Image source={require('../../icons/long-arrow-right.png')} />
+              <MaterialIcons name="keyboard-tab" size={27} color="white" />
             </TouchableOpacity>
           )}
         </View>
@@ -297,5 +297,12 @@ export const styles = StyleSheet.create({
     borderColor: 'gray',
     backgroundColor: '#fff',
     flex: 1
+  },
+  uploadButton: {
+    paddingLeft: 10
+  },
+  tabButton: {
+    width: 40,
+    paddingLeft: 10
   }
 });

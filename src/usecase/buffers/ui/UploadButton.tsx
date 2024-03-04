@@ -84,7 +84,7 @@ const UploadButton: React.FC<Props> = ({ onUpload, style, uploadOptions }) => {
       style={style}
       accessibilityLabel="Upload Image"
     >
-      <MaterialIcons name="photo-library" size={24} color="white" />
+      <MaterialIcons name="photo-library" size={27} color="white" />
     </TouchableOpacity>
   );
 };

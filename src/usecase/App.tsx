@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Dimensions,
   EmitterSubscription,
-  Image,
   Keyboard,
   Platform,
   StyleSheet,
@@ -12,12 +11,13 @@ import {
 } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
 import {
+  SafeAreaInsetsContext,
   SafeAreaProvider,
-  SafeAreaView,
-  SafeAreaInsetsContext
+  SafeAreaView
 } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
 import BufferGate from './buffers/ui/BufferGate';
@@ -215,7 +215,11 @@ class App extends React.Component<Props, State> {
                         style={styles.channelsButton}
                         onPress={this.props.disconnect}
                       >
-                        <Image source={require('./icons/eject.png')} />
+                        <MaterialCommunityIcons
+                          name="lan-disconnect"
+                          size={22}
+                          color="white"
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -253,8 +257,7 @@ const styles = StyleSheet.create({
   },
   channelsButton: {
     paddingVertical: 5,
-    paddingHorizontal: 10,
-    width: 40
+    paddingHorizontal: 10
   },
   channelsButtonText: {
     textAlign: 'center',
