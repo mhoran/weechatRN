@@ -87,9 +87,7 @@ const migrations: MigrationManifest = {
         ...storeState.connection,
         mediaUploadOptions: {
           url: '',
-          basicAuth: true,
-          username: '',
-          password: ''
+          basicAuth: true
         }
       }
     };

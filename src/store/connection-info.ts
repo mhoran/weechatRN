@@ -9,8 +9,8 @@ export type ConnectionInfo = {
     url: string;
     fieldName?: string;
     basicAuth: boolean;
-    username: string;
-    password: string;
+    username?: string;
+    password?: string;
   };
 };
 
@@ -21,9 +21,7 @@ const initialState: ConnectionInfo = {
   filterBuffers: true,
   mediaUploadOptions: {
     url: '',
-    basicAuth: true,
-    username: '',
-    password: ''
+    basicAuth: true
   }
 };
 

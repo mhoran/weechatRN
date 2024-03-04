@@ -53,6 +53,8 @@ const UploadSettings: React.FC<Props> = ({
       type: 'SET_MEDIA_UPLOAD_OPTIONS',
       payload: {
         ...uploadOptionsState,
+        username: uploadOptionsState.username || undefined,
+        password: uploadOptionsState.password || undefined,
         fieldName: uploadOptionsState.fieldName || undefined
       }
     });

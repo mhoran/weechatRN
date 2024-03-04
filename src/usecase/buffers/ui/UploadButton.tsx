@@ -81,10 +81,10 @@ const UploadButton: React.FC<Props> = ({
   };
 
   if (
-    uploadOptions.url == '' ||
-    uploadOptionsFieldName == '' ||
+    !uploadOptions.url ||
+    !uploadOptionsFieldName ||
     (uploadOptions.basicAuth &&
-      (uploadOptions.username == '' || uploadOptions.password == ''))
+      (!uploadOptions.username || !uploadOptions.password))
   )
     return;
 
