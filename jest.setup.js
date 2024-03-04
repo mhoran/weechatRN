@@ -13,3 +13,7 @@ jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 jest.mock('@expo/vector-icons', () => ({
   MaterialIcons: ''
 }));
+
+jest.mock('expo-clipboard', () => ({
+  setStringAsync: jest.fn()
+}));
