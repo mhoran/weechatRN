@@ -72,6 +72,17 @@ describe(UploadButton, () => {
     expect(screen.queryByLabelText('Upload Image')).toBeNull();
   });
 
+  it('hides the button when the field name is empty', () => {
+    const uploadOptions = {
+      url: 'http://example.com',
+      fieldName: '',
+      basicAuth: false
+    };
+    render(<UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />);
+
+    expect(screen.queryByLabelText('Upload Image')).toBeNull();
+  });
+
   describe('basic auth disabled', () => {
     it('shows the button when the url is not empty', () => {
       const uploadOptions = {

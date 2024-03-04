@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import React from 'react';
 import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface Props {
@@ -9,12 +10,21 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   uploadOptions: {
     url: string;
+    fieldName?: string;
     basicAuth: boolean;
     username?: string;
     password?: string;
   };
 }
-const UploadButton: React.FC<Props> = ({ onUpload, style, uploadOptions }) => {
+
+const UploadButton: React.FC<Props> = ({
+  onUpload,
+  style,
+  uploadOptions: {
+    fieldName: uploadOptionsFieldName = 'file',
+    ...uploadOptions
+  }
+}) => {
   const takePhoto = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
 
@@ -55,7 +65,7 @@ const UploadButton: React.FC<Props> = ({ onUpload, style, uploadOptions }) => {
 
   const uploadImage = async (fileUri: string) => {
     const response = await FileSystem.uploadAsync(uploadOptions.url, fileUri, {
-      fieldName: 'file',
+      fieldName: uploadOptionsFieldName,
       uploadType: FileSystem.FileSystemUploadType.MULTIPART,
       headers: {
         Authorization:
@@ -72,6 +82,7 @@ const UploadButton: React.FC<Props> = ({ onUpload, style, uploadOptions }) => {
 
   if (
     uploadOptions.url == '' ||
+    uploadOptionsFieldName == '' ||
     (uploadOptions.basicAuth &&
       (uploadOptions.username == '' || uploadOptions.password == ''))
   )

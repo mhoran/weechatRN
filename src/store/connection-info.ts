@@ -7,6 +7,7 @@ export type ConnectionInfo = {
   filterBuffers: boolean;
   mediaUploadOptions: {
     url: string;
+    fieldName?: string;
     basicAuth: boolean;
     username: string;
     password: string;

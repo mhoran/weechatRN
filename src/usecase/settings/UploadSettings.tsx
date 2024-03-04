@@ -26,19 +26,34 @@ const UploadSettings: React.FC<Props> = ({
   dispatch,
   setShowUploadSettings
 }) => {
-  const [uploadUrl, setUploadUrl] = useState(uploadOptions.url);
-  const [basicAuth, setBasicAuth] = useState(uploadOptions.basicAuth);
-  const [username, setUsername] = useState(uploadOptions.username);
-  const [password, setPassword] = useState(uploadOptions.password);
+  const [uploadOptionsState, setUploadOptionsState] = useState(uploadOptions);
 
-  const onPress = () => {
+  const setUploadOptionsUrl = (url: string) => {
+    setUploadOptionsState({ ...uploadOptionsState, url });
+  };
+
+  const setUploadOptionsBasicAuth = (basicAuth: boolean) => {
+    setUploadOptionsState({ ...uploadOptionsState, basicAuth });
+  };
+
+  const setUploadOptionsUsername = (username: string) => {
+    setUploadOptionsState({ ...uploadOptionsState, username });
+  };
+
+  const setUploadOptionsPassword = (password: string) => {
+    setUploadOptionsState({ ...uploadOptionsState, password });
+  };
+
+  const setUploadOptionsFieldName = (fieldName: string) => {
+    setUploadOptionsState({ ...uploadOptionsState, fieldName });
+  };
+
+  const setUploadOptions = () => {
     dispatch({
       type: 'SET_MEDIA_UPLOAD_OPTIONS',
       payload: {
-        url: uploadUrl,
-        basicAuth: basicAuth,
-        username: username,
-        password: password
+        ...uploadOptionsState,
+        fieldName: uploadOptionsState.fieldName || undefined
       }
     });
     setShowUploadSettings(false);
@@ -55,44 +70,53 @@ const UploadSettings: React.FC<Props> = ({
           placeholderTextColor="#4157af"
           keyboardType="url"
           autoCapitalize="none"
-          placeholder="Media Upload URL"
-          onChangeText={setUploadUrl}
-          value={uploadUrl}
+          placeholder="Upload Service URL"
+          onChangeText={setUploadOptionsUrl}
+          value={uploadOptionsState.url}
           autoCorrect={false}
         />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.text}>Basic Auth</Text>
+          <Text style={styles.text}>Use Basic Auth</Text>
           <Switch
             style={{ margin: 10 }}
-            onValueChange={setBasicAuth}
-            value={basicAuth}
+            onValueChange={setUploadOptionsBasicAuth}
+            value={uploadOptionsState.basicAuth}
           />
         </View>
-        {basicAuth && (
+        {uploadOptionsState.basicAuth && (
           <>
             <UndoTextInput
               style={styles.input}
               placeholderTextColor="#4157af"
               keyboardType="url"
               autoCapitalize="none"
-              placeholder="Media Upload Username"
-              onChangeText={setUsername}
-              value={username}
+              placeholder="Upload Service Username"
+              onChangeText={setUploadOptionsUsername}
+              value={uploadOptionsState.username}
               autoCorrect={false}
             />
             <TextInput
               style={styles.input}
               placeholderTextColor="#4157af"
               autoCapitalize="none"
-              placeholder="Media Upload Password"
+              placeholder="Upload Service Password"
               secureTextEntry
-              onChangeText={setPassword}
-              value={password}
+              onChangeText={setUploadOptionsPassword}
+              value={uploadOptionsState.password}
             />
           </>
         )}
+        <UndoTextInput
+          style={styles.input}
+          placeholderTextColor="#4157af"
+          autoCapitalize="none"
+          placeholder="Form Field Name (default: file)"
+          autoCorrect={false}
+          onChangeText={setUploadOptionsFieldName}
+          value={uploadOptionsState.fieldName}
+        />
         <View style={styles.centeredButton}>
-          <TouchableOpacity style={styles.button} onPress={onPress}>
+          <TouchableOpacity style={styles.button} onPress={setUploadOptions}>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
         </View>
