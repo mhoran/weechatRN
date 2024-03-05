@@ -110,8 +110,8 @@ const UploadSettings: React.FC<Props> = ({
     <View style={styles.container}>
       <SafeAreaView>
         <ScrollView
-          style={{ height: '100%' }}
           automaticallyAdjustKeyboardInsets={true}
+          alwaysBounceVertical={false}
         >
           <StatusBar barStyle="dark-content" />
           <Text style={styles.header}>Media Upload Settings</Text>
@@ -140,7 +140,7 @@ const UploadSettings: React.FC<Props> = ({
               <UndoTextInput
                 style={styles.input}
                 placeholderTextColor="#4157af"
-                keyboardType="url"
+                keyboardType="email-address"
                 autoCapitalize="none"
                 placeholder="Upload Service Username"
                 onChangeText={setUploadOptionsUsername}
@@ -216,6 +216,14 @@ const UploadSettings: React.FC<Props> = ({
           <View style={styles.centeredButton}>
             <TouchableOpacity style={styles.button} onPress={setUploadOptions}>
               <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.centeredButton, { paddingTop: 10 }]}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setShowUploadSettings(false)}
+            >
+              <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
