@@ -15,6 +15,7 @@ interface Props {
     basicAuth: boolean;
     username?: string;
     password?: string;
+    headers?: Record<string, string>;
   };
 }
 
@@ -24,6 +25,7 @@ const UploadButton: React.FC<Props> = ({
   uploadOptions: {
     fieldName: uploadOptionsFieldName = 'file',
     regexp: uploadOptionsRegexp = '^https://\\S+',
+    headers: uploadOptionsHeaders = {},
     ...uploadOptions
   }
 }) => {
@@ -72,11 +74,14 @@ const UploadButton: React.FC<Props> = ({
       fieldName: uploadOptionsFieldName,
       uploadType: FileSystem.FileSystemUploadType.MULTIPART,
       headers: {
-        Authorization:
-          'Basic ' +
-          Buffer.from(
-            `${uploadOptions.username}:${uploadOptions.password}`
-          ).toString('base64')
+        ...(uploadOptions.basicAuth && {
+          Authorization:
+            'Basic ' +
+            Buffer.from(
+              `${uploadOptions.username}:${uploadOptions.password}`
+            ).toString('base64')
+        }),
+        ...uploadOptionsHeaders
       }
     });
 

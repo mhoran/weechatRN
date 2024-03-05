@@ -13,7 +13,8 @@ jest.mock('expo-file-system', () => {
 const mockedFileSystem = jest.mocked(FileSystem);
 
 describe(UploadButton, () => {
-  it('uploads an image from library on press', async () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
     jest
       .spyOn(ImagePicker, 'launchImageLibraryAsync')
       .mockImplementation(() => {
@@ -28,7 +29,9 @@ describe(UploadButton, () => {
         body: 'https://example.com/image.jpg'
       } as FileSystem.FileSystemUploadResult);
     });
+  });
 
+  it('uploads an image from library on press', async () => {
     const onUpload = jest.fn();
     const uploadOptions = {
       url: 'https://example.com',
@@ -94,6 +97,33 @@ describe(UploadButton, () => {
       );
 
       expect(screen.queryByLabelText('Upload Image')).not.toBeNull();
+    });
+
+    it('does not overwrite the authorization header', async () => {
+      const uploadOptions = {
+        url: 'https://example.com',
+        basicAuth: false,
+        headers: { Authorization: 'Bearer token' }
+      };
+      render(
+        <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
+      );
+      const button = screen.getByLabelText('Upload Image');
+
+      fireEvent(button, 'press');
+
+      await new Promise(process.nextTick);
+      expect(FileSystem.uploadAsync).toHaveBeenCalledWith(
+        'https://example.com',
+        'file:///tmp/image.jpg',
+        {
+          fieldName: 'file',
+          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+          headers: {
+            Authorization: 'Bearer token'
+          }
+        }
+      );
     });
   });
 

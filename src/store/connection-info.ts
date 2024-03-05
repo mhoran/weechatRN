@@ -12,6 +12,7 @@ export type ConnectionInfo = {
     basicAuth: boolean;
     username?: string;
     password?: string;
+    headers?: Record<string, string>;
   };
 };
 
