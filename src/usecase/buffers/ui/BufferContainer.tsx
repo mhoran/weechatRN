@@ -167,7 +167,7 @@ class BufferContainer extends React.Component<Props, State> {
     this.setState({
       textValue:
         textValue.substring(0, selection.start) +
-        url.trim() +
+        url +
         textValue.substring(selection.start)
     });
   };

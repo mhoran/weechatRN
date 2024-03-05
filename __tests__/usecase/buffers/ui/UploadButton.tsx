@@ -25,7 +25,7 @@ describe(UploadButton, () => {
     mockedFileSystem.uploadAsync.mockImplementation(() => {
       return Promise.resolve({
         status: 200,
-        body: 'http://example.com/image.jpg'
+        body: 'https://example.com/image.jpg'
       } as FileSystem.FileSystemUploadResult);
     });
 
@@ -59,7 +59,7 @@ describe(UploadButton, () => {
         }
       }
     );
-    expect(onUpload).toHaveBeenCalledWith('http://example.com/image.jpg');
+    expect(onUpload).toHaveBeenCalledWith('https://example.com/image.jpg');
   });
 
   it('hides the button when the url is empty', () => {
@@ -74,7 +74,7 @@ describe(UploadButton, () => {
 
   it('hides the button when the field name is empty', () => {
     const uploadOptions = {
-      url: 'http://example.com',
+      url: 'https://example.com',
       fieldName: '',
       basicAuth: false
     };
@@ -86,7 +86,7 @@ describe(UploadButton, () => {
   describe('basic auth disabled', () => {
     it('shows the button when the url is not empty', () => {
       const uploadOptions = {
-        url: 'http://example.com',
+        url: 'https://example.com',
         basicAuth: false
       };
       render(
@@ -100,7 +100,7 @@ describe(UploadButton, () => {
   describe('basic auth enabled', () => {
     it('hides the button when the username or password is empty', () => {
       const uploadOptions = {
-        url: 'http://example.com',
+        url: 'https://example.com',
         basicAuth: true,
         username: '',
         password: ''

@@ -11,6 +11,7 @@ interface Props {
   uploadOptions: {
     url: string;
     fieldName?: string;
+    regexp?: string;
     basicAuth: boolean;
     username?: string;
     password?: string;
@@ -22,6 +23,7 @@ const UploadButton: React.FC<Props> = ({
   style,
   uploadOptions: {
     fieldName: uploadOptionsFieldName = 'file',
+    regexp: uploadOptionsRegexp = '^https://\\S+',
     ...uploadOptions
   }
 }) => {
@@ -56,7 +58,9 @@ const UploadButton: React.FC<Props> = ({
         return;
       } else {
         const uploadUrl = await uploadImage(pickerResult.assets[0].uri);
-        onUpload(uploadUrl);
+        const matches = uploadUrl.match(new RegExp(uploadOptionsRegexp));
+        if (!matches) return alert('Failed to extract URL from response');
+        onUpload(matches[1] || matches[0]);
       }
     } catch (e) {
       alert('Upload failed');

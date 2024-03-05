@@ -48,6 +48,10 @@ const UploadSettings: React.FC<Props> = ({
     setUploadOptionsState({ ...uploadOptionsState, fieldName });
   };
 
+  const setUploadOptionsRegexp = (regexp: string) => {
+    setUploadOptionsState({ ...uploadOptionsState, regexp });
+  };
+
   const setUploadOptions = () => {
     dispatch({
       type: 'SET_MEDIA_UPLOAD_OPTIONS',
@@ -55,7 +59,8 @@ const UploadSettings: React.FC<Props> = ({
         ...uploadOptionsState,
         username: uploadOptionsState.username || undefined,
         password: uploadOptionsState.password || undefined,
-        fieldName: uploadOptionsState.fieldName || undefined
+        fieldName: uploadOptionsState.fieldName || undefined,
+        regexp: uploadOptionsState.regexp || undefined
       }
     });
     setShowUploadSettings(false);
@@ -66,7 +71,6 @@ const UploadSettings: React.FC<Props> = ({
       <SafeAreaView>
         <StatusBar barStyle="dark-content" />
         <Text style={styles.header}>Media Upload Settings</Text>
-
         <UndoTextInput
           style={styles.input}
           placeholderTextColor="#4157af"
@@ -116,6 +120,15 @@ const UploadSettings: React.FC<Props> = ({
           autoCorrect={false}
           onChangeText={setUploadOptionsFieldName}
           value={uploadOptionsState.fieldName}
+        />
+        <UndoTextInput
+          style={styles.input}
+          placeholderTextColor="#4157af"
+          autoCapitalize="none"
+          placeholder="RegExp (default: /^https://\S+/)"
+          autoCorrect={false}
+          onChangeText={setUploadOptionsRegexp}
+          value={uploadOptionsState.regexp}
         />
         <View style={styles.centeredButton}>
           <TouchableOpacity style={styles.button} onPress={setUploadOptions}>

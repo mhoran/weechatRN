@@ -8,6 +8,7 @@ export type ConnectionInfo = {
   mediaUploadOptions: {
     url: string;
     fieldName?: string;
+    regexp?: string;
     basicAuth: boolean;
     username?: string;
     password?: string;
