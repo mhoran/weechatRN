@@ -133,6 +133,7 @@ const UploadSettings: React.FC<Props> = ({
               style={{ margin: 10 }}
               onValueChange={setUploadOptionsBasicAuth}
               value={uploadOptionsState.basicAuth}
+              accessibilityLabel="Use Basic Auth"
             />
           </View>
           {uploadOptionsState.basicAuth && (
