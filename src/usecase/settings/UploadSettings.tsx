@@ -174,6 +174,7 @@ const UploadSettings: React.FC<Props> = ({
             autoCapitalize="none"
             placeholder="RegExp (default: /^https://\S+/)"
             autoCorrect={false}
+            keyboardType="ascii-capable"
             onChangeText={setUploadOptionsRegexp}
             value={uploadOptionsState.regexp}
           />
