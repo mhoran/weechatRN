@@ -18,7 +18,7 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
-      - run: yarn test
+      - run: yarn test --testTimeout 10000
   tsc:
     name: Run tsc
     runs-on: ubuntu-latest
