@@ -2,6 +2,9 @@
 
 A [weechat](https://github.com/weechat/weechat) [relay](https://weechat.org/files/doc/stable/weechat_user.en.html#relay) client built with [React Native](https://reactnative.dev/) using [Expo](https://expo.dev/). Heavily inspired by [weechat-android](https://github.com/ubergeek42/weechat-android).
 
+<img src="https://github.com/mhoran/weechatRN/assets/5330/1c03e41e-2e9c-4724-8bb6-aa3d02cd419e" width="300">
+<img src="https://github.com/mhoran/weechatRN/assets/5330/f2d78df7-7e71-47b5-b874-d82aa8648e5b" width="300">
+
 ## Installation
 
 ### iOS
