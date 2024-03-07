@@ -68,7 +68,7 @@ const UploadSettings: React.FC<Props> = ({
     setUploadOptionsState({
       ...uploadOptionsState,
       headers: uploadOptionsState.headers.map((header, currentIndex) =>
-        index == currentIndex ? [name, header[1]] : header
+        index === currentIndex ? [name, header[1]] : header
       )
     });
   };
@@ -77,7 +77,7 @@ const UploadSettings: React.FC<Props> = ({
     setUploadOptionsState({
       ...uploadOptionsState,
       headers: uploadOptionsState.headers.map((header, currentIndex) =>
-        index == currentIndex ? [header[0], value] : header
+        index === currentIndex ? [header[0], value] : header
       )
     });
   };

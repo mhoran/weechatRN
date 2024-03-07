@@ -85,7 +85,7 @@ const UploadButton: React.FC<Props> = ({
       }
     });
 
-    if (response.status == 200) return response.body;
+    if (response.status === 200) return response.body;
     else throw 'Upload failed';
   };
 

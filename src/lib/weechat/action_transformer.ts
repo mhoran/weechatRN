@@ -56,7 +56,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       return (dispatch: AppDispatch, getState: () => StoreState) => {
         const state: StoreState = getState();
         const buffer = Object.values(state.buffers).find(
-          (buffer: WeechatBuffer) => buffer.full_name == fullName
+          (buffer: WeechatBuffer) => buffer.full_name === fullName
         );
 
         if (!buffer) return undefined;
@@ -83,8 +83,8 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
           currentBufferId: state.app.currentBufferId,
           payload: {
             ...restLine,
-            date: (<Date>date).toISOString(),
-            date_printed: (<Date>date_printed).toISOString()
+            date: (date as Date).toISOString(),
+            date_printed: (date_printed as Date).toISOString()
           }
         });
       };
@@ -220,8 +220,8 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
           const { date, date_printed, ...restLine } = line;
           return {
             ...restLine,
-            date: (<Date>date).toISOString(),
-            date_printed: (<Date>date_printed).toISOString()
+            date: (date as Date).toISOString(),
+            date_printed: (date_printed as Date).toISOString()
           };
         })
       };
