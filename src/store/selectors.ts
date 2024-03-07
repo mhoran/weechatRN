@@ -1,4 +1,4 @@
-import { HotListState } from "./hotlists";
+import { HotListState } from './hotlists';
 
 const createEmptyHotlist = (bufferId: string) => ({
   buffer: bufferId,

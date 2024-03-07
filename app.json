@@ -15,10 +15,7 @@
     "android": {
       "package": "com.matthoran.weechatrn"
     },
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "version": "1.1.1",
     "icon": "./assets/icon.png",
     "splash": {
@@ -30,9 +27,7 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/5e51d3f0-dc9c-11e8-9dfe-b9e5abc941a4"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "githubUrl": "https://github.com/mhoran/weechatRN",
     "extra": {
       "eas": {

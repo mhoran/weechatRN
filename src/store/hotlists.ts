@@ -12,7 +12,8 @@ export default (
   switch (action.type) {
     case 'FETCH_HOTLISTS':
       if (action.currentBufferId) {
-        const { [action.currentBufferId]: _, ...rest } = action.payload as HotListState;
+        const { [action.currentBufferId]: _, ...rest } =
+          action.payload as HotListState;
         return rest;
       }
 
