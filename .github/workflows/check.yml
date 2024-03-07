@@ -16,9 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn
-      - run: yarn install
-      - run: yarn test --testTimeout 10000
+          cache: npm
+      - run: npm install
+      - run: npm test -- --testTimeout 10000
   tsc:
     name: Run tsc
     runs-on: ubuntu-latest
@@ -28,9 +28,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn
-      - run: yarn install
-      - run: yarn tsc
+          cache: npm
+      - run: npm install
+      - run: npx tsc
   linter:
     name: Run linter
     runs-on: ubuntu-latest
@@ -40,9 +40,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn
-      - run: yarn install
-      - run: yarn lint
+          cache: npm
+      - run: npm install
+      - run: npm run lint
   prettier:
     name: Run prettier
     runs-on: ubuntu-latest
@@ -53,6 +53,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn
-      - run: yarn install
-      - run: yarn prettier . --check
+          cache: npm
+      - run: npm install
+      - run: npx prettier . --check
