@@ -11,11 +11,5 @@
     "target": "esnext",
     "skipLibCheck": true
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "jest.config.js"
-  ],
   "extends": "expo/tsconfig.base"
 }

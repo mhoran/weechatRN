@@ -87,10 +87,10 @@ To disable push notifications without uninstalling WeechatRN, unload (`/python u
 
 ```bash
 # Install dependencies for project
-yarn install
+npm install
 
 # Launch Expo
-yarn start
+npm start
 ```
 
 On your device, scan the QR code with the Camera app (iOS) or the [Expo Client](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www) (Android).

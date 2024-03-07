@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn
+          cache: npm
       - name: Set up Expo
         uses: expo/expo-github-action@v8
         with:
@@ -23,7 +23,7 @@ jobs:
           eas-version: latest
           expo-cache: true
           token: ${{secrets.EXPO_TOKEN}}
-      - run: yarn install
+      - run: npm install
       - run: eas build -p ios --non-interactive
       - run: eas submit -p ios --latest --profile production --non-interactive
         env:
