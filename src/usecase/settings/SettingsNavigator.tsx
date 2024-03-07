@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ConnectionError } from '../../lib/weechat/connection';
 import LoginForm from '../login/LoginForm';
