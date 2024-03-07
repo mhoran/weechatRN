@@ -5,7 +5,7 @@
   "scripts": {
     "start": "expo start",
     "test": "jest",
-    "lint": "eslint . --ext .ts --ext .tsx"
+    "lint": "eslint . --ext .ts --ext .tsx --ext .js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.21.0",

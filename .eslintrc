@@ -13,5 +13,9 @@
       "error",
       { "ignoreRestSiblings": true }
     ]
+  },
+  "env": { "jest": true },
+  "globals": {
+    "module": "readonly"
   }
 }
