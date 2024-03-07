@@ -12,9 +12,7 @@ export default (
   switch (action.type) {
     case 'FETCH_HOTLISTS':
       if (action.currentBufferId) {
-        const { [action.currentBufferId]: _, ...rest } = <HotListState>(
-          action.payload
-        );
+        const { [action.currentBufferId]: _, ...rest } = action.payload as HotListState;
         return rest;
       }
 
@@ -34,7 +32,7 @@ export default (
       };
 
       const shouldNotify = (tag: string) =>
-        tag != 'irc_smart_filter' && tag != 'notify_none';
+        tag !== 'irc_smart_filter' && tag !== 'notify_none';
       if (payload.tags_array.every(shouldNotify)) {
         if (payload.highlight !== 0) {
           hotlist.highlight++;

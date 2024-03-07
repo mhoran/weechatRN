@@ -1,5 +1,4 @@
 import 'react-native';
-import React from 'react';
 import App from '../../src/usecase/App';
 
 import { render } from '../../src/test-utils';

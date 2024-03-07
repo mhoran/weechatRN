@@ -127,7 +127,7 @@ class BufferContainer extends React.Component<Props, State> {
       this.tabCompleteWordStart =
         textValue.lastIndexOf(' ', this.tabCompleteWordEnd - 1) + 1;
 
-      if (this.tabCompleteWordStart == this.tabCompleteWordEnd) return;
+      if (this.tabCompleteWordStart === this.tabCompleteWordEnd) return;
 
       const prefix = textValue
         .substring(this.tabCompleteWordStart, this.tabCompleteWordEnd)
@@ -136,7 +136,7 @@ class BufferContainer extends React.Component<Props, State> {
       this.tabCompleteMatches = nicklist.filter((nick) =>
         nick.name.toLowerCase().startsWith(prefix)
       );
-      if (this.tabCompleteMatches.length == 0) {
+      if (this.tabCompleteMatches.length === 0) {
         return;
       }
 
@@ -147,7 +147,7 @@ class BufferContainer extends React.Component<Props, State> {
     }
 
     let nick = this.tabCompleteMatches[this.tabCompleteIndex].name;
-    if (this.tabCompleteWordStart == 0) {
+    if (this.tabCompleteWordStart === 0) {
       nick += ': ';
     }
 
