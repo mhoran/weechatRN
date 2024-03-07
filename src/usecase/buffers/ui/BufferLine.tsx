@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 
 import { View } from 'react-native';

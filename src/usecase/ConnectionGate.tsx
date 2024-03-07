@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { connect } from 'react-redux';
 import { StoreState } from '../store';
 import { ConnectionError } from '../lib/weechat/connection';

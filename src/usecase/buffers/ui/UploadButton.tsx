@@ -2,7 +2,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import React from 'react';
 import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface Props {
