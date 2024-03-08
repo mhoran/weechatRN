@@ -89,8 +89,7 @@ class BufferContainer extends React.Component<Props, State> {
   handleOnLongPress(type: string, text: string) {
     ActionSheetIOS.showShareActionSheetWithOptions(
       {
-        url: formatUrl(type, text),
-        message: text
+        url: formatUrl(type, text)
       },
       () => null,
       () => null
