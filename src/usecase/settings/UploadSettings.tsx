@@ -41,45 +41,45 @@ const UploadSettings: React.FC<Props> = ({
   });
 
   const setUploadOptionsUrl = (url: string) => {
-    setUploadOptionsState({ ...uploadOptionsState, url });
+    setUploadOptionsState((state) => ({ ...state, url }));
   };
 
   const setUploadOptionsBasicAuth = (basicAuth: boolean) => {
-    setUploadOptionsState({ ...uploadOptionsState, basicAuth });
+    setUploadOptionsState((state) => ({ ...state, basicAuth }));
   };
 
   const setUploadOptionsUsername = (username: string) => {
-    setUploadOptionsState({ ...uploadOptionsState, username });
+    setUploadOptionsState((state) => ({ ...state, username }));
   };
 
   const setUploadOptionsPassword = (password: string) => {
-    setUploadOptionsState({ ...uploadOptionsState, password });
+    setUploadOptionsState((state) => ({ ...state, password }));
   };
 
   const setUploadOptionsFieldName = (fieldName: string) => {
-    setUploadOptionsState({ ...uploadOptionsState, fieldName });
+    setUploadOptionsState((state) => ({ ...state, fieldName }));
   };
 
   const setUploadOptionsRegexp = (regexp: string) => {
-    setUploadOptionsState({ ...uploadOptionsState, regexp });
+    setUploadOptionsState((state) => ({ ...state, regexp }));
   };
 
   const setUploadOptionsHeaderName = (index: number, name: string) => {
-    setUploadOptionsState({
-      ...uploadOptionsState,
-      headers: uploadOptionsState.headers.map((header, currentIndex) =>
+    setUploadOptionsState((state) => ({
+      ...state,
+      headers: state.headers.map((header, currentIndex) =>
         index === currentIndex ? [name, header[1]] : header
       )
-    });
+    }));
   };
 
   const setUploadOptionsHeaderValue = (index: number, value: string) => {
-    setUploadOptionsState({
-      ...uploadOptionsState,
-      headers: uploadOptionsState.headers.map((header, currentIndex) =>
+    setUploadOptionsState((state) => ({
+      ...state,
+      headers: state.headers.map((header, currentIndex) =>
         index === currentIndex ? [header[0], value] : header
       )
-    });
+    }));
   };
 
   const setUploadOptions = () => {

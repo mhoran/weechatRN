@@ -162,14 +162,12 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   handleOnUpload = (url: string) => {
-    const { textValue, selection } = this.state;
-
-    this.setState({
+    this.setState(({ textValue, selection }) => ({
       textValue:
         textValue.substring(0, selection.start) +
         url +
         textValue.substring(selection.start)
-    });
+    }));
   };
 
   handleSelectionChange = ({
