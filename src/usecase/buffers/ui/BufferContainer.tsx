@@ -98,12 +98,7 @@ class BufferContainer extends React.Component<Props, State> {
   }
 
   handleOnPress(type: string, text: string) {
-    console.log(type, text);
-    if (type === 'channel') {
-      // this.props.dispatch(changeCurrentBuffer(text));
-    } else {
-      Linking.openURL(formatUrl(type, text));
-    }
+    Linking.openURL(formatUrl(type, text));
   }
 
   handleChangeText = (textValue: string) => {
