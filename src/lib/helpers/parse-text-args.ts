@@ -19,12 +19,6 @@ export const getParseArgs = (
     },
     {
       ...baseObj,
-      onPress: (arg) => onPress('channel', arg),
-      onLongPress: (arg) => onLongPress('channel', arg),
-      pattern: /#(\w+)/
-    },
-    {
-      ...baseObj,
       onPress: (arg) => onPress('phone', arg),
       onLongPress: (arg) => onLongPress('phone', arg),
       type: 'phone'
