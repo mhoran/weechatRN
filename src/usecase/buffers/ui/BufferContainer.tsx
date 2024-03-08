@@ -4,8 +4,10 @@ import {
   KeyboardAvoidingView,
   LayoutAnimation,
   Linking,
+  NativeSyntheticEvent,
   StyleSheet,
   Text,
+  TextInputSelectionChangeEventData,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -24,23 +26,23 @@ import Buffer from './Buffer';
 import UndoTextInput from './UndoTextInput';
 import UploadButton from './UploadButton';
 
-const connector = connect(
-  (state: StoreState, { bufferId }: { bufferId: string }) => ({
-    lines: state.lines[bufferId] || [],
-    nicklist: state.nicklists[bufferId] || [],
-    buffer: state.buffers[bufferId],
-    mediaUploadOptions: state.connection.mediaUploadOptions
-  })
-);
+const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
+  lines: state.lines[bufferId] || [],
+  nicklist: state.nicklists[bufferId] || [],
+  buffer: state.buffers[bufferId],
+  mediaUploadOptions: state.connection.mediaUploadOptions
+}));
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {
+type OwnProps = {
   bufferId: string;
   showTopic: boolean;
   sendMessage: (message: string) => void;
   fetchMoreLines: (lines: number) => void;
 };
+
+type Props = OwnProps & PropsFromRedux;
 
 interface State {
   showTabButton: boolean;
@@ -172,9 +174,7 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleSelectionChange = ({
     nativeEvent: { selection }
-  }: {
-    nativeEvent: { selection: { start: number; end: number } };
-  }) => {
+  }: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
     this.setState({ selection });
   };
 
