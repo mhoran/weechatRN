@@ -63,10 +63,10 @@ export default class WeechatNative extends React.Component<null, State> {
     reconnect: boolean,
     connectionError: ConnectionError | null
   ): void => {
-    this.setState({
+    this.setState((state) => ({
       connecting: reconnect,
-      connectionError: this.state.connecting ? connectionError : null
-    });
+      connectionError: state.connecting ? connectionError : null
+    }));
   };
 
   disconnect = (): void => {

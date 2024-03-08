@@ -19,6 +19,7 @@
       "error",
       { "ignoreRestSiblings": true }
     ],
+    "react/no-access-state-in-setstate": "error",
     "react/prop-types": "off"
   },
   "env": { "jest": true, "node": true }
