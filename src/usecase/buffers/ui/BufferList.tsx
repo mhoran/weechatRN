@@ -32,7 +32,6 @@ class BufferList extends React.Component<Props> {
 
   visibleBuffer = (buffer: WeechatBuffer) => {
     const { filterBuffers, hotlists } = this.props;
-    console.log(buffer.local_variables.type);
     if (filterBuffers) {
       return (
         (buffer.local_variables.type &&
