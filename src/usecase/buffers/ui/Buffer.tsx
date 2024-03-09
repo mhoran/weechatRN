@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Button } from 'react-native';
+import { Button, Text } from 'react-native';
 
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 import BufferLine from './BufferLine';
+import { styles as lineStyles } from './themes/Default';
 
 interface Props {
   lines: WeechatLine[];
@@ -46,10 +47,18 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
   );
 };
 
-export default class Buffer extends React.PureComponent<Props> {
+interface State {
+  letterWidth: number;
+}
+
+export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
 
   linesList = React.createRef<FlashList<WeechatLine>>();
+
+  state = {
+    letterWidth: 0
+  };
 
   componentDidUpdate(prevProps: Props) {
     const { bufferId } = this.props;
@@ -68,12 +77,27 @@ export default class Buffer extends React.PureComponent<Props> {
         onLongPress={onLongPress}
         parseArgs={parseArgs}
         marker={marker}
+        letterWidth={this.state.letterWidth}
       />
     );
   };
 
   render() {
     const { bufferId, lines, fetchMoreLines } = this.props;
+
+    if (!this.state.letterWidth) {
+      return (
+        <Text
+          onLayout={(layout) => {
+            this.setState({ letterWidth: layout.nativeEvent.layout.width });
+          }}
+          style={[lineStyles.text, { opacity: 0, position: 'absolute' }]}
+        >
+          a
+        </Text>
+      );
+    }
+
     return (
       <FlashList
         ref={this.linesList}

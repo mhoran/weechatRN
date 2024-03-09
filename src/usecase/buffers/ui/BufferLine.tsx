@@ -9,18 +9,25 @@ interface Props {
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
   marker: boolean;
+  letterWidth: number;
 }
 
 const BufferLine: React.FC<Props> = ({
   line,
   onLongPress,
   parseArgs,
-  marker
+  marker,
+  letterWidth
 }) => {
   return (
     <>
       {line.displayed !== 0 && (
-        <Default line={line} onLongPress={onLongPress} parseArgs={parseArgs} />
+        <Default
+          line={line}
+          onLongPress={onLongPress}
+          parseArgs={parseArgs}
+          letterWidth={letterWidth}
+        />
       )}
       {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
     </>

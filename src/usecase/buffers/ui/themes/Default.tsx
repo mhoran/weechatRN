@@ -9,31 +9,42 @@ interface Props {
   line: WeechatLine;
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
+  letterWidth: number;
 }
 
-const BufferLine: React.FC<Props> = ({ line, onLongPress, parseArgs }) => {
+const BufferLine: React.FC<Props> = ({
+  line,
+  onLongPress,
+  parseArgs,
+  letterWidth
+}) => {
   return (
     <TouchableHighlight onLongPress={() => onLongPress(line)}>
       <View style={[styles.container]}>
-        <View style={styles.metaContainer}>
-          <View style={styles.userContainer}>
-            <Text style={[styles.text, styles.meta]}>
-              {renderWeechatFormat(line.prefix).map((props, index) => {
-                const { style, ...rest } = props;
-                return (
-                  <Text
-                    {...rest}
-                    key={index}
-                    style={line.highlight ? styles.highlight : style}
-                  />
-                );
-              })}
-            </Text>
-          </View>
-          <Text style={[styles.text, styles.meta]}>
-            {formatDate(line.date)}
-          </Text>
-        </View>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[
+            styles.text,
+            {
+              width: letterWidth * 8,
+              paddingRight: letterWidth,
+              textAlign: 'right'
+            }
+          ]}
+        >
+          {renderWeechatFormat(line.prefix).map((props, index) => {
+            const { style, ...rest } = props;
+            return (
+              <Text
+                {...rest}
+                key={index}
+                style={[line.highlight ? styles.highlight : style]}
+              />
+            );
+          })}
+        </Text>
+
         <View style={[styles.messageContainer]}>
           <Text style={styles.text}>
             {renderWeechatFormat(line.message).map((props, index) => (
@@ -41,6 +52,10 @@ const BufferLine: React.FC<Props> = ({ line, onLongPress, parseArgs }) => {
             ))}
           </Text>
         </View>
+
+        <Text style={[styles.text, { paddingLeft: letterWidth }]}>
+          {formatDate(line.date)}
+        </Text>
       </View>
     </TouchableHighlight>
   );
@@ -48,31 +63,20 @@ const BufferLine: React.FC<Props> = ({ line, onLongPress, parseArgs }) => {
 
 export default BufferLine;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     backgroundColor: '#2e3440',
-    paddingTop: 4,
-    paddingBottom: 8,
-    paddingHorizontal: 7
-  },
-  metaContainer: {
-    flexDirection: 'row',
-    paddingBottom: 2
-  },
-  userContainer: {
-    flex: 1
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    flexDirection: 'row'
   },
   messageContainer: {
-    flex: 1,
-    paddingHorizontal: 5
+    flex: 1
   },
   text: {
     fontFamily: 'Menlo',
     color: '#eee',
     fontSize: 14
-  },
-  meta: {
-    fontSize: 12
   },
   highlight: {
     backgroundColor: 'magenta',
