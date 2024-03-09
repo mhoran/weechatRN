@@ -24,7 +24,7 @@ import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
 import UndoTextInput from './UndoTextInput';
-import UploadButton from './UploadButton';
+import UploadButton from '../../shared/UploadButton';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] || [],
