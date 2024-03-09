@@ -1,5 +1,13 @@
 import { useRef } from 'react';
-import { Button, FlatList, Modal, StyleSheet, Text, View } from 'react-native';
+import {
+  Button,
+  FlatList,
+  ListRenderItemInfo,
+  Modal,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
 import { ConnectedProps, connect } from 'react-redux';
 import { StoreState } from '../../../store';
 
@@ -16,6 +24,20 @@ type OwnProps = {
 };
 
 type Props = OwnProps & PropsFromRedux;
+
+type ItemProps = {
+  item: ListRenderItemInfo<WeechatNicklist>;
+};
+
+const Item: React.FC<ItemProps> = ({ item }) => {
+  return (
+    <View style={styles.listItem}>
+      <View style={styles.row}>
+        <Text style={styles.listItemText}>{item.item.name}</Text>
+      </View>
+    </View>
+  );
+};
 
 const NicklistModal: React.FC<Props> = ({
   bufferId,
@@ -40,27 +62,14 @@ const NicklistModal: React.FC<Props> = ({
       animationType="slide"
     >
       <View style={styles.modalWrapper}>
-        <View
-          style={[
-            styles.modalView,
-            {
-              marginTop: 48,
-              marginBottom: 48
-            }
-          ]}
-        >
+        <View style={styles.modalView}>
           <FlatList
             style={styles.list}
             data={nicklist}
             renderItem={(item) => {
-              return (
-                <View style={styles.listItem}>
-                  <View style={styles.row}>
-                    <Text style={styles.listItemText}>{item.item.name}</Text>
-                  </View>
-                </View>
-              );
+              return <Item item={item} />;
             }}
+            keyExtractor={(item) => item.pointers[item.pointers.length - 1]}
           />
           <Button title="Close" onPress={close} />
         </View>
@@ -90,7 +99,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width: 280,
-    flexShrink: 1
+    flexShrink: 1,
+    marginTop: 48,
+    marginBottom: 48
   },
   list: {
     flexGrow: 1,
