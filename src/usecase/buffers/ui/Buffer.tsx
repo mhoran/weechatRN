@@ -67,9 +67,12 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
   }
 
-  renderBuffer: ListRenderItem<WeechatLine> = ({ item }) => {
-    const { onLongPress, parseArgs, lastReadLine } = this.props;
+  renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
+    const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
     const marker = item.pointers.at(-1) === lastReadLine;
+    const lastItemDate = lines[index + 1] && new Date(lines[index + 1].date);
+    const showDate =
+      !lastItemDate || new Date(item.date).getDay() !== lastItemDate.getDay();
 
     return (
       <BufferLine
@@ -78,6 +81,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         parseArgs={parseArgs}
         marker={marker}
         letterWidth={this.state.letterWidth}
+        showDate={showDate}
       />
     );
   };

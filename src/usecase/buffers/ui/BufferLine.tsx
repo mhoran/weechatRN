@@ -1,8 +1,9 @@
 import { ParseShape } from 'react-native-parsed-text';
 
-import { View } from 'react-native';
-import { cef } from '../../../lib/weechat/colors';
-import Default from './themes/Default';
+import { Text, View } from 'react-native';
+import { formatDateDayChange } from '../../../lib/helpers/date-formatter';
+import { cof } from '../../../lib/weechat/colors';
+import Default, { styles } from './themes/Default';
 
 interface Props {
   line: WeechatLine;
@@ -10,6 +11,7 @@ interface Props {
   parseArgs: ParseShape[];
   marker: boolean;
   letterWidth: number;
+  showDate: boolean;
 }
 
 const BufferLine: React.FC<Props> = ({
@@ -17,10 +19,18 @@ const BufferLine: React.FC<Props> = ({
   onLongPress,
   parseArgs,
   marker,
-  letterWidth
+  letterWidth,
+  showDate
 }) => {
   return (
     <>
+      {showDate && (
+        <View style={[styles.container]}>
+          <Text style={[styles.text, { color: cof.chat_day_change.color }]}>
+            -- {formatDateDayChange(line.date)} --
+          </Text>
+        </View>
+      )}
       {line.displayed !== 0 && (
         <Default
           line={line}
@@ -29,7 +39,11 @@ const BufferLine: React.FC<Props> = ({
           letterWidth={letterWidth}
         />
       )}
-      {marker && <View style={{ borderWidth: 1, borderColor: cef[5] }} />}
+      {marker && (
+        <View
+          style={{ borderWidth: 1, borderColor: cof.chat_read_marker.color }}
+        />
+      )}
     </>
   );
 };
