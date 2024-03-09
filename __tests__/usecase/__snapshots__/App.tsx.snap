@@ -93,7 +93,7 @@ exports[`renders correctly 1`] = `
                   "alignItems": "center",
                   "backgroundColor": "#333",
                   "flexDirection": "row",
-                  "justifyContent": "space-between",
+                  "justifyContent": "center",
                   "paddingBottom": 10,
                 }
               }
@@ -101,7 +101,10 @@ exports[`renders correctly 1`] = `
               <View
                 style={
                   {
-                    "paddingHorizontal": 5,
+                    "flex": 1,
+                    "flexDirection": "row",
+                    "justifyContent": "flex-start",
+                    "paddingLeft": 10,
                   }
                 }
               >
@@ -136,7 +139,7 @@ exports[`renders correctly 1`] = `
                   style={
                     {
                       "opacity": 1,
-                      "paddingHorizontal": 10,
+                      "paddingHorizontal": 5,
                       "paddingVertical": 5,
                     }
                   }
@@ -160,54 +163,10 @@ exports[`renders correctly 1`] = `
                 </View>
               </View>
               <View
-                accessibilityState={
-                  {
-                    "busy": undefined,
-                    "checked": undefined,
-                    "disabled": undefined,
-                    "expanded": undefined,
-                    "selected": undefined,
-                  }
-                }
-                accessibilityValue={
-                  {
-                    "max": undefined,
-                    "min": undefined,
-                    "now": undefined,
-                    "text": undefined,
-                  }
-                }
-                accessible={true}
-                collapsable={false}
-                focusable={true}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
                 style={
                   {
-                    "opacity": 1,
-                  }
-                }
-              >
-                <Text
-                  style={
-                    {
-                      "color": "#eee",
-                      "fontFamily": "Thonburi",
-                      "fontSize": 15,
-                      "fontWeight": "bold",
-                    }
-                  }
-                />
-              </View>
-              <View
-                style={
-                  {
-                    "paddingHorizontal": 5,
+                    "alignItems": "center",
+                    "flex": 4,
                   }
                 }
               >
@@ -242,7 +201,67 @@ exports[`renders correctly 1`] = `
                   style={
                     {
                       "opacity": 1,
-                      "paddingHorizontal": 10,
+                    }
+                  }
+                >
+                  <Text
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
+                    style={
+                      [
+                        {
+                          "color": "#eee",
+                          "fontFamily": "Thonburi",
+                          "fontSize": 15,
+                          "fontWeight": "bold",
+                        },
+                      ]
+                    }
+                  />
+                </View>
+              </View>
+              <View
+                style={
+                  {
+                    "flex": 1,
+                    "flexDirection": "row",
+                    "justifyContent": "flex-end",
+                    "paddingRight": 10,
+                  }
+                }
+              >
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": undefined,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "opacity": 1,
+                      "paddingHorizontal": 5,
                       "paddingVertical": 5,
                     }
                   }

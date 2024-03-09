@@ -167,6 +167,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         });
       };
     }
+    case '_nicklist':
     case 'nicklist': {
       const object = data.objects[0] as WeechatObject<WeechatNicklist[]>;
       const nicklistDiffs = object.content;

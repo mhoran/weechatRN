@@ -16,11 +16,12 @@ import {
 } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
+import NicklistModal from './buffers/ui/NicklistModal';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -56,6 +57,7 @@ interface State {
   showTopic: boolean;
   drawerWidth: number;
   drawerOpen: boolean;
+  showNicklistModal: boolean;
 }
 
 class App extends React.Component<Props, State> {
@@ -80,7 +82,8 @@ class App extends React.Component<Props, State> {
   state: State = {
     showTopic: false,
     drawerWidth: this.drawerWidth(),
-    drawerOpen: !this.props.currentBufferId
+    drawerOpen: !this.props.currentBufferId,
+    showNicklistModal: false
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer) => {
@@ -101,6 +104,10 @@ class App extends React.Component<Props, State> {
     this.setState((state) => ({
       showTopic: !state.showTopic
     }));
+  };
+
+  toggleShowNicklistModal = () => {
+    this.setState((state) => ({ showNicklistModal: !state.showNicklistModal }));
   };
 
   openDrawer = () => {
@@ -154,7 +161,7 @@ class App extends React.Component<Props, State> {
     const { buffers, currentBufferId, currentBuffer, hasHighlights } =
       this.props;
 
-    const { showTopic, drawerWidth } = this.state;
+    const { showTopic, drawerWidth, showNicklistModal } = this.state;
 
     const sidebar = () => (
       <BufferList
@@ -185,10 +192,16 @@ class App extends React.Component<Props, State> {
               drawerPosition={'left'}
             >
               <SafeAreaView style={styles.container}>
+                <NicklistModal
+                  bufferId={currentBufferId}
+                  visible={showNicklistModal}
+                  close={this.toggleShowNicklistModal}
+                />
+
                 <View style={styles.topbar}>
-                  <View style={styles.channels}>
+                  <View style={styles.channelsButtonWrapper}>
                     <TouchableOpacity
-                      style={styles.channelsButton}
+                      style={styles.topbarButton}
                       onPress={this.openDrawer}
                     >
                       <Text
@@ -203,14 +216,34 @@ class App extends React.Component<Props, State> {
                       </Text>
                     </TouchableOpacity>
                   </View>
-                  <TouchableOpacity onPress={this.toggleShowTopic}>
-                    <Text style={styles.topbarText}>
-                      {currentBuffer && currentBuffer.short_name}
-                    </Text>
-                  </TouchableOpacity>
-                  <View style={styles.channels}>
+
+                  <View style={styles.topbarTextWrapper}>
+                    <TouchableOpacity onPress={this.toggleShowTopic}>
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.topbarText]}
+                      >
+                        {currentBuffer && currentBuffer.short_name}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.rightTopbarButtons}>
+                    {currentBufferId && (
+                      <TouchableOpacity
+                        style={styles.topbarButton}
+                        onPress={this.toggleShowNicklistModal}
+                      >
+                        <MaterialIcons
+                          name="view-list"
+                          size={22}
+                          color="white"
+                        />
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity
-                      style={styles.channelsButton}
+                      style={styles.topbarButton}
                       onPress={this.props.disconnect}
                     >
                       <MaterialCommunityIcons
@@ -245,16 +278,19 @@ const styles = StyleSheet.create({
   topbar: {
     flexDirection: 'row',
     backgroundColor: '#333',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 10
   },
-  channels: {
-    paddingHorizontal: 5
+  channelsButtonWrapper: {
+    paddingLeft: 10,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
   },
-  channelsButton: {
+  topbarButton: {
     paddingVertical: 5,
-    paddingHorizontal: 10
+    paddingHorizontal: 5
   },
   channelsButtonText: {
     textAlign: 'center',
@@ -263,11 +299,21 @@ const styles = StyleSheet.create({
     color: '#eee',
     fontWeight: 'bold'
   },
+  topbarTextWrapper: {
+    flex: 4,
+    alignItems: 'center'
+  },
   topbarText: {
     color: '#eee',
     fontFamily: 'Thonburi',
     fontWeight: 'bold',
     fontSize: 15
+  },
+  rightTopbarButtons: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingRight: 10,
+    flexDirection: 'row'
   },
   container: {
     flex: 1,
