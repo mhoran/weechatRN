@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   ActivityIndicator,
-  SafeAreaView,
   StatusBar,
   Switch,
   Text,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConnectionError } from '../../lib/weechat/connection';
 import { StoreState } from '../../store';

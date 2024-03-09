@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  SafeAreaView,
+  KeyboardAvoidingView,
   ScrollView,
   StatusBar,
   Switch,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 import { StoreState } from '../../store';
 import UndoTextInput from '../buffers/ui/UndoTextInput';
@@ -107,12 +108,9 @@ const UploadSettings: React.FC<Props> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView>
-        <ScrollView
-          automaticallyAdjustKeyboardInsets={true}
-          alwaysBounceVertical={false}
-        >
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView behavior="padding">
+        <ScrollView alwaysBounceVertical={false}>
           <StatusBar barStyle="dark-content" />
           <Text style={styles.header}>Media Upload Settings</Text>
           <UndoTextInput
@@ -229,8 +227,8 @@ const UploadSettings: React.FC<Props> = ({
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </SafeAreaView>
-    </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

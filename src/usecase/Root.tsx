@@ -6,11 +6,12 @@ import { PersistGate } from 'redux-persist/integration/react';
 import WeechatConnection, { ConnectionError } from '../lib/weechat/connection';
 import { persistor, store } from '../store';
 
+import { addListener } from '@reduxjs/toolkit';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
-import { addListener } from '@reduxjs/toolkit';
 
 interface State {
   connecting: boolean;
@@ -128,21 +129,23 @@ export default class WeechatNative extends React.Component<null, State> {
 
     return (
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <ConnectionGate
-            connecting={connecting}
-            connectionError={connectionError}
-            onConnect={this.onConnect}
-          >
-            <StatusBar barStyle="light-content" />
-            <App
-              disconnect={this.disconnect}
-              clearHotlistForBuffer={this.clearHotlistForBuffer}
-              sendMessageToBuffer={this.sendMessageToBuffer}
-              fetchBufferInfo={this.fetchBufferInfo}
-            />
-          </ConnectionGate>
-        </PersistGate>
+        <SafeAreaProvider>
+          <PersistGate loading={null} persistor={persistor}>
+            <ConnectionGate
+              connecting={connecting}
+              connectionError={connectionError}
+              onConnect={this.onConnect}
+            >
+              <StatusBar barStyle="light-content" />
+              <App
+                disconnect={this.disconnect}
+                clearHotlistForBuffer={this.clearHotlistForBuffer}
+                sendMessageToBuffer={this.sendMessageToBuffer}
+                fetchBufferInfo={this.fetchBufferInfo}
+              />
+            </ConnectionGate>
+          </PersistGate>
+        </SafeAreaProvider>
       </Provider>
     );
   }

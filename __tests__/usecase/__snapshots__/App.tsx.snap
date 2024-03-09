@@ -351,9 +351,9 @@ exports[`renders correctly 1`] = `
             "backgroundColor": "#121212",
             "bottom": 0,
             "maxWidth": "100%",
-            "paddingBottom": 0,
-            "paddingLeft": 0,
-            "paddingTop": 0,
+            "paddingBottom": undefined,
+            "paddingLeft": undefined,
+            "paddingTop": undefined,
             "position": "absolute",
             "top": 0,
             "transform": [
