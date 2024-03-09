@@ -16,7 +16,7 @@ import {
 } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
 import BufferGate from './buffers/ui/BufferGate';
@@ -235,11 +235,7 @@ class App extends React.Component<Props, State> {
                         style={styles.topbarButton}
                         onPress={this.toggleShowNicklistModal}
                       >
-                        <MaterialIcons
-                          name="view-list"
-                          size={22}
-                          color="white"
-                        />
+                        <Feather name="users" size={22} color="white" />
                       </TouchableOpacity>
                     )}
                     <TouchableOpacity
