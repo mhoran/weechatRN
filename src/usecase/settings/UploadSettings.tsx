@@ -14,6 +14,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { StoreState } from '../../store';
 import UndoTextInput from '../buffers/ui/UndoTextInput';
 import { styles } from './SettingsNavigator';
+import { setMediaUploadOptionsAction } from '../../store/actions';
 
 const connector = connect((state: StoreState) => ({
   uploadOptions: {
@@ -93,17 +94,16 @@ const UploadSettings: React.FC<Props> = ({
       {}
     );
 
-    dispatch({
-      type: 'SET_MEDIA_UPLOAD_OPTIONS',
-      payload: {
+    dispatch(
+      setMediaUploadOptionsAction({
         ...rest,
         username: rest.username || undefined,
         password: rest.password || undefined,
         fieldName: rest.fieldName || undefined,
         regexp: rest.regexp || undefined,
         ...(Object.keys(headersObject).length > 0 && { headers: headersObject })
-      }
-    });
+      })
+    );
     setShowUploadSettings(false);
   };
 

@@ -14,6 +14,7 @@ import { ConnectionError } from '../../lib/weechat/connection';
 import { StoreState } from '../../store';
 import UndoTextInput from '../buffers/ui/UndoTextInput';
 import { styles } from '../settings/SettingsNavigator';
+import { setConnectionInfoAction } from '../../store/actions';
 
 const connector = connect((state: StoreState) => ({
   hostname: state.connection.hostname || '',
@@ -47,13 +48,14 @@ class LoginForm extends React.Component<Props, State> {
   };
 
   onPress = () => {
-    this.props.dispatch({
-      type: 'SET_CONNECTION_INFO',
-      hostname: this.state.hostname,
-      password: this.state.password,
-      ssl: this.state.ssl,
-      filterBuffers: this.state.filterBuffers
-    });
+    this.props.dispatch(
+      setConnectionInfoAction({
+        hostname: this.state.hostname,
+        password: this.state.password,
+        ssl: this.state.ssl,
+        filterBuffers: this.state.filterBuffers
+      })
+    );
     const { hostname, password, ssl } = this.state;
     this.props.onConnect(hostname, password, ssl);
   };

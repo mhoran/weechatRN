@@ -1,5 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { BufferState } from './buffers';
+import { ConnectionOptions, MediaUploadOptions } from './connection-info';
 
 export const disconnectAction = createAction<undefined>('DISCONNECT');
 export const fetchVersionAction = createAction<string>('FETCH_VERSION');
@@ -23,3 +24,13 @@ export const bufferLocalvarRemoveAction = createAction<WeechatBuffer>(
 export const bufferRenamedAction =
   createAction<WeechatBuffer>('BUFFER_RENAMED');
 export const lastReadLinesAction = createAction<unknown>('LAST_READ_LINES');
+
+export const setConnectionInfoAction = createAction<ConnectionOptions>(
+  'SET_CONNECTION_INFO'
+);
+export const setMediaUploadOptionsAction = createAction<MediaUploadOptions>(
+  'SET_MEDIA_UPLOAD_OPTIONS'
+);
+export const clearConnectionInfoAction = createAction<undefined>(
+  'CLEAR_CONNECTION_INFO'
+);

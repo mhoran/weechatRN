@@ -1,19 +1,29 @@
-import { AnyAction } from 'redux';
+import { createReducer } from '@reduxjs/toolkit';
+import {
+  clearConnectionInfoAction,
+  setConnectionInfoAction,
+  setMediaUploadOptionsAction
+} from './actions';
 
-export type ConnectionInfo = {
+export type ConnectionOptions = {
   hostname: string | null;
   password: string | null;
   ssl: boolean;
   filterBuffers: boolean;
-  mediaUploadOptions: {
-    url: string;
-    fieldName?: string;
-    regexp?: string;
-    basicAuth: boolean;
-    username?: string;
-    password?: string;
-    headers?: Record<string, string>;
-  };
+};
+
+export type MediaUploadOptions = {
+  url: string;
+  fieldName?: string;
+  regexp?: string;
+  basicAuth: boolean;
+  username?: string;
+  password?: string;
+  headers?: Record<string, string>;
+};
+
+export type ConnectionInfo = ConnectionOptions & {
+  mediaUploadOptions: MediaUploadOptions;
 };
 
 const initialState: ConnectionInfo = {
@@ -27,24 +37,22 @@ const initialState: ConnectionInfo = {
   }
 };
 
-export default (
-  state: ConnectionInfo = initialState,
-  action: AnyAction
-): ConnectionInfo => {
-  switch (action.type) {
-    case 'SET_CONNECTION_INFO':
-      return {
-        ...state,
-        hostname: action.hostname,
-        password: action.password,
-        ssl: action.ssl,
-        filterBuffers: action.filterBuffers
-      };
-    case 'SET_MEDIA_UPLOAD_OPTIONS':
-      return { ...state, mediaUploadOptions: action.payload };
-    case 'CLEAR_CONNECTION_INFO':
-      return initialState;
-    default:
-      return state;
-  }
-};
+const connectionInfoReducer = createReducer(initialState, (builder) => {
+  builder.addCase(setConnectionInfoAction, (state, action) => {
+    return {
+      ...state,
+      hostname: action.payload.hostname,
+      password: action.payload.password,
+      ssl: action.payload.ssl,
+      filterBuffers: action.payload.filterBuffers
+    };
+  });
+  builder.addCase(setMediaUploadOptionsAction, (state, action) => {
+    return { ...state, mediaUploadOptions: action.payload };
+  });
+  builder.addCase(clearConnectionInfoAction, () => {
+    return initialState;
+  });
+});
+
+export default connectionInfoReducer;
