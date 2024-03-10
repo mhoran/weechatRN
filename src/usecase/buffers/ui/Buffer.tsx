@@ -71,8 +71,10 @@ export default class Buffer extends React.PureComponent<Props, State> {
   renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
     const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
     const marker = item.pointers.at(-1) === lastReadLine;
-    const lastItemDate = lines[index + 1] && lines[index + 1].date;
-    const showDate = !(lastItemDate && isSameDay(item.date, lastItemDate));
+    const nextUnread = lines.slice(index + 1).find((line) => line.displayed);
+    const showDate =
+      item.displayed !== 0 &&
+      !(nextUnread && isSameDay(item.date, nextUnread.date));
 
     return (
       <BufferLine
