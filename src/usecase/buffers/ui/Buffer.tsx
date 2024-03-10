@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Button, Text } from 'react-native';
 
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import { isSameDay } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 import BufferLine from './BufferLine';
@@ -70,20 +69,16 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
     const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
-    const marker = item.pointers.at(-1) === lastReadLine;
-    const nextUnread = lines.slice(index + 1).find((line) => line.displayed);
-    const showDate =
-      item.displayed !== 0 &&
-      !(nextUnread && isSameDay(item.date, nextUnread.date));
+    const lastMessage = lines.slice(index + 1).find((line) => line.displayed);
 
     return (
       <BufferLine
         line={item}
         onLongPress={onLongPress}
         parseArgs={parseArgs}
-        marker={marker}
         letterWidth={this.state.letterWidth}
-        showDate={showDate}
+        lastReadLine={lastReadLine}
+        lastMessageDate={lastMessage?.date}
       />
     );
   };
