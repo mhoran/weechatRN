@@ -11,8 +11,10 @@ import {
   fetchBuffersRemovedAction,
   fetchHotlistsAction,
   fetchLinesAction,
+  fetchNicklistAction,
   fetchVersionAction,
   lastReadLinesAction,
+  nicklistUpdatedAction,
   upgradeAction
 } from '../../store/actions';
 
@@ -32,38 +34,24 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const object = data.objects[0] as WeechatObject<WeechatNicklist[]>;
       const nicklistDiffs = object.content;
 
-      const nick = nicklistDiffs.filter((diff) => diff.group === 0)[0];
+      const nicks = nicklistDiffs.filter((diff) => diff.group === 0);
 
-      if (nick) {
-        const bufferId = nick.pointers[0];
-        const payload = nick;
+      const updates = nicks.reduce(
+        ({ added, removed }, nick) => {
+          switch (String.fromCharCode(nick._diff)) {
+            case '+': {
+              return { added: [...added, nick], removed };
+            }
+            case '-': {
+              return { removed: [...removed, nick], added };
+            }
+          }
+          return { added, removed };
+        },
+        { added: [] as WeechatNicklist[], removed: [] as WeechatNicklist[] }
+      );
 
-        switch (String.fromCharCode(nick._diff)) {
-          case '+': {
-            return {
-              type: 'NICK_ADDED',
-              bufferId,
-              payload
-            };
-          }
-          case '-': {
-            return {
-              type: 'NICK_REMOVED',
-              bufferId,
-              payload
-            };
-          }
-          case '*': {
-            return {
-              type: 'NICK_UPDATED',
-              bufferId,
-              payload
-            };
-          }
-        }
-      }
-
-      return null;
+      return nicklistUpdatedAction(updates);
     }
     case '_buffer_cleared': {
       const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;
@@ -169,11 +157,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
 
       const nicks = nicklistDiffs.filter((diff) => diff.group === 0);
 
-      return {
-        type: 'FETCH_NICKLIST',
+      return fetchNicklistAction({
         bufferId: object.content[0].pointers[0],
-        payload: nicks
-      };
+        nicklist: nicks
+      });
     }
     case 'buffers': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;

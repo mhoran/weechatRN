@@ -47,3 +47,12 @@ export const bufferLineAddedAction = createAction<{
 
 export const fetchLinesAction = createAction<WeechatLine[]>('FETCH_LINES');
 export const bufferClearedAction = createAction<string>('BUFFER_CLEARED');
+
+export const fetchNicklistAction = createAction<{
+  bufferId: string;
+  nicklist: WeechatNicklist[];
+}>('FETCH_NICKLIST');
+export const nicklistUpdatedAction = createAction<{
+  added: WeechatNicklist[];
+  removed: WeechatNicklist[];
+}>('NICKLIST_UPDATED');

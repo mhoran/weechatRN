@@ -213,4 +213,51 @@ describe('transformToReduxAction', () => {
       });
     });
   });
+
+  describe('on _nicklist_diff', () => {
+    it('synchronizes the nicklist state with the provided diff', () => {
+      const preloadedState = {
+        nicklists: {
+          '84ed37600': [
+            {
+              name: 'oldnick',
+              pointers: ['84ed37600', '85139f000']
+            } as WeechatNicklist
+          ]
+        }
+      };
+      const store = configureStore({ reducer, preloadedState });
+
+      const action = transformToReduxAction({
+        id: '_nicklist_diff',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                _diff: 45,
+                group: 0,
+                name: 'oldnick',
+                pointers: ['84ed37600', '85139f000']
+              },
+              {
+                _diff: 43,
+                group: 0,
+                name: 'newnick',
+                pointers: ['84ed37600', '85139f000']
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().nicklists).toMatchObject({
+        '84ed37600': [{ name: 'newnick', pointers: ['84ed37600', '85139f000'] }]
+      });
+    });
+  });
 });
