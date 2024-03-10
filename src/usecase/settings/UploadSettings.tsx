@@ -88,7 +88,8 @@ const UploadSettings: React.FC<Props> = ({
     const { headers, ...rest } = uploadOptionsState;
     const headersObject = headers.reduce<Record<string, string>>(
       (headers, [headerName, headerValue]) => {
-        if (headerName && headerValue) headers[headerName] = headerValue;
+        if (headerName && headerValue)
+          return { ...headers, [headerName]: headerValue };
         return headers;
       },
       {}
