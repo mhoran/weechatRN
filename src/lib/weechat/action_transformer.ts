@@ -1,5 +1,6 @@
 import { AppDispatch, StoreState } from '../../store';
 import {
+  bufferClearedAction,
   bufferClosedAction,
   bufferLineAddedAction,
   bufferLocalvarRemoveAction,
@@ -9,6 +10,7 @@ import {
   fetchBuffersAction,
   fetchBuffersRemovedAction,
   fetchHotlistsAction,
+  fetchLinesAction,
   fetchVersionAction,
   lastReadLinesAction,
   upgradeAction
@@ -75,10 +77,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
 
         if (!buffer) return undefined;
 
-        dispatch({
-          type: 'BUFFER_CLEARED',
-          bufferId: buffer.id
-        });
+        dispatch(bufferClearedAction(buffer.id));
       };
     }
     case '_buffer_line_added': {
@@ -204,18 +203,17 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         Record<string, unknown>[]
       >;
       if (!object.content[0]) return undefined;
-      return {
-        type: 'FETCH_LINES',
-        bufferId: object.content[0].buffer,
-        payload: object.content.map((line) => {
+      return fetchLinesAction(
+        object.content.map((line) => {
           const { date, date_printed, ...restLine } = line;
+
           return {
             ...restLine,
             date: (date as Date).toISOString(),
             date_printed: (date_printed as Date).toISOString()
-          };
+          } as WeechatLine;
         })
-      };
+      );
     }
     case 'last_read_lines': {
       const object = data.objects[0] as WeechatObject<unknown>;

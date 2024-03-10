@@ -44,3 +44,6 @@ export const bufferLineAddedAction = createAction<{
   line: WeechatLine;
   currentBufferId: string | null;
 }>('BUFFER_LINE_ADDED');
+
+export const fetchLinesAction = createAction<WeechatLine[]>('FETCH_LINES');
+export const bufferClearedAction = createAction<string>('BUFFER_CLEARED');
