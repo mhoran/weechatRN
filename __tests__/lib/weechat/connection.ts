@@ -1,6 +1,10 @@
 import WeechatConnection, {
   ConnectionError
 } from '../../../src/lib/weechat/connection';
+import {
+  disconnectAction,
+  fetchVersionAction
+} from '../../../src/store/actions';
 
 const mockWebSocket = jest.fn(function () {
   this.send = jest.fn();
@@ -86,10 +90,7 @@ describe(WeechatConnection, () => {
 
     expect(onSuccess).toHaveBeenCalled();
     expect(onError).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'FETCH_VERSION',
-      payload: '4.1.2'
-    });
+    expect(dispatch).toHaveBeenCalledWith(fetchVersionAction('4.1.2'));
   });
 
   describe('close', () => {
@@ -120,9 +121,7 @@ describe(WeechatConnection, () => {
         'quit\n'
       );
       expect(mockWebSocket.mock.instances[0].close).toHaveBeenCalled();
-      expect(dispatch).toHaveBeenNthCalledWith(2, {
-        type: 'DISCONNECT'
-      });
+      expect(dispatch).toHaveBeenNthCalledWith(2, disconnectAction());
       expect(mockWebSocket.mock.instances).toHaveLength(1);
     });
 
@@ -151,9 +150,7 @@ describe(WeechatConnection, () => {
       mockWebSocket.mock.instances[0].close();
 
       expect(onError).toHaveBeenCalledWith(true, ConnectionError.Socket);
-      expect(dispatch).toHaveBeenNthCalledWith(2, {
-        type: 'DISCONNECT'
-      });
+      expect(dispatch).toHaveBeenNthCalledWith(2, disconnectAction());
       expect(mockWebSocket.mock.instances).toHaveLength(2);
     });
   });

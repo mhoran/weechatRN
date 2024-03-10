@@ -22,6 +22,7 @@ import { StoreState } from '../store';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
+import { changeCurrentBufferAction } from '../store/actions';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -91,10 +92,7 @@ class App extends React.Component<Props, State> {
 
     this.closeDrawer();
     if (currentBufferId !== buffer.id) {
-      this.props.dispatch({
-        type: 'CHANGE_CURRENT_BUFFER',
-        bufferId: buffer.id
-      });
+      this.props.dispatch(changeCurrentBufferAction(buffer.id));
       this.props.clearHotlistForBuffer(currentBufferId, buffer.id);
       fetchBufferInfo(buffer.id);
     }

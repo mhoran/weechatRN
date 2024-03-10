@@ -1,4 +1,10 @@
 import { AppDispatch, StoreState } from '../../store';
+import {
+  bufferClosedAction,
+  fetchBuffersRemovedAction,
+  fetchVersionAction,
+  upgradeAction
+} from '../../store/actions';
 
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
@@ -93,10 +99,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
 
-      return {
-        type: 'BUFFER_CLOSED',
-        bufferId: buffer.pointers[0]
-      };
+      return bufferClosedAction(buffer.pointers[0]);
     }
     case '_buffer_opened': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
@@ -144,7 +147,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       };
     }
     case '_upgrade': {
-      return { type: 'UPGRADE' };
+      return upgradeAction();
     }
     case 'hotlist': {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
@@ -194,7 +197,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
           return !(buffer in newBuffers);
         });
 
-        dispatch({ type: 'FETCH_BUFFERS_REMOVED', payload: removed });
+        dispatch(fetchBuffersRemovedAction(removed));
         dispatch({
           type: 'FETCH_BUFFERS',
           payload: newBuffers
@@ -204,10 +207,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
     case 'version': {
       const infolist = data.objects[0] as WeechatObject<WeechatInfoList>;
 
-      return {
-        type: 'FETCH_VERSION',
-        payload: infolist.content.value
-      };
+      return fetchVersionAction(infolist.content.value);
     }
     case 'lines': {
       const object = data.objects[0] as WeechatObject<

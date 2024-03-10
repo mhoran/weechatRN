@@ -19,7 +19,7 @@ export default (
 
       return action.payload as HotListState;
     case 'CHANGE_CURRENT_BUFFER': {
-      const { [action.bufferId]: _, ...rest } = state;
+      const { [action.payload]: _, ...rest } = state;
       return rest;
     }
     case 'BUFFER_LINE_ADDED': {
@@ -47,7 +47,7 @@ export default (
       };
     }
     case 'BUFFER_CLOSED': {
-      const { [action.bufferId]: _, ...rest } = state;
+      const { [action.payload]: _, ...rest } = state;
       return rest;
     }
     case 'FETCH_BUFFERS_REMOVED': {

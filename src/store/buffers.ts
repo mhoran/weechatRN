@@ -13,7 +13,7 @@ export default (
       return action.payload as BufferState;
     }
     case 'BUFFER_CLOSED': {
-      const { [action.bufferId]: _, ...rest } = state;
+      const { [action.payload]: _, ...rest } = state;
       return rest;
     }
     case 'BUFFER_OPENED': {

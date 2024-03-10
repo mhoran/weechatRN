@@ -1,6 +1,7 @@
 import { WeeChatProtocol } from './parser';
 import { transformToReduxAction } from './action_transformer';
 import { AppDispatch } from '../../store';
+import { disconnectAction } from '../../store/actions';
 
 const protocol = new WeeChatProtocol();
 
@@ -84,9 +85,7 @@ export default class WeechatConnection {
     }
 
     this.connected = false;
-    this.dispatch({
-      type: 'DISCONNECT'
-    });
+    this.dispatch(disconnectAction());
 
     if (this.reconnect) {
       this.reconnect = false;

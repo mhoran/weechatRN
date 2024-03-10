@@ -2,6 +2,7 @@ import { AnyAction, configureStore } from '@reduxjs/toolkit';
 import { StoreState, reducer } from '../../../src/store';
 import { transformToReduxAction } from '../../../src/lib/weechat/action_transformer';
 import { ThunkAction } from 'redux-thunk';
+import { fetchBuffersRemovedAction } from '../../../src/store/actions';
 
 describe('transformToReduxAction', () => {
   describe('on buffers', () => {
@@ -68,7 +69,7 @@ describe('transformToReduxAction', () => {
       );
       expect(dispatch).toHaveBeenNthCalledWith(
         1,
-        expect.objectContaining({ type: 'FETCH_BUFFERS_REMOVED' })
+        fetchBuffersRemovedAction([])
       );
       expect(dispatch).toHaveBeenNthCalledWith(
         2,

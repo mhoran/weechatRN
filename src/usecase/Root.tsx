@@ -12,6 +12,7 @@ import { getPushNotificationStatusAsync } from '../lib/helpers/push-notification
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
+import { upgradeAction } from '../store/actions';
 
 interface State {
   connecting: boolean;
@@ -30,9 +31,7 @@ export default class WeechatNative extends React.Component<null, State> {
     super(props);
     store.dispatch(
       addListener({
-        predicate: (action) => {
-          return action.type === 'UPGRADE';
-        },
+        predicate: (action) => upgradeAction.match(action),
         effect: () => {
           this.disconnect();
         }
