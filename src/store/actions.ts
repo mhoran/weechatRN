@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { BufferState } from './buffers';
 import { ConnectionOptions, MediaUploadOptions } from './connection-info';
+import { HotListState } from './hotlists';
 
 export const disconnectAction = createAction<undefined>('DISCONNECT');
 export const fetchVersionAction = createAction<string>('FETCH_VERSION');
@@ -34,3 +35,12 @@ export const setMediaUploadOptionsAction = createAction<MediaUploadOptions>(
 export const clearConnectionInfoAction = createAction<undefined>(
   'CLEAR_CONNECTION_INFO'
 );
+
+export const fetchHotlistsAction = createAction<{
+  hotlists: HotListState;
+  currentBufferId: string | null;
+}>('FETCH_HOTLISTS');
+export const bufferLineAddedAction = createAction<{
+  line: WeechatLine;
+  currentBufferId: string | null;
+}>('BUFFER_LINE_ADDED');

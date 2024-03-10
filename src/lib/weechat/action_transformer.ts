@@ -1,12 +1,14 @@
 import { AppDispatch, StoreState } from '../../store';
 import {
   bufferClosedAction,
+  bufferLineAddedAction,
   bufferLocalvarRemoveAction,
   bufferLocalvarUpdateAction,
   bufferOpenedAction,
   bufferRenamedAction,
   fetchBuffersAction,
   fetchBuffersRemovedAction,
+  fetchHotlistsAction,
   fetchVersionAction,
   lastReadLinesAction,
   upgradeAction
@@ -89,16 +91,16 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         const state: StoreState = getState();
         const { date, date_printed, ...restLine } = line;
 
-        dispatch({
-          type: 'BUFFER_LINE_ADDED',
-          bufferId: line.buffer,
-          currentBufferId: state.app.currentBufferId,
-          payload: {
-            ...restLine,
-            date: (date as Date).toISOString(),
-            date_printed: (date_printed as Date).toISOString()
-          }
-        });
+        dispatch(
+          bufferLineAddedAction({
+            currentBufferId: state.app.currentBufferId,
+            line: {
+              ...restLine,
+              date: (date as Date).toISOString(),
+              date_printed: (date_printed as Date).toISOString()
+            } as WeechatLine
+          })
+        );
       };
     }
     case '_buffer_closing': {
@@ -145,19 +147,20 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       return (dispatch: AppDispatch, getState: () => StoreState) => {
         const state: StoreState = getState();
 
-        dispatch({
-          type: 'FETCH_HOTLISTS',
-          payload: reduceToObjectByKey(
-            object.content,
-            (hotlist) => hotlist.buffer,
-            ({ buffer, count }) => {
-              const [, message, privmsg, highlight] = count;
-              const sum = message + privmsg + highlight;
-              return { buffer, message, privmsg, highlight, sum };
-            }
-          ),
-          currentBufferId: state.app.currentBufferId
-        });
+        dispatch(
+          fetchHotlistsAction({
+            hotlists: reduceToObjectByKey(
+              object.content,
+              (hotlist) => hotlist.buffer,
+              ({ buffer, count }) => {
+                const [, message, privmsg, highlight] = count;
+                const sum = message + privmsg + highlight;
+                return { buffer, message, privmsg, highlight, sum };
+              }
+            ),
+            currentBufferId: state.app.currentBufferId
+          })
+        );
       };
     }
     case '_nicklist':

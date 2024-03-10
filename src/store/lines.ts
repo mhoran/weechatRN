@@ -27,9 +27,9 @@ export default (
     case 'BUFFER_LINE_ADDED':
       return {
         ...state,
-        [action.bufferId]: [
-          action.payload as WeechatLine,
-          ...(state[action.bufferId] || [])
+        [action.payload.line.buffer]: [
+          action.payload.line as WeechatLine,
+          ...(state[action.payload.line.buffer] || [])
         ]
       };
     case 'FETCH_BUFFERS_REMOVED': {

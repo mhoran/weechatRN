@@ -1,63 +1,67 @@
-import { AnyAction } from 'redux';
 import { getHotlistForBufferId } from './selectors';
+import {
+  bufferClosedAction,
+  bufferLineAddedAction,
+  changeCurrentBufferAction,
+  fetchBuffersRemovedAction,
+  fetchHotlistsAction
+} from './actions';
+import { createReducer } from '@reduxjs/toolkit';
 
 export type HotListState = { [key: string]: Hotlist };
 
 const initialState: HotListState = {};
 
-export default (
-  state: HotListState = initialState,
-  action: AnyAction
-): HotListState => {
-  switch (action.type) {
-    case 'FETCH_HOTLISTS':
-      if (action.currentBufferId) {
-        const { [action.currentBufferId]: _, ...rest } =
-          action.payload as HotListState;
-        return rest;
-      }
-
-      return action.payload as HotListState;
-    case 'CHANGE_CURRENT_BUFFER': {
-      const { [action.payload]: _, ...rest } = state;
+const hotlistsReducer = createReducer(initialState, (builder) => {
+  builder.addCase(fetchHotlistsAction, (state, action) => {
+    if (action.payload.currentBufferId) {
+      const { [action.payload.currentBufferId]: _, ...rest } =
+        action.payload.hotlists;
       return rest;
     }
-    case 'BUFFER_LINE_ADDED': {
-      if (action.bufferId === action.currentBufferId) {
-        return state;
-      }
 
-      const payload = action.payload as WeechatLine;
-      const hotlist = {
-        ...getHotlistForBufferId(state, action.bufferId)
-      };
+    return action.payload.hotlists;
+  });
+  builder.addCase(changeCurrentBufferAction, (state, action) => {
+    const { [action.payload]: _, ...rest } = state;
+    return rest;
+  });
+  builder.addCase(bufferLineAddedAction, (state, action) => {
+    const { line, currentBufferId } = action.payload;
 
-      const shouldNotify = (tag: string) =>
-        tag !== 'irc_smart_filter' && tag !== 'notify_none';
-      if (payload.tags_array.every(shouldNotify)) {
-        if (payload.highlight !== 0) {
-          hotlist.highlight++;
-        }
-        hotlist.sum++;
-      }
-
-      return {
-        ...state,
-        [action.bufferId]: hotlist
-      };
-    }
-    case 'BUFFER_CLOSED': {
-      const { [action.payload]: _, ...rest } = state;
-      return rest;
-    }
-    case 'FETCH_BUFFERS_REMOVED': {
-      return Object.fromEntries(
-        Object.entries(state).filter(
-          ([bufferId]) => !(action.payload as string[]).includes(bufferId)
-        )
-      );
-    }
-    default:
+    if (line.buffer === currentBufferId) {
       return state;
-  }
-};
+    }
+
+    const hotlist = {
+      ...getHotlistForBufferId(state, line.buffer)
+    };
+
+    const shouldNotify = (tag: string) =>
+      tag !== 'irc_smart_filter' && tag !== 'notify_none';
+    if (line.tags_array.every(shouldNotify)) {
+      if (line.highlight !== 0) {
+        hotlist.highlight++;
+      }
+      hotlist.sum++;
+    }
+
+    return {
+      ...state,
+      [line.buffer]: hotlist
+    };
+  });
+  builder.addCase(bufferClosedAction, (state, action) => {
+    const { [action.payload]: _, ...rest } = state;
+    return rest;
+  });
+  builder.addCase(fetchBuffersRemovedAction, (state, action) => {
+    return Object.fromEntries(
+      Object.entries(state).filter(
+        ([bufferId]) => !(action.payload as string[]).includes(bufferId)
+      )
+    );
+  });
+});
+
+export default hotlistsReducer;
