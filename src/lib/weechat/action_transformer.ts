@@ -1,8 +1,14 @@
 import { AppDispatch, StoreState } from '../../store';
 import {
   bufferClosedAction,
+  bufferLocalvarRemoveAction,
+  bufferLocalvarUpdateAction,
+  bufferOpenedAction,
+  bufferRenamedAction,
+  fetchBuffersAction,
   fetchBuffersRemovedAction,
   fetchVersionAction,
+  lastReadLinesAction,
   upgradeAction
 } from '../../store/actions';
 
@@ -106,33 +112,21 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return {
-        type: 'BUFFER_OPENED',
-        payload: buffer,
-        bufferId: buffer.id
-      };
+      return bufferOpenedAction(buffer);
     }
     case '_buffer_renamed': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return {
-        type: 'BUFFER_RENAMED',
-        payload: buffer,
-        bufferId: buffer.id
-      };
+      return bufferRenamedAction(buffer);
     }
     case '_buffer_localvar_removed': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return {
-        type: 'BUFFER_LOCALVAR_REMOVE',
-        payload: buffer,
-        bufferId: buffer.id
-      };
+      return bufferLocalvarRemoveAction(buffer);
     }
     case '_buffer_title_changed':
     case '_buffer_localvar_added': {
@@ -140,11 +134,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return {
-        type: 'BUFFER_LOCALVAR_UPDATE',
-        payload: buffer,
-        bufferId: buffer.id
-      };
+      return bufferLocalvarUpdateAction(buffer);
     }
     case '_upgrade': {
       return upgradeAction();
@@ -198,10 +188,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
         });
 
         dispatch(fetchBuffersRemovedAction(removed));
-        dispatch({
-          type: 'FETCH_BUFFERS',
-          payload: newBuffers
-        });
+        dispatch(fetchBuffersAction(newBuffers));
       };
     }
     case 'version': {
@@ -230,7 +217,7 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
     case 'last_read_lines': {
       const object = data.objects[0] as WeechatObject<unknown>;
 
-      return { type: 'LAST_READ_LINES', payload: object.content };
+      return lastReadLinesAction(object.content);
     }
     default:
       console.log('unhandled event!', data.id, data);
