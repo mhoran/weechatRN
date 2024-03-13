@@ -69,7 +69,13 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
     const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
-    const lastMessage = lines.slice(index + 1).find((line) => line.displayed);
+    let lastMessage;
+    for (let i = index + 1; i < lines.length; i++) {
+      if (lines[i].displayed) {
+        lastMessage = lines[i];
+        break;
+      }
+    }
 
     return (
       <BufferLine
