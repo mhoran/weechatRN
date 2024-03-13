@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
 };
 
 interface State {
-  letterWidth: number;
+  nickWidth: number;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
@@ -57,7 +57,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   linesList = React.createRef<FlashList<WeechatLine>>();
 
   state = {
-    letterWidth: 0
+    nickWidth: 0
   };
 
   componentDidUpdate(prevProps: Props) {
@@ -82,7 +82,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         line={item}
         onLongPress={onLongPress}
         parseArgs={parseArgs}
-        letterWidth={this.state.letterWidth}
+        nickWidth={this.state.nickWidth}
         lastReadLine={lastReadLine}
         lastMessageDate={lastMessage?.date}
       />
@@ -92,15 +92,15 @@ export default class Buffer extends React.PureComponent<Props, State> {
   render() {
     const { bufferId, lines, fetchMoreLines } = this.props;
 
-    if (!this.state.letterWidth) {
+    if (!this.state.nickWidth) {
       return (
         <Text
           onLayout={(layout) => {
-            this.setState({ letterWidth: layout.nativeEvent.layout.width });
+            this.setState({ nickWidth: layout.nativeEvent.layout.width });
           }}
           style={[lineStyles.text, { opacity: 0, position: 'absolute' }]}
         >
-          a
+          aaaaaaaa
         </Text>
       );
     }

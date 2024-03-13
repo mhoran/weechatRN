@@ -9,14 +9,14 @@ interface Props {
   line: WeechatLine;
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
-  letterWidth: number;
+  nickWidth: number;
 }
 
 const BufferLine: React.FC<Props> = ({
   line,
   onLongPress,
   parseArgs,
-  letterWidth
+  nickWidth
 }) => {
   return (
     <TouchableHighlight onLongPress={() => onLongPress(line)}>
@@ -27,8 +27,7 @@ const BufferLine: React.FC<Props> = ({
           style={[
             styles.text,
             {
-              width: letterWidth * 8,
-              paddingRight: letterWidth,
+              width: nickWidth,
               textAlign: 'right'
             }
           ]}
@@ -44,6 +43,7 @@ const BufferLine: React.FC<Props> = ({
             );
           })}
         </Text>
+        <Text style={styles.text}> </Text>
 
         <View style={[styles.messageContainer]}>
           <Text style={styles.text}>
@@ -53,9 +53,7 @@ const BufferLine: React.FC<Props> = ({
           </Text>
         </View>
 
-        <Text style={[styles.text, { paddingLeft: letterWidth }]}>
-          {formatDate(line.date)}
-        </Text>
+        <Text style={[styles.text]}> {formatDate(line.date)}</Text>
       </View>
     </TouchableHighlight>
   );

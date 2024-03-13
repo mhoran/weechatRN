@@ -10,7 +10,7 @@ interface Props {
   line: WeechatLine;
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
-  letterWidth: number;
+  nickWidth: number;
   lastReadLine?: string;
   lastMessageDate?: string;
 }
@@ -19,7 +19,7 @@ const BufferLine: React.FC<Props> = ({
   line,
   onLongPress,
   parseArgs,
-  letterWidth,
+  nickWidth,
   lastReadLine,
   lastMessageDate
 }) => {
@@ -42,7 +42,7 @@ const BufferLine: React.FC<Props> = ({
             line={line}
             onLongPress={onLongPress}
             parseArgs={parseArgs}
-            letterWidth={letterWidth}
+            nickWidth={nickWidth}
           />
         </>
       )}
