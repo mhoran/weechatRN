@@ -15,6 +15,7 @@
   "rules": {
     "eqeqeq": "error",
     "no-param-reassign": ["error", { "props": true }],
+    "no-shadow": "error",
     "@typescript-eslint/consistent-type-assertions": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
