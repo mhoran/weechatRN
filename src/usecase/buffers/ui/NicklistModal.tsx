@@ -64,7 +64,6 @@ const NicklistModal: React.FC<Props> = ({
       <View style={styles.modalWrapper}>
         <View style={styles.modalView}>
           <FlatList
-            style={styles.list}
             data={nicklist}
             renderItem={(item) => {
               return <Item item={item} />;
@@ -99,13 +98,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width: 280,
-    flexShrink: 1,
     marginTop: 48,
     marginBottom: 48
-  },
-  list: {
-    flexGrow: 1,
-    flexShrink: 1
   },
   listItem: {
     flex: 1,
