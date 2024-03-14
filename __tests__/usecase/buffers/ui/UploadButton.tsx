@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import UploadButton from '../../../../src/usecase/shared/UploadButton';
+import UploadButton from '../../../../src/usecase/buffers/ui/UploadButton';
 
 jest.mock('expo-file-system', () => {
   const FileSystem = jest.requireActual('expo-file-system');
