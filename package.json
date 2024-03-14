@@ -12,6 +12,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@shopify/flash-list": "^1.6.3",
     "date-fns": "^3.3.1",
+    "emoji-regex": "^10.3.0",
     "expo": "~50.0.8",
     "expo-clipboard": "~5.0.1",
     "expo-file-system": "~16.0.7",

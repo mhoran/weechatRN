@@ -1,3 +1,4 @@
+import emojiRegex from 'emoji-regex';
 import { TextStyle } from 'react-native';
 import { ParseShape } from 'react-native-parsed-text';
 
@@ -28,6 +29,10 @@ export const getParseArgs = (
       onPress: (arg) => onPress('email', arg),
       onLongPress: (arg) => onLongPress('email', arg),
       type: 'email'
+    },
+    {
+      pattern: emojiRegex(),
+      style: { fontFamily: 'System' }
     }
   ];
 };
