@@ -1,6 +1,6 @@
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { fireEvent, render, screen } from '@testing-library/react-native';
 import UploadButton from '../../../../src/usecase/buffers/ui/UploadButton';
 
 jest.mock('expo-file-system', () => {
@@ -13,6 +13,8 @@ jest.mock('expo-file-system', () => {
 const mockedFileSystem = jest.mocked(FileSystem);
 
 describe(UploadButton, () => {
+  let resolveUpload: (result: FileSystem.FileSystemUploadResult) => void;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest
@@ -24,10 +26,7 @@ describe(UploadButton, () => {
       });
 
     mockedFileSystem.uploadAsync.mockImplementation(() => {
-      return Promise.resolve({
-        status: 200,
-        body: 'https://example.com/image.jpg'
-      } as FileSystem.FileSystemUploadResult);
+      return new Promise((resolve) => (resolveUpload = resolve));
     });
   });
 
@@ -44,7 +43,15 @@ describe(UploadButton, () => {
 
     fireEvent(button, 'press');
 
-    await new Promise(process.nextTick);
+    await screen.findByLabelText('Image Uploading');
+
+    resolveUpload({
+      status: 200,
+      body: 'https://example.com/image.jpg'
+    } as FileSystem.FileSystemUploadResult);
+
+    await screen.findByLabelText('Upload Image');
+
     expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalledWith({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: false,
@@ -112,7 +119,15 @@ describe(UploadButton, () => {
 
       fireEvent(button, 'press');
 
-      await new Promise(process.nextTick);
+      await screen.findByLabelText('Image Uploading');
+
+      resolveUpload({
+        status: 200,
+        body: 'https://example.com/image.jpg'
+      } as FileSystem.FileSystemUploadResult);
+
+      await screen.findByLabelText('Upload Image');
+
       expect(FileSystem.uploadAsync).toHaveBeenCalledWith(
         'https://example.com',
         'file:///tmp/image.jpg',

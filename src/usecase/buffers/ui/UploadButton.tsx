@@ -2,7 +2,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import UploadSpinner from './UploadSpinner';
+import { useState } from 'react';
 
 interface Props {
   onUpload: (url: string) => void;
@@ -28,6 +30,8 @@ const UploadButton: React.FC<Props> = ({
     ...uploadOptions
   }
 }) => {
+  const [showSpinner, setShowSpinner] = useState(false);
+
   const takePhoto = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
 
@@ -58,6 +62,7 @@ const UploadButton: React.FC<Props> = ({
       if (pickerResult.canceled) {
         return;
       } else {
+        setShowSpinner(true);
         const uploadUrl = await uploadImage(pickerResult.assets[0].uri);
         const matches = uploadUrl.match(new RegExp(uploadOptionsRegexp));
         if (!matches) return alert('Failed to extract URL from response');
@@ -65,6 +70,8 @@ const UploadButton: React.FC<Props> = ({
       }
     } catch (e) {
       alert('Upload failed');
+    } finally {
+      setShowSpinner(false);
     }
   };
 
@@ -95,6 +102,14 @@ const UploadButton: React.FC<Props> = ({
       (!uploadOptions.username || !uploadOptions.password))
   )
     return;
+
+  if (showSpinner) {
+    return (
+      <View style={style} accessibilityLabel="Image Uploading">
+        <UploadSpinner />
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity
