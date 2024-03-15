@@ -3,7 +3,7 @@ import UploadSettings from '../../../src/usecase/settings/UploadSettings';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from '../../../src/store';
 
-jest.mock('../../../src/usecase/buffers/ui/UndoTextInput', () => 'TextInput');
+jest.mock('../../../src/usecase/shared/UndoTextInput', () => 'TextInput');
 
 describe('UploadSettings', () => {
   it('stores the configured settings', async () => {

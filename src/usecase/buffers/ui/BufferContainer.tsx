@@ -23,7 +23,7 @@ import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
-import UndoTextInput from './UndoTextInput';
+import UndoTextInput from '../../shared/UndoTextInput';
 import UploadButton from './UploadButton';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({

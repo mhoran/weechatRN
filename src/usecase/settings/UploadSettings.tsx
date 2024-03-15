@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 import { StoreState } from '../../store';
-import UndoTextInput from '../buffers/ui/UndoTextInput';
+import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './SettingsNavigator';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 

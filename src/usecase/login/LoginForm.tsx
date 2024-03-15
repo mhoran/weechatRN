@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConnectionError } from '../../lib/weechat/connection';
 import { StoreState } from '../../store';
-import UndoTextInput from '../buffers/ui/UndoTextInput';
+import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from '../settings/SettingsNavigator';
 import { setConnectionInfoAction } from '../../store/actions';
 
