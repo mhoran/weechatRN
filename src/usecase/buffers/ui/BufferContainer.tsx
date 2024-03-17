@@ -22,8 +22,9 @@ import { formatUrl } from '../../../lib/helpers/url-formatter';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import { StoreState } from '../../../store';
-import Buffer from './Buffer';
 import UndoTextInput from '../../shared/UndoTextInput';
+import Buffer from './Buffer';
+import ClipboardModal from './ClipboardModal';
 import UploadButton from './UploadButton';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
@@ -65,6 +66,8 @@ class BufferContainer extends React.Component<Props, State> {
   tabCompleteIndex = 0;
   tabCompleteWordStart = 0;
   tabCompleteWordEnd = 0;
+
+  pressTimeout?: ReturnType<typeof setTimeout>;
 
   parseArgs = getParseArgs(
     styles.link,
@@ -213,6 +216,7 @@ class BufferContainer extends React.Component<Props, State> {
             </Text>
           </View>
         )}
+        <ClipboardModal visible={false} close={function () {}} />
         <Buffer
           bufferId={bufferId}
           lines={lines}
@@ -233,6 +237,12 @@ class BufferContainer extends React.Component<Props, State> {
             blurOnSubmit={false}
             onSubmitEditing={this.handleSubmit}
             enablesReturnKeyAutomatically={true}
+            onPressIn={() => {
+              if (textValue) return;
+              this.pressTimeout = setTimeout(() => alert('Hello!'), 500);
+            }}
+            onPressOut={() => clearTimeout(this.pressTimeout)}
+            pointerEvents={textValue ? 'auto' : 'box-only'}
           />
           <UploadButton
             onUpload={this.handleOnUpload}
