@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Text } from 'react-native';
+import { Button, Text, View } from 'react-native';
 
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
@@ -94,14 +94,16 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
     if (!this.state.nickWidth) {
       return (
-        <Text
-          onLayout={(layout) => {
-            this.setState({ nickWidth: layout.nativeEvent.layout.width });
-          }}
-          style={[lineStyles.text, { opacity: 0, position: 'absolute' }]}
-        >
-          aaaaaaaa
-        </Text>
+        <View style={{ flexDirection: 'row', flex: 1 }} aria-hidden={true}>
+          <Text
+            onLayout={(layout) => {
+              this.setState({ nickWidth: layout.nativeEvent.layout.width });
+            }}
+            style={[lineStyles.text, { opacity: 0 }]}
+          >
+            aaaaaaaa
+          </Text>
+        </View>
       );
     }
 
