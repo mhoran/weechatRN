@@ -39,7 +39,7 @@ export default class WeechatNative extends React.Component<null, State> {
     super(props);
     store.dispatch(
       addListener({
-        predicate: (action) => upgradeAction.match(action),
+        actionCreator: upgradeAction,
         effect: () => {
           this.disconnect();
         }
