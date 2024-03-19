@@ -1,6 +1,7 @@
-import { connect } from 'react-redux';
-import { StoreState } from '../store';
+import { useEffect } from 'react';
+import { connect, useStore } from 'react-redux';
 import { ConnectionError } from '../lib/weechat/connection';
+import { StoreState } from '../store';
 import SettingsNavigator from './settings/SettingsNavigator';
 
 interface Props {
@@ -18,6 +19,19 @@ const ConnectionGate: React.FC<Props> = ({
   onConnect,
   connectionError
 }) => {
+  const store = useStore<StoreState>();
+
+  useEffect(() => {
+    const connectionSettings = store.getState().connection;
+    if (connectionSettings.hostname && connectionSettings.password) {
+      onConnect(
+        connectionSettings.hostname,
+        connectionSettings.password,
+        connectionSettings.ssl
+      );
+    }
+  }, [onConnect, store]);
+
   if (connected) {
     return children;
   } else {
