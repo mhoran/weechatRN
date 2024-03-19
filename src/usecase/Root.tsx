@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StatusBar } from 'react-native';
+import { AppState, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
@@ -9,10 +9,10 @@ import { persistor, store } from '../store';
 import { addListener } from '@reduxjs/toolkit';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
+import { upgradeAction } from '../store/actions';
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
-import { upgradeAction } from '../store/actions';
 
 interface State {
   connecting: boolean;
@@ -25,7 +25,15 @@ export default class WeechatNative extends React.Component<null, State> {
     connectionError: null
   };
 
+  connectOnResume = true;
+
   connection?: WeechatConnection;
+
+  appStateListener = AppState.addEventListener('change', (nextAppState) => {
+    if (nextAppState === 'active') {
+      this.onResume();
+    }
+  });
 
   constructor(props: null) {
     super(props);
@@ -39,12 +47,17 @@ export default class WeechatNative extends React.Component<null, State> {
     );
   }
 
+  componentWillUnmount(): void {
+    this.appStateListener.remove();
+  }
+
   setNotificationToken = async (): Promise<void> => {
     const token = await getPushNotificationStatusAsync();
     if (token) this.sendMessageToBuffer('core.weechat', '/weechatrn ' + token);
   };
 
   onConnectionSuccess = (connection: WeechatConnection): void => {
+    this.connectOnResume = true;
     this.setState({ connecting: false });
     connection.send('(hotlist) hdata hotlist:gui_hotlist(*)');
     connection.send(
@@ -63,14 +76,15 @@ export default class WeechatNative extends React.Component<null, State> {
     reconnect: boolean,
     connectionError: ConnectionError | null
   ): void => {
-    this.setState((state) => ({
+    this.setState({
       connecting: reconnect,
-      connectionError: state.connecting ? connectionError : null
-    }));
+      connectionError: reconnect ? null : connectionError
+    });
   };
 
   disconnect = (): void => {
-    this.connection && this.connection.close();
+    this.connectOnResume = false;
+    this.connection && this.connection.disconnect();
   };
 
   onConnect = (hostname: string, password: string, ssl: boolean): void => {
@@ -84,6 +98,13 @@ export default class WeechatNative extends React.Component<null, State> {
       this.onConnectionError
     );
     this.connection.connect();
+  };
+
+  onResume = () => {
+    if (this.connectOnResume && this.connection?.isDisconnected()) {
+      this.setState({ connecting: true, connectionError: null });
+      this.connection.connect();
+    }
   };
 
   fetchBufferInfo = (

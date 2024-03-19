@@ -10,6 +10,13 @@ export enum ConnectionError {
   Authentication
 }
 
+enum State {
+  CONNECTING = 1,
+  AUTHENTICATING,
+  CONNECTED,
+  DISCONNECTED
+}
+
 export default class WeechatConnection {
   dispatch: AppDispatch;
   hostname: string;
@@ -22,9 +29,8 @@ export default class WeechatConnection {
     reconnect: boolean,
     connectionError: ConnectionError | null
   ) => void;
-  connected: boolean;
-  reconnect: boolean;
-  authenticating: boolean;
+  reconnect = false;
+  state = State.DISCONNECTED;
 
   constructor(
     dispatch: AppDispatch,
@@ -43,10 +49,11 @@ export default class WeechatConnection {
     this.ssl = ssl;
     this.onSuccess = onSuccess;
     this.onError = onError;
-    this.reconnect = this.connected = this.authenticating = false;
   }
 
   connect(): void {
+    if (this.state !== State.DISCONNECTED) return;
+    this.state = State.CONNECTING;
     this.openSocket();
   }
 
@@ -62,7 +69,7 @@ export default class WeechatConnection {
   }
 
   onopen(): void {
-    this.authenticating = true;
+    this.state = State.AUTHENTICATING;
 
     this.send(
       `init password=${this.password},compression=${
@@ -74,36 +81,41 @@ export default class WeechatConnection {
 
   handleError(event: Event): void {
     console.log(event);
-    this.reconnect = this.connected;
+    this.reconnect = this.state === State.CONNECTED;
     this.onError(this.reconnect, ConnectionError.Socket);
   }
 
   handleClose(): void {
-    if (this.authenticating) {
+    if (this.state === State.AUTHENTICATING) {
+      this.state = State.DISCONNECTED;
       this.onError(false, ConnectionError.Authentication);
       return;
     }
 
-    this.connected = false;
+    if (this.state === State.DISCONNECTED) return;
+
+    this.state = State.DISCONNECTED;
     this.dispatch(disconnectAction());
 
     if (this.reconnect) {
       this.reconnect = false;
-      this.openSocket();
+      this.connect();
     }
   }
 
-  close(): void {
-    this.send('quit');
-    this.websocket?.close();
+  disconnect(): void {
+    this.state = State.DISCONNECTED;
+    if (this.websocket?.readyState === WebSocket.OPEN) {
+      this.websocket.close();
+    }
+    this.dispatch(disconnectAction());
   }
 
   onmessage(event: WebSocketMessageEvent): void {
     const parsed = protocol.parse(event.data);
 
     if (parsed.id === 'version') {
-      this.authenticating = false;
-      this.connected = true;
+      this.state = State.CONNECTED;
       this.onSuccess(this);
     }
 
@@ -122,5 +134,9 @@ export default class WeechatConnection {
     if (!this.websocket) return;
     console.log('Sending data:', data);
     this.websocket.send(data + '\n');
+  }
+
+  isDisconnected(): boolean {
+    return this.state === State.DISCONNECTED;
   }
 }

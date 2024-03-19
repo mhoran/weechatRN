@@ -93,7 +93,7 @@ describe(WeechatConnection, () => {
     expect(dispatch).toHaveBeenCalledWith(fetchVersionAction('4.1.2'));
   });
 
-  describe('close', () => {
+  describe('disconnect', () => {
     it('closes the WebSocket', () => {
       const dispatch = jest.fn();
       const connection = new WeechatConnection(
@@ -115,12 +115,10 @@ describe(WeechatConnection, () => {
         )
       } as WebSocketMessageEvent);
 
-      connection.close();
+      connection.disconnect();
 
-      expect(mockWebSocket.mock.instances[0].send).toHaveBeenCalledWith(
-        'quit\n'
-      );
       expect(mockWebSocket.mock.instances[0].close).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledTimes(2);
       expect(dispatch).toHaveBeenNthCalledWith(2, disconnectAction());
       expect(mockWebSocket.mock.instances).toHaveLength(1);
     });
@@ -150,6 +148,7 @@ describe(WeechatConnection, () => {
       mockWebSocket.mock.instances[0].close();
 
       expect(onError).toHaveBeenCalledWith(true, ConnectionError.Socket);
+      expect(dispatch).toHaveBeenCalledTimes(2);
       expect(dispatch).toHaveBeenNthCalledWith(2, disconnectAction());
       expect(mockWebSocket.mock.instances).toHaveLength(2);
     });
