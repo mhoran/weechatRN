@@ -56,3 +56,5 @@ export const nicklistUpdatedAction = createAction<{
   added: WeechatNicklist[];
   removed: WeechatNicklist[];
 }>('NICKLIST_UPDATED');
+
+export const fetchScriptsAction = createAction<string[]>('FETCH_SCRIPTS');

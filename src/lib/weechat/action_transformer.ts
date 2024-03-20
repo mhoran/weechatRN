@@ -15,6 +15,7 @@ import {
   fetchVersionAction,
   lastReadLinesAction,
   nicklistUpdatedAction,
+  fetchScriptsAction,
   upgradeAction
 } from '../../store/actions';
 
@@ -206,6 +207,11 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const object = data.objects[0] as WeechatObject<unknown>;
 
       return lastReadLinesAction(object.content);
+    }
+    case 'scripts': {
+      const object = data.objects[0] as WeechatObject<{ name: string }[]>;
+
+      return fetchScriptsAction(object.content.map(({ name }) => name));
     }
     default:
       console.log('unhandled event!', data.id, data);

@@ -6,10 +6,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import WeechatConnection, { ConnectionError } from '../lib/weechat/connection';
 import { persistor, store } from '../store';
 
-import { addListener } from '@reduxjs/toolkit';
+import { UnsubscribeListener, addListener } from '@reduxjs/toolkit';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
-import { upgradeAction } from '../store/actions';
+import { fetchScriptsAction, upgradeAction } from '../store/actions';
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
@@ -35,9 +35,12 @@ export default class WeechatNative extends React.Component<null, State> {
     }
   });
 
+  unsubscribeUpgradeAction: UnsubscribeListener;
+  unsubscribeFetchScriptsAction: UnsubscribeListener;
+
   constructor(props: null) {
     super(props);
-    store.dispatch(
+    this.unsubscribeUpgradeAction = store.dispatch(
       addListener({
         actionCreator: upgradeAction,
         effect: () => {
@@ -45,10 +48,21 @@ export default class WeechatNative extends React.Component<null, State> {
         }
       })
     );
+    this.unsubscribeFetchScriptsAction = store.dispatch(
+      addListener({
+        actionCreator: fetchScriptsAction,
+        effect: (scripts) => {
+          if (scripts.payload.includes('WeechatRN'))
+            this.setNotificationToken();
+        }
+      })
+    );
   }
 
   componentWillUnmount(): void {
     this.appStateListener.remove();
+    this.unsubscribeUpgradeAction();
+    this.unsubscribeFetchScriptsAction();
   }
 
   setNotificationToken = async (): Promise<void> => {
@@ -67,9 +81,8 @@ export default class WeechatNative extends React.Component<null, State> {
       this.connection.send(
         '(last_read_lines) hdata buffer:gui_buffers(*)/own_lines/last_read_line/data buffer'
       );
-    // connection.send("(nicklist) nicklist");
+    connection.send('(scripts) hdata python_script:scripts(*) name');
     connection.send('sync');
-    this.setNotificationToken();
   };
 
   onConnectionError = (
