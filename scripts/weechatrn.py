@@ -1,19 +1,7 @@
 import weechat
 import json
 
-weechat.register(
-    "WeechatRN", "mhoran", "1.0", "MIT", "WeechatRN push notification plugin", "", ""
-)
-
-# Plugin options
-# /set plugins.var.python.WeechatRN.push_tokens
 script_options = {"push_tokens": "", "notify_current_buffer": "on"}
-
-for option, default_value in script_options.items():
-    if weechat.config_is_set_plugin(option):
-        script_options[option] = weechat.config_get_plugin(option)
-    else:
-        weechat.config_set_plugin(option, default_value)
 
 
 # Register a custom command so the relay can set the token if the relay is
@@ -30,9 +18,6 @@ def weechatrn_cb(data: str, buffer: str, args: str) -> int:
     return weechat.WEECHAT_RC_OK
 
 
-weechat.hook_command("weechatrn", "", "", "", "", "weechatrn_cb", "")
-
-
 # Reset in-memory push token on config change.
 def config_cb(data: str, option: str, value: str) -> int:
     if option == "plugins.var.python.WeechatRN.push_tokens":
@@ -40,9 +25,6 @@ def config_cb(data: str, option: str, value: str) -> int:
     if option == "plugins.var.python.WeechatRN.notify_current_buffer":
         script_options["notify_current_buffer"] = value
     return weechat.WEECHAT_RC_OK
-
-
-weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
 
 
 # Only notify for PMs or highlights if message is not tagged with notify_none
@@ -77,9 +59,6 @@ def priv_msg_cb(
         send_push(title="Highlight in %s" % buffer_name, body=body)
 
     return weechat.WEECHAT_RC_OK
-
-
-weechat.hook_print("", "irc_privmsg", "", 1, "priv_msg_cb", "")
 
 
 # Send push notification to Expo server. Message JSON encoded in the format:
@@ -141,3 +120,31 @@ def remove_unregistered_devices(response: str) -> None:
                     pass
 
         weechat.config_set_plugin("push_tokens", ",".join(tokens))
+
+
+if weechat.register(
+    "WeechatRN",
+    "mhoran",
+    "1.1.0",
+    "MIT",
+    "WeechatRN push notification plugin",
+    "",
+    "",
+):
+    weechat.hook_command(
+        "weechatrn",
+        "Manage Expo push tokens for WeechatRN",
+        "<token>",
+        "token: Append the given push token to the list of push tokens",
+        "",
+        "weechatrn_cb",
+        "",
+    )
+    weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
+    weechat.hook_print("", "irc_privmsg", "", 1, "priv_msg_cb", "")
+
+    for option, default_value in script_options.items():
+        if weechat.config_is_set_plugin(option):
+            script_options[option] = weechat.config_get_plugin(option)
+        else:
+            weechat.config_set_plugin(option, default_value)
