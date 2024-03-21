@@ -6,8 +6,8 @@ weechat.register(
 )
 
 # Plugin options
-# /set plugins.var.python.WeechatRN.push_token
-script_options = {"push_token": "", "notify_current_buffer": "on"}
+# /set plugins.var.python.WeechatRN.push_tokens
+script_options = {"push_tokens": "", "notify_current_buffer": "on"}
 
 for option, default_value in script_options.items():
     if weechat.config_is_set_plugin(option):
@@ -19,7 +19,14 @@ for option, default_value in script_options.items():
 # Register a custom command so the relay can set the token if the relay is
 # configured to blacklist certain commands (like /set).
 def weechatrn_cb(data: str, buffer: str, args: str) -> int:
-    weechat.config_set_plugin("push_token", args)
+    tokens = (
+        script_options["push_tokens"].split(",")
+        if script_options["push_tokens"]
+        else []
+    )
+    if args not in tokens:
+        tokens.append(args)
+        weechat.config_set_plugin("push_tokens", ",".join(tokens))
     return weechat.WEECHAT_RC_OK
 
 
@@ -28,8 +35,8 @@ weechat.hook_command("weechatrn", "", "", "", "", "weechatrn_cb", "")
 
 # Reset in-memory push token on config change.
 def config_cb(data: str, option: str, value: str) -> int:
-    if option == "plugins.var.python.WeechatRN.push_token":
-        script_options["push_token"] = value
+    if option == "plugins.var.python.WeechatRN.push_tokens":
+        script_options["push_tokens"] = value
     if option == "plugins.var.python.WeechatRN.notify_current_buffer":
         script_options["notify_current_buffer"] = value
     return weechat.WEECHAT_RC_OK
@@ -86,14 +93,22 @@ def process_expo_cb(
 #   "title": "Notification title",
 #   "body": "Notification body" }
 def send_push(title: str, body: str) -> None:
-    push_token = script_options["push_token"]
-    if push_token == "":
+    push_tokens = (
+        script_options["push_tokens"].split(",")
+        if script_options["push_tokens"]
+        else []
+    )
+    if push_tokens == []:
         return
 
-    post_body = {"to": push_token, "title": title, "body": body}
+    post_body: list[dict[str, str]] = []
+    for token in push_tokens:
+        post_body.append({"to": token, "title": title, "body": body})
+
     options = {
         "httpheader": "Content-Type: application/json",
         "postfields": json.dumps(post_body),
+        "failonerror": "1",
     }
     weechat.hook_process_hashtable(
         "url:https://exp.host/--/api/v2/push/send",
