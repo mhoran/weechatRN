@@ -1,7 +1,17 @@
 import weechat
 import json
 
-script_options = {"push_tokens": "", "notify_current_buffer": "on"}
+script_options_default = {
+    "push_tokens": (
+        "",
+        "Comma separated list of push tokens (appended to by /weechatrn <token>)",
+    ),
+    "notify_current_buffer": (
+        "on",
+        "Option to send notifications for the current buffer",
+    ),
+}
+script_options: dict[str, str] = {}
 
 
 # Register a custom command so the relay can set the token if the relay is
@@ -143,8 +153,11 @@ if weechat.register(
     weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
     weechat.hook_print("", "irc_privmsg", "", 1, "priv_msg_cb", "")
 
-    for option, default_value in script_options.items():
+    for option, value in script_options_default.items():
         if weechat.config_is_set_plugin(option):
             script_options[option] = weechat.config_get_plugin(option)
         else:
-            weechat.config_set_plugin(option, default_value)
+            weechat.config_set_plugin(option, value[0])
+        weechat.config_set_desc_plugin(
+            option, '%s (default: "%s")' % (value[1], value[0])
+        )
