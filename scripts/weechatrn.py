@@ -82,12 +82,6 @@ def priv_msg_cb(
 weechat.hook_print("", "irc_privmsg", "", 1, "priv_msg_cb", "")
 
 
-def process_expo_cb(
-    data: str, command: str, return_code: int, out: str, err: str
-) -> int:
-    return weechat.WEECHAT_RC_OK
-
-
 # Send push notification to Expo server. Message JSON encoded in the format:
 # { "to": "EXPO_PUSH_TOKEN",
 #   "title": "Notification title",
@@ -117,3 +111,33 @@ def send_push(title: str, body: str) -> None:
         "process_expo_cb",
         "",
     )
+
+
+def process_expo_cb(
+    data: str, command: str, return_code: int, out: str, err: str
+) -> int:
+    if out:
+        remove_unregistered_devices(out)
+    return weechat.WEECHAT_RC_OK
+
+
+def remove_unregistered_devices(response: str) -> None:
+    try:
+        statuses = json.loads(response)
+    except json.JSONDecodeError:
+        pass
+    else:
+        tokens = script_options["push_tokens"].split(",")
+
+        for index, status in enumerate(statuses["data"]):
+            if (
+                status["status"] == "error"
+                and status["details"]["error"] == "DeviceNotRegistered"
+            ):
+                unregistered_token = tokens[index]
+                try:
+                    tokens.remove(unregistered_token)
+                except ValueError:
+                    pass
+
+        weechat.config_set_plugin("push_tokens", ",".join(tokens))
