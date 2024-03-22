@@ -77,11 +77,9 @@ To install the script, download [weechatrn.py](scripts/weechatrn.py?raw=1) to we
 
 Once downloaded, load the script via `/python load weechatrn.py`.
 
-On (re)connect, WeechatRN will store a token in weechat, which will be used to send push notifications. Only a single token is stored at this time -- so only the most recently connected device will receive notifications.
+On (re)connect, WeechatRN will store a token in weechat, which will be used to send push notifications to the device.
 
 By default, push notifications will be sent for all highlights and private messages. You can disable notifications for the current buffer with `/set plugins.var.python.WeechatRN.notify_current_buffer off`.
-
-To disable push notifications without uninstalling WeechatRN, unload (`/python unload WeechatRN`) and remove the script from `python/autoload`.
 
 ## Development
 
