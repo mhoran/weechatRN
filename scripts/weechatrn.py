@@ -1,6 +1,6 @@
-import weechat
 import json
 from collections import UserDict
+import weechat  # pylint: disable=import-error
 
 
 class Options(UserDict[str, str]):
@@ -78,15 +78,15 @@ def priv_msg_cb(
     if not script_options.notify_current_buffer and weechat.current_buffer() == buffer:
         return weechat.WEECHAT_RC_OK
 
-    body = "<%s> %s" % (prefix, message)
+    body = f"<{prefix}> {message}"
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
     if is_pm:
-        send_push(title="Private message from %s" % prefix, body=body)
+        send_push(title=f"Private message from {prefix}", body=body)
     elif int(highlight):
         buffer_name = weechat.buffer_get_string(
             buffer, "short_name"
         ) or weechat.buffer_get_string(buffer, "name")
-        send_push(title="Highlight in %s" % buffer_name, body=body)
+        send_push(title=f"Highlight in {buffer_name}", body=body)
 
     return weechat.WEECHAT_RC_OK
 
@@ -123,6 +123,7 @@ def send_push(title: str, body: str) -> None:
 def process_expo_cb(
     data: str, command: str, return_code: int, out: str, err: str
 ) -> int:
+    """Callback for Expi API request."""
     if out:
         remove_unregistered_devices(out)
     return weechat.WEECHAT_RC_OK
@@ -151,32 +152,38 @@ def remove_unregistered_devices(response: str) -> None:
         script_options.push_tokens = tokens
 
 
-if weechat.register(
-    "WeechatRN",
-    "mhoran",
-    "1.1.0",
-    "MIT",
-    "WeechatRN push notification plugin",
-    "",
-    "",
-):
-    weechat.hook_command(
-        "weechatrn",
-        "Manage Expo push tokens for WeechatRN",
-        "<token>",
-        "token: Append the given push token to the list of push tokens",
+def main():
+    """Main entrypoint for plugin."""
+    if weechat.register(
+        "WeechatRN",
+        "mhoran",
+        "1.1.0",
+        "MIT",
+        "WeechatRN push notification plugin",
         "",
-        "weechatrn_cb",
         "",
-    )
-    weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
-    weechat.hook_print("", "irc_privmsg", "", 1, "priv_msg_cb", "")
-
-    for option, value in script_options_default.items():
-        if weechat.config_is_set_plugin(option):
-            script_options[option] = weechat.config_get_plugin(option)
-        else:
-            weechat.config_set_plugin(option, value[0])
-        weechat.config_set_desc_plugin(
-            option, '%s (default: "%s")' % (value[1], value[0])
+    ):
+        weechat.hook_command(
+            "weechatrn",
+            "Manage Expo push tokens for WeechatRN",
+            "<token>",
+            "token: Append the given push token to the list of push tokens",
+            "",
+            "weechatrn_cb",
+            "",
         )
+        weechat.hook_config("plugins.var.python.WeechatRN.*", "config_cb", "")
+        weechat.hook_print("", "irc_privmsg", "", 1, "priv_msg_cb", "")
+
+        for option, value in script_options_default.items():
+            if weechat.config_is_set_plugin(option):
+                script_options[option] = weechat.config_get_plugin(option)
+            else:
+                weechat.config_set_plugin(option, value[0])
+            weechat.config_set_desc_plugin(
+                option, f'{value[1]} (default: "{value[0]}")'
+            )
+
+
+if __name__ == "__main__":
+    main()
