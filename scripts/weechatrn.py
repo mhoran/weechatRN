@@ -14,9 +14,11 @@ script_options_default = {
 script_options: dict[str, str] = {}
 
 
-# Register a custom command so the relay can set the token if the relay is
-# configured to blacklist certain commands (like /set).
 def weechatrn_cb(data: str, buffer: str, args: str) -> int:
+    """
+    Command to allow managing push tokens without the need to allow /set access
+    to relay clients.
+    """
     tokens = (
         script_options["push_tokens"].split(",")
         if script_options["push_tokens"]
@@ -28,8 +30,8 @@ def weechatrn_cb(data: str, buffer: str, args: str) -> int:
     return weechat.WEECHAT_RC_OK
 
 
-# Reset in-memory push token on config change.
 def config_cb(data: str, option: str, value: str) -> int:
+    """Reset script_options values on config change."""
     if option == "plugins.var.python.WeechatRN.push_tokens":
         script_options["push_tokens"] = value
     if option == "plugins.var.python.WeechatRN.notify_current_buffer":
@@ -37,8 +39,6 @@ def config_cb(data: str, option: str, value: str) -> int:
     return weechat.WEECHAT_RC_OK
 
 
-# Only notify for PMs or highlights if message is not tagged with notify_none
-# (ignores messages from ourselves).
 def priv_msg_cb(
     data: str,
     buffer: str,
@@ -49,6 +49,11 @@ def priv_msg_cb(
     prefix: str,
     message: str,
 ) -> int:
+    """
+    Only notify for PMs or highlights if message is not tagged with notify_none
+    (ignores messages from ourselves). Optionally ignores notifications for the
+    current buffer.
+    """
     if "notify_none" in tags.split(","):
         return weechat.WEECHAT_RC_OK
 
@@ -71,11 +76,13 @@ def priv_msg_cb(
     return weechat.WEECHAT_RC_OK
 
 
-# Send push notification to Expo server. Message JSON encoded in the format:
-# { "to": "EXPO_PUSH_TOKEN",
-#   "title": "Notification title",
-#   "body": "Notification body" }
 def send_push(title: str, body: str) -> None:
+    """
+    Send push notification to Expo server. Message JSON encoded in the format:
+    [{ "to": "EXPO_PUSH_TOKEN",
+       "title": "Notification title",
+       "body": "Notification body" }]
+    """
     push_tokens = (
         script_options["push_tokens"].split(",")
         if script_options["push_tokens"]
@@ -111,6 +118,7 @@ def process_expo_cb(
 
 
 def remove_unregistered_devices(response: str) -> None:
+    """Remove push tokens for unregistered devices."""
     try:
         statuses = json.loads(response)
     except json.JSONDecodeError:
