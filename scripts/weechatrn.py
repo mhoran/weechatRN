@@ -1,5 +1,27 @@
 import weechat
 import json
+from collections import UserDict
+
+
+class Options(UserDict[str, str]):
+    """Helper object for accessing configuration settings."""
+
+    @property
+    def push_tokens(self) -> list[str]:
+        """Return comma separated push tokens as an array."""
+        if script_options["push_tokens"]:
+            return self.data["push_tokens"].split(",")
+        return []
+
+    @push_tokens.setter
+    def push_tokens(self, tokens: list[str]):
+        weechat.config_set_plugin("push_tokens", ",".join(tokens))
+
+    @property
+    def notify_current_buffer(self):
+        """Return notify_current_buffer option as boolean."""
+        return weechat.config_string_to_boolean(self.data["notify_current_buffer"])
+
 
 script_options_default = {
     "push_tokens": (
@@ -11,7 +33,7 @@ script_options_default = {
         "Option to send notifications for the current buffer",
     ),
 }
-script_options: dict[str, str] = {}
+script_options = Options()
 
 
 def weechatrn_cb(data: str, buffer: str, args: str) -> int:
@@ -19,14 +41,10 @@ def weechatrn_cb(data: str, buffer: str, args: str) -> int:
     Command to allow managing push tokens without the need to allow /set access
     to relay clients.
     """
-    tokens = (
-        script_options["push_tokens"].split(",")
-        if script_options["push_tokens"]
-        else []
-    )
+    tokens = script_options.push_tokens
     if args not in tokens:
         tokens.append(args)
-        weechat.config_set_plugin("push_tokens", ",".join(tokens))
+        script_options.push_tokens = tokens
     return weechat.WEECHAT_RC_OK
 
 
@@ -57,10 +75,7 @@ def priv_msg_cb(
     if "notify_none" in tags.split(","):
         return weechat.WEECHAT_RC_OK
 
-    if (
-        not weechat.config_string_to_boolean(script_options["notify_current_buffer"])
-        and weechat.current_buffer() == buffer
-    ):
+    if not script_options.notify_current_buffer and weechat.current_buffer() == buffer:
         return weechat.WEECHAT_RC_OK
 
     body = "<%s> %s" % (prefix, message)
@@ -83,11 +98,7 @@ def send_push(title: str, body: str) -> None:
        "title": "Notification title",
        "body": "Notification body" }]
     """
-    push_tokens = (
-        script_options["push_tokens"].split(",")
-        if script_options["push_tokens"]
-        else []
-    )
+    push_tokens = script_options.push_tokens
     if push_tokens == []:
         return
 
@@ -124,7 +135,7 @@ def remove_unregistered_devices(response: str) -> None:
     except json.JSONDecodeError:
         pass
     else:
-        tokens = script_options["push_tokens"].split(",")
+        tokens = script_options.push_tokens
 
         for index, status in enumerate(statuses["data"]):
             if (
@@ -137,7 +148,7 @@ def remove_unregistered_devices(response: str) -> None:
                 except ValueError:
                     pass
 
-        weechat.config_set_plugin("push_tokens", ",".join(tokens))
+        script_options.push_tokens = tokens
 
 
 if weechat.register(
