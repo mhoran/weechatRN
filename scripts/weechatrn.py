@@ -41,9 +41,10 @@ def weechatrn_cb(data: str, buffer: str, args: str) -> int:
     Command to allow managing push tokens without the need to allow /set access
     to relay clients.
     """
+    token = args.strip()
     tokens = script_options.push_tokens
-    if args not in tokens:
-        tokens.append(args)
+    if token and token not in tokens:
+        tokens.append(token)
         script_options.push_tokens = tokens
     return weechat.WEECHAT_RC_OK
 
