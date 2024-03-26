@@ -16,13 +16,19 @@ import {
 } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
+import {
+  changeCurrentBufferAction,
+  fetchBuffersAction,
+  fetchLinesAction
+} from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
-import { changeCurrentBufferAction } from '../store/actions';
+import { addListener } from '@reduxjs/toolkit';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -38,7 +44,8 @@ const connector = connect((state: StoreState) => {
     buffers: state.buffers,
     currentBufferId,
     currentBuffer,
-    hasHighlights: numHighlights > 0
+    hasHighlights: numHighlights > 0,
+    connected: state.app.connected
   };
 });
 
@@ -91,7 +98,7 @@ class App extends React.Component<Props, State> {
     const { currentBufferId, fetchBufferInfo } = this.props;
 
     this.closeDrawer();
-    if (currentBufferId !== buffer.id) {
+    if (currentBufferId !== buffer.id && this.props.buffers[buffer.id]) {
       this.props.dispatch(changeCurrentBufferAction(buffer.id));
       this.props.clearHotlistForBuffer(currentBufferId, buffer.id);
       fetchBufferInfo(buffer.id);
@@ -142,10 +149,30 @@ class App extends React.Component<Props, State> {
     }
 
     registerForPushNotificationsAsync();
+
+    this.responseListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const { bufferId, lineId } = response.notification.request.content.data;
+        this.props.dispatch(
+          addListener({
+            predicate: (action) =>
+              fetchLinesAction.match(action) &&
+              action.payload[0].buffer === bufferId,
+            effect: (effect, listenerApi) => {
+              listenerApi.unsubscribe();
+              this.changeCurrentBuffer({
+                id: (bufferId as string).replace(/^0x/, '')
+              } as WeechatBuffer);
+            }
+          })
+        );
+        fetchBufferInfo(bufferId);
+      });
   }
 
   componentWillUnmount() {
     this.dimensionsListener?.remove();
+    this.responseListener?.remove();
   }
 
   componentDidUpdate(prevProps: Props) {
