@@ -79,20 +79,29 @@ def priv_msg_cb(
     if not script_options.notify_current_buffer and weechat.current_buffer() == buffer:
         return weechat.WEECHAT_RC_OK
 
+    line = ""
+    own_lines = weechat.hdata_pointer(weechat.hdata_get("buffer"), buffer, "own_lines")
+    if own_lines:
+        line = weechat.hdata_pointer(weechat.hdata_get("lines"), own_lines, "last_line")
+
     body = f"<{prefix}> {message}"
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
     if is_pm:
-        send_push(title=f"Private message from {prefix}", body=body)
+        send_push(
+            f"Private message from {prefix}", body, {"bufferId": buffer, "lineId": line}
+        )
     elif int(highlight):
         buffer_name = weechat.buffer_get_string(
             buffer, "short_name"
         ) or weechat.buffer_get_string(buffer, "name")
-        send_push(title=f"Highlight in {buffer_name}", body=body)
+        send_push(
+            f"Highlight in {buffer_name}", body, {"bufferId": buffer, "lineId": line}
+        )
 
     return weechat.WEECHAT_RC_OK
 
 
-def send_push(title: str, body: str) -> None:
+def send_push(title: str, body: str, data: dict[str, str]) -> None:
     """
     Send push notification to Expo server. Message JSON encoded in the format:
     [{ "to": "EXPO_PUSH_TOKEN",
@@ -103,9 +112,9 @@ def send_push(title: str, body: str) -> None:
     if push_tokens == []:
         return
 
-    post_body: list[dict[str, str]] = []
+    post_body: list[dict[str, object]] = []
     for token in push_tokens:
-        post_body.append({"to": token, "title": title, "body": body})
+        post_body.append({"to": token, "title": title, "body": body, "data": data})
 
     options = {
         "httpheader": "Content-Type: application/json",

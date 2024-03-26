@@ -4,15 +4,30 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import WeechatConnection, { ConnectionError } from '../lib/weechat/connection';
-import { persistor, store } from '../store';
+import { AppDispatch, StoreState, persistor, store } from '../store';
 
-import { UnsubscribeListener, addListener } from '@reduxjs/toolkit';
+import {
+  TypedAddListener,
+  UnsubscribeListener,
+  addListener,
+  createAction
+} from '@reduxjs/toolkit';
+import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
-import { fetchScriptsAction, upgradeAction } from '../store/actions';
+import {
+  bufferNotificationAction,
+  fetchBuffersAction,
+  fetchScriptsAction,
+  upgradeAction
+} from '../store/actions';
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
+
+const fetchBuffersDispatchAction = createAction<
+  ReturnType<typeof bufferNotificationAction>
+>('FETCH_BUFFERS_DISPATCH');
 
 interface State {
   connecting: boolean;
@@ -35,12 +50,30 @@ export default class WeechatNative extends React.Component<null, State> {
     }
   });
 
-  unsubscribeUpgradeAction: UnsubscribeListener;
-  unsubscribeFetchScriptsAction: UnsubscribeListener;
+  responseListener = Notifications.addNotificationResponseReceivedListener(
+    (response) => {
+      const { bufferId } = response.notification.request.content.data;
+
+      if (!bufferId) return;
+
+      store.dispatch(
+        fetchBuffersDispatchAction(
+          bufferNotificationAction(bufferId.replace(/^0x/, ''))
+        )
+      );
+    }
+  );
+
+  unsubscribeUpgradeListener: UnsubscribeListener;
+  unsubscribeFetchScriptsListener: UnsubscribeListener;
+  unsubscribeFetchBuffersDispatchListener: UnsubscribeListener;
+
+  private readonly FETCH_BUFFERS_COMMAND =
+    '(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type';
 
   constructor(props: null) {
     super(props);
-    this.unsubscribeUpgradeAction = store.dispatch(
+    this.unsubscribeUpgradeListener = store.dispatch(
       addListener({
         actionCreator: upgradeAction,
         effect: () => {
@@ -48,7 +81,7 @@ export default class WeechatNative extends React.Component<null, State> {
         }
       })
     );
-    this.unsubscribeFetchScriptsAction = store.dispatch(
+    this.unsubscribeFetchScriptsListener = store.dispatch(
       addListener({
         actionCreator: fetchScriptsAction,
         effect: (scripts) => {
@@ -57,12 +90,33 @@ export default class WeechatNative extends React.Component<null, State> {
         }
       })
     );
+    this.unsubscribeFetchBuffersDispatchListener = store.dispatch(
+      (addListener as TypedAddListener<StoreState, AppDispatch>)({
+        actionCreator: fetchBuffersDispatchAction,
+        effect: async (action, listenerApi) => {
+          listenerApi.cancelActiveListeners();
+
+          if (this.connection?.isConnected()) {
+            this.connection.send(this.FETCH_BUFFERS_COMMAND);
+          }
+
+          await listenerApi.condition(fetchBuffersAction.match);
+
+          const wrappedAction = action.payload;
+          if (listenerApi.getState().buffers[wrappedAction.payload]) {
+            listenerApi.dispatch(wrappedAction);
+          }
+        }
+      })
+    );
   }
 
   componentWillUnmount(): void {
     this.appStateListener.remove();
-    this.unsubscribeUpgradeAction();
-    this.unsubscribeFetchScriptsAction();
+    this.unsubscribeUpgradeListener();
+    this.unsubscribeFetchScriptsListener();
+    this.responseListener.remove();
+    this.unsubscribeFetchBuffersDispatchListener();
   }
 
   setNotificationToken = async (): Promise<void> => {
@@ -74,13 +128,10 @@ export default class WeechatNative extends React.Component<null, State> {
     this.connectOnResume = true;
     this.setState({ connecting: false });
     connection.send('(hotlist) hdata hotlist:gui_hotlist(*)');
+    connection.send(this.FETCH_BUFFERS_COMMAND);
     connection.send(
-      '(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type'
+      '(last_read_lines) hdata buffer:gui_buffers(*)/own_lines/last_read_line/data buffer'
     );
-    this.connection &&
-      this.connection.send(
-        '(last_read_lines) hdata buffer:gui_buffers(*)/own_lines/last_read_line/data buffer'
-      );
     connection.send('(scripts) hdata python_script:scripts(*) name');
     connection.send('sync');
   };

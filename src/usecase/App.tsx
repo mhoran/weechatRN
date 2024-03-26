@@ -16,13 +16,16 @@ import {
 } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
 
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
+import {
+  changeCurrentBufferAction,
+  clearBufferNotificationAction
+} from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
-import { changeCurrentBufferAction } from '../store/actions';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -38,7 +41,8 @@ const connector = connect((state: StoreState) => {
     buffers: state.buffers,
     currentBufferId,
     currentBuffer,
-    hasHighlights: numHighlights > 0
+    hasHighlights: numHighlights > 0,
+    notificationBufferId: state.app.notificationBufferId
   };
 });
 
@@ -87,14 +91,20 @@ class App extends React.Component<Props, State> {
     showNicklistModal: false
   };
 
-  changeCurrentBuffer = (buffer: WeechatBuffer) => {
-    const { currentBufferId, fetchBufferInfo } = this.props;
+  changeCurrentBuffer = (buffer: WeechatBuffer | string) => {
+    const {
+      currentBufferId,
+      dispatch,
+      clearHotlistForBuffer,
+      fetchBufferInfo
+    } = this.props;
+    const bufferId = typeof buffer === 'string' ? buffer : buffer.id;
 
     this.closeDrawer();
-    if (currentBufferId !== buffer.id) {
-      this.props.dispatch(changeCurrentBufferAction(buffer.id));
-      this.props.clearHotlistForBuffer(currentBufferId, buffer.id);
-      fetchBufferInfo(buffer.id);
+    if (currentBufferId !== bufferId) {
+      dispatch(changeCurrentBufferAction(bufferId));
+      clearHotlistForBuffer(currentBufferId, bufferId);
+      fetchBufferInfo(bufferId);
     }
   };
 
@@ -149,7 +159,17 @@ class App extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { currentBufferId } = this.props;
+    const { currentBufferId, notificationBufferId, dispatch } = this.props;
+
+    if (
+      notificationBufferId &&
+      notificationBufferId !== prevProps.notificationBufferId
+    ) {
+      dispatch(clearBufferNotificationAction());
+      this.changeCurrentBuffer(notificationBufferId);
+      return;
+    }
+
     if (currentBufferId !== prevProps.currentBufferId && !currentBufferId) {
       this.openDrawer();
     }

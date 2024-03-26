@@ -58,3 +58,10 @@ export const nicklistUpdatedAction = createAction<{
 }>('NICKLIST_UPDATED');
 
 export const fetchScriptsAction = createAction<string[]>('FETCH_SCRIPTS');
+
+export const bufferNotificationAction = createAction<string>(
+  'BUFFER_NOTIFICATION'
+);
+export const clearBufferNotificationAction = createAction(
+  'CLEAR_BUFFER_NOTIFICATION'
+);

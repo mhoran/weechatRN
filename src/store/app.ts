@@ -5,17 +5,21 @@ import {
   changeCurrentBufferAction,
   bufferClosedAction,
   fetchBuffersRemovedAction,
-  upgradeAction
+  upgradeAction,
+  bufferNotificationAction,
+  clearBufferNotificationAction,
 } from './actions';
 
 type AppState = {
   connected: boolean;
   currentBufferId: string | null;
+  notificationBufferId: string | null;
 };
 
 const initialState: AppState = {
   connected: false,
-  currentBufferId: null
+  currentBufferId: null,
+  notificationBufferId: null
 };
 
 export const app = createReducer(initialState, (builder) => {
@@ -35,6 +39,18 @@ export const app = createReducer(initialState, (builder) => {
     return {
       ...state,
       currentBufferId: action.payload
+    };
+  });
+  builder.addCase(bufferNotificationAction, (state, action) => {
+    return {
+      ...state,
+      notificationBufferId: action.payload
+    };
+  });
+  builder.addCase(clearBufferNotificationAction, (state) => {
+    return {
+      ...state,
+      notificationBufferId: null
     };
   });
   builder.addCase(bufferClosedAction, (state, action) => {
