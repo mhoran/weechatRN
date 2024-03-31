@@ -129,9 +129,6 @@ export default class WeechatNative extends React.Component<null, State> {
     this.setState({ connecting: false });
     connection.send('(hotlist) hdata hotlist:gui_hotlist(*)');
     connection.send(this.FETCH_BUFFERS_COMMAND);
-    connection.send(
-      '(last_read_lines) hdata buffer:gui_buffers(*)/own_lines/last_read_line/data buffer'
-    );
     connection.send('(scripts) hdata python_script:scripts(*) name');
     connection.send('sync');
   };
@@ -177,6 +174,9 @@ export default class WeechatNative extends React.Component<null, State> {
   ): void => {
     if (this.connection) {
       this.connection.send(
+        `(last_read_lines) hdata buffer:0x${bufferId}/own_lines/last_read_line/data buffer`
+      );
+      this.connection.send(
         `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`
       );
       this.connection.send(`(nicklist) nicklist 0x${bufferId}`);
@@ -188,10 +188,7 @@ export default class WeechatNative extends React.Component<null, State> {
       this.connection.send(`(input) input ${bufferIdOrFullName} ${message}`);
   };
 
-  clearHotlistForBuffer = (
-    currentBufferId: string | null,
-    bufferId: string
-  ): void => {
+  clearHotlistForBuffer = (currentBufferId: string | null): void => {
     if (currentBufferId) {
       this.sendMessageToBuffer(
         `0x${currentBufferId}`,
@@ -202,10 +199,6 @@ export default class WeechatNative extends React.Component<null, State> {
         '/input set_unread_current_buffer'
       );
     }
-    this.connection &&
-      this.connection.send(
-        `(last_read_lines) hdata buffer:0x${bufferId}/own_lines/last_read_line/data buffer`
-      );
   };
 
   render() {

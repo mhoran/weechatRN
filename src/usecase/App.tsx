@@ -52,10 +52,7 @@ type Props = PropsFromRedux & {
   disconnect: () => void;
   fetchBufferInfo: (bufferId: string, numLines?: number) => void;
   sendMessageToBuffer: (fullBufferName: string, message: string) => void;
-  clearHotlistForBuffer: (
-    currentBufferId: string | null,
-    bufferId: string
-  ) => void;
+  clearHotlistForBuffer: (currentBufferId: string | null) => void;
 };
 
 interface State {
@@ -103,7 +100,7 @@ class App extends React.Component<Props, State> {
     this.closeDrawer();
     if (currentBufferId !== bufferId) {
       dispatch(changeCurrentBufferAction(bufferId));
-      clearHotlistForBuffer(currentBufferId, bufferId);
+      clearHotlistForBuffer(currentBufferId);
       fetchBufferInfo(bufferId);
     }
   };
