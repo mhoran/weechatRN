@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, FlatList, ListRenderItem, Text, View } from 'react-native';
 
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 import BufferLine from './BufferLine';
@@ -54,7 +53,7 @@ interface State {
 export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
 
-  linesList = React.createRef<FlashList<WeechatLine>>();
+  linesList = React.createRef<FlatList<WeechatLine>>();
 
   state = {
     nickWidth: 0
@@ -108,13 +107,18 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
 
     return (
-      <FlashList
+      <FlatList
         ref={this.linesList}
         data={lines}
+        key={bufferId}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
+        initialNumToRender={35}
+        maxToRenderPerBatch={35}
+        removeClippedSubviews={true}
+        windowSize={15}
         ListFooterComponent={
           <Header
             bufferId={bufferId}
@@ -122,7 +126,6 @@ export default class Buffer extends React.PureComponent<Props, State> {
             fetchMoreLines={fetchMoreLines}
           />
         }
-        estimatedItemSize={44}
       />
     );
   }

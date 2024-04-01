@@ -5,6 +5,7 @@ import { formatDateDayChange } from '../../../lib/helpers/date-formatter';
 import { cof } from '../../../lib/weechat/colors';
 import Default, { styles } from './themes/Default';
 import { isSameDay } from 'date-fns';
+import { memo } from 'react';
 
 interface Props {
   line: WeechatLine;
@@ -28,7 +29,7 @@ const BufferLine: React.FC<Props> = ({
   const showReadMarker = line.pointers.at(-1) === lastReadLine;
 
   return (
-    <>
+    <View>
       {showLine && (
         <>
           {showDate && (
@@ -51,8 +52,8 @@ const BufferLine: React.FC<Props> = ({
           style={{ borderWidth: 1, borderColor: cof.chat_read_marker.color }}
         />
       )}
-    </>
+    </View>
   );
 };
 
-export default BufferLine;
+export default memo(BufferLine);
