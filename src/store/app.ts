@@ -8,18 +8,21 @@ import {
   upgradeAction,
   bufferNotificationAction,
   clearBufferNotificationAction,
+  fetchLinesAction
 } from './actions';
 
-type AppState = {
+export type AppState = {
   connected: boolean;
   currentBufferId: string | null;
-  notificationBufferId: string | null;
+  notification: { bufferId: string; lineId: string; identifier: string } | null;
+  notificationBufferLinesFetched: boolean;
 };
 
 const initialState: AppState = {
   connected: false,
   currentBufferId: null,
-  notificationBufferId: null
+  notification: null,
+  notificationBufferLinesFetched: false
 };
 
 export const app = createReducer(initialState, (builder) => {
@@ -41,16 +44,27 @@ export const app = createReducer(initialState, (builder) => {
       currentBufferId: action.payload
     };
   });
+  builder.addCase(fetchLinesAction, (state, action) => {
+    return {
+      ...state,
+      notificationBufferLinesFetched:
+        action.payload.some(
+          (line) => line.buffer === state.notification?.bufferId
+        ) || state.notificationBufferLinesFetched
+    };
+  });
   builder.addCase(bufferNotificationAction, (state, action) => {
     return {
       ...state,
-      notificationBufferId: action.payload
+      notification: action.payload,
+      notificationBufferLinesFetched: false
     };
   });
   builder.addCase(clearBufferNotificationAction, (state) => {
     return {
       ...state,
-      notificationBufferId: null
+      notification: null,
+      notificationBufferLinesFetched: false
     };
   });
   builder.addCase(bufferClosedAction, (state, action) => {

@@ -25,12 +25,18 @@ import { StoreState } from '../../../store';
 import Buffer from './Buffer';
 import UndoTextInput from '../../shared/UndoTextInput';
 import UploadButton from './UploadButton';
+import { clearBufferNotificationAction } from '../../../store/actions';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] || [],
   nicklist: state.nicklists[bufferId] || [],
   buffer: state.buffers[bufferId],
-  mediaUploadOptions: state.connection.mediaUploadOptions
+  mediaUploadOptions: state.connection.mediaUploadOptions,
+  notification:
+    bufferId === state.app.notification?.bufferId &&
+    state.app.notificationBufferLinesFetched
+      ? state.app.notification
+      : null
 }));
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -71,6 +77,19 @@ class BufferContainer extends React.Component<Props, State> {
     this.handleOnPress,
     this.handleOnLongPress
   );
+
+  buffer = React.createRef<Buffer>();
+
+  componentDidUpdate(prevProps: Readonly<Props>): void {
+    const { notification } = this.props;
+    if (
+      notification &&
+      notification.identifier !== prevProps.notification?.identifier
+    ) {
+      this.buffer.current?.scrollToLine(notification.lineId);
+      this.props.dispatch(clearBufferNotificationAction());
+    }
+  }
 
   handleOnFocus = () => {
     this.setState({
@@ -214,6 +233,7 @@ class BufferContainer extends React.Component<Props, State> {
           </View>
         )}
         <Buffer
+          ref={this.buffer}
           bufferId={bufferId}
           lines={lines}
           lastReadLine={buffer.last_read_line}

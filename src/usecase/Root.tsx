@@ -52,13 +52,18 @@ export default class WeechatNative extends React.Component<null, State> {
 
   responseListener = Notifications.addNotificationResponseReceivedListener(
     (response) => {
-      const { bufferId } = response.notification.request.content.data;
+      const request = response.notification.request;
+      const { bufferId, lineId } = request.content.data;
 
-      if (!bufferId) return;
+      if (!bufferId || !lineId) return;
 
       store.dispatch(
         fetchBuffersDispatchAction(
-          bufferNotificationAction(bufferId.replace(/^0x/, ''))
+          bufferNotificationAction({
+            identifier: request.identifier,
+            bufferId: bufferId.replace(/^0x/, ''),
+            lineId: lineId.replace(/^0x/, '')
+          })
         )
       );
     }
@@ -103,7 +108,7 @@ export default class WeechatNative extends React.Component<null, State> {
           await listenerApi.condition(fetchBuffersAction.match);
 
           const wrappedAction = action.payload;
-          if (listenerApi.getState().buffers[wrappedAction.payload]) {
+          if (listenerApi.getState().buffers[wrappedAction.payload.bufferId]) {
             listenerApi.dispatch(wrappedAction);
           }
         }

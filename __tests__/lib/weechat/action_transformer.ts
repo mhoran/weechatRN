@@ -6,6 +6,7 @@ import {
   fetchBuffersAction,
   fetchBuffersRemovedAction
 } from '../../../src/store/actions';
+import { AppState } from '../../../src/store/app';
 
 describe('transformToReduxAction', () => {
   describe('on buffers', () => {
@@ -19,10 +20,8 @@ describe('transformToReduxAction', () => {
         },
         lines: { '8578d9c00': [], '83a41cd80': [] },
         app: {
-          currentBufferId: '8578d9c00',
-          connected: true,
-          notificationBufferId: null
-        }
+          currentBufferId: '8578d9c00'
+        } as AppState
       };
       const store = configureStore({ reducer, preloadedState });
 
@@ -88,10 +87,8 @@ describe('transformToReduxAction', () => {
           '83a41cd80': {} as WeechatBuffer
         },
         app: {
-          currentBufferId: '8578d9c00',
-          connected: true,
-          notificationBufferId: null
-        }
+          currentBufferId: '8578d9c00'
+        } as AppState
       };
       const store = configureStore({ reducer, preloadedState });
 
@@ -124,10 +121,8 @@ describe('transformToReduxAction', () => {
         },
         lines: { '8578d9c00': [], '83a41cd80': [] },
         app: {
-          currentBufferId: '83a41cd80',
-          connected: true,
-          notificationBufferId: null
-        }
+          currentBufferId: '83a41cd80'
+        } as AppState
       };
       const store = configureStore({ reducer, preloadedState });
 
@@ -168,10 +163,8 @@ describe('transformToReduxAction', () => {
         },
         lines: { '8578d9c00': [], '83a41cd80': [] },
         app: {
-          currentBufferId: '83a41cd80',
-          connected: true,
-          notificationBufferId: null
-        }
+          currentBufferId: '83a41cd80'
+        } as AppState
       };
       const store = configureStore({ reducer, preloadedState });
 

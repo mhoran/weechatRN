@@ -19,10 +19,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
-import {
-  changeCurrentBufferAction,
-  clearBufferNotificationAction
-} from '../store/actions';
+import { changeCurrentBufferAction } from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
@@ -42,7 +39,7 @@ const connector = connect((state: StoreState) => {
     currentBufferId,
     currentBuffer,
     hasHighlights: numHighlights > 0,
-    notificationBufferId: state.app.notificationBufferId
+    notification: state.app.notification
   };
 });
 
@@ -156,14 +153,18 @@ class App extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { currentBufferId, notificationBufferId, dispatch } = this.props;
+    const { currentBufferId, notification } = this.props;
 
     if (
-      notificationBufferId &&
-      notificationBufferId !== prevProps.notificationBufferId
+      notification &&
+      notification.identifier !== prevProps.notification?.identifier
     ) {
-      dispatch(clearBufferNotificationAction());
-      this.changeCurrentBuffer(notificationBufferId);
+      if (currentBufferId !== notification.bufferId)
+        this.changeCurrentBuffer(notification.bufferId);
+      else {
+        this.props.fetchBufferInfo(notification.bufferId);
+      }
+
       return;
     }
 

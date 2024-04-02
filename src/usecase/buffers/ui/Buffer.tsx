@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Button, FlatList, ListRenderItem, Text, View } from 'react-native';
+import {
+  Button,
+  CellRendererProps,
+  FlatList,
+  ListRenderItem,
+  Text,
+  View
+} from 'react-native';
 
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
@@ -59,12 +66,44 @@ export default class Buffer extends React.PureComponent<Props, State> {
     nickWidth: 0
   };
 
-  componentDidUpdate(prevProps: Props) {
-    const { bufferId } = this.props;
-    if (bufferId !== prevProps.bufferId) {
-      this.linesList.current?.scrollToOffset({ animated: false, offset: 0 });
-    }
-  }
+  onCellLayout?: (index: number) => void;
+
+  onScrollToIndexFailed = async (info: {
+    index: number;
+    highestMeasuredFrameIndex: number;
+    averageItemLength: number;
+  }) => {
+    this.linesList.current?.scrollToIndex({
+      index: info.highestMeasuredFrameIndex,
+      animated: false
+    });
+
+    await new Promise<void>((resolve) => {
+      this.onCellLayout = (index: number) => {
+        if (index > info.highestMeasuredFrameIndex) resolve();
+      };
+    });
+    this.onCellLayout = undefined;
+
+    this.linesList.current?.scrollToIndex({
+      index: info.index,
+      animated: false,
+      viewPosition: 0.5
+    });
+  };
+
+  scrollToLine = (lineId: string) => {
+    const index = this.props.lines.findIndex(
+      (line) => line.pointers[line.pointers.length - 2] === lineId
+    );
+    if (index < 0) return;
+
+    this.linesList.current?.scrollToIndex({
+      index: index,
+      animated: false,
+      viewPosition: 0.5
+    });
+  };
 
   renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
     const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
@@ -85,6 +124,26 @@ export default class Buffer extends React.PureComponent<Props, State> {
         lastReadLine={lastReadLine}
         lastMessageDate={lastMessage?.date}
       />
+    );
+  };
+
+  renderCell: React.FC<CellRendererProps<WeechatLine>> = ({
+    index,
+    children,
+    onLayout,
+    style
+  }) => {
+    return (
+      <View
+        testID={`renderCell(${index})`}
+        style={style}
+        onLayout={(event) => {
+          onLayout?.(event);
+          this.onCellLayout?.(index);
+        }}
+      >
+        {children}
+      </View>
     );
   };
 
@@ -109,6 +168,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
     return (
       <FlatList
         ref={this.linesList}
+        accessibilityLabel="Message list"
         data={lines}
         key={bufferId}
         inverted
@@ -119,6 +179,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         maxToRenderPerBatch={35}
         removeClippedSubviews={true}
         windowSize={15}
+        CellRendererComponent={this.renderCell}
         ListFooterComponent={
           <Header
             bufferId={bufferId}
@@ -126,6 +187,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
             fetchMoreLines={fetchMoreLines}
           />
         }
+        onScrollToIndexFailed={this.onScrollToIndexFailed}
       />
     );
   }
