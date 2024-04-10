@@ -10,13 +10,13 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "5"
+      "buildNumber": "1"
     },
     "android": {
       "package": "com.matthoran.weechatrn"
     },
     "platforms": ["ios", "android"],
-    "version": "1.1.1",
+    "version": "1.2.0",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
