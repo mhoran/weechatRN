@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
+import {
+  autoBatchEnhancer,
+  configureStore,
+  createListenerMiddleware
+} from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import {
   FLUSH,
@@ -14,12 +18,12 @@ import {
   persistStore
 } from 'redux-persist';
 
+import { app } from './app';
 import buffers from './buffers';
 import connection from './connection-info';
 import hotlists from './hotlists';
 import lines from './lines';
 import nicklists from './nicklists';
-import { app } from './app';
 
 export type StoreState = ReturnType<typeof reducer>;
 
@@ -80,7 +84,9 @@ export const store = configureStore({
           REGISTER
         ]
       }
-    }).prepend(listenerMiddleware.middleware)
+    }).prepend(listenerMiddleware.middleware),
+  enhancers: (existingEnhancers) =>
+    existingEnhancers.concat(autoBatchEnhancer())
 });
 
 export const persistor = persistStore(store);

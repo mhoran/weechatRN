@@ -48,9 +48,9 @@ export const app = createReducer(initialState, (builder) => {
     return {
       ...state,
       notificationBufferLinesFetched:
-        action.payload.some(
-          (line) => line.buffer === state.notification?.bufferId
-        ) || state.notificationBufferLinesFetched
+        (state.notification &&
+          action.payload[0].buffer === state.notification.bufferId) ||
+        state.notificationBufferLinesFetched
     };
   });
   builder.addCase(bufferNotificationAction, (state, action) => {
