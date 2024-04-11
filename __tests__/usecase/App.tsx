@@ -5,7 +5,10 @@ import { act, render } from '../../src/test-utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from '../../src/store';
 import { AppState } from '../../src/store/app';
-import { bufferNotificationAction } from '../../src/store/actions';
+import {
+  bufferNotificationAction,
+  changeCurrentBufferAction
+} from '../../src/store/actions';
 
 jest.mock('react-native-drawer-layout');
 
@@ -89,8 +92,7 @@ describe('App', () => {
               title: '',
               type: 0
             }
-          },
-          app: { currentBufferId: bufferId } as AppState
+          }
         }
       });
       const fetchBufferInfo = jest.fn();
@@ -107,6 +109,7 @@ describe('App', () => {
       );
 
       act(() => {
+        store.dispatch(changeCurrentBufferAction(bufferId));
         store.dispatch(
           bufferNotificationAction({
             bufferId,
