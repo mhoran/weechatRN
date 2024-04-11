@@ -79,23 +79,29 @@ def priv_msg_cb(
     if not script_options.notify_current_buffer and weechat.current_buffer() == buffer:
         return weechat.WEECHAT_RC_OK
 
-    line = ""
+    line_data = ""
     own_lines = weechat.hdata_pointer(weechat.hdata_get("buffer"), buffer, "own_lines")
     if own_lines:
         line = weechat.hdata_pointer(weechat.hdata_get("lines"), own_lines, "last_line")
+        if line:
+            line_data = weechat.hdata_pointer(weechat.hdata_get("line"), line, "data")
 
     body = f"<{prefix}> {message}"
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
     if is_pm:
         send_push(
-            f"Private message from {prefix}", body, {"bufferId": buffer, "lineId": line}
+            f"Private message from {prefix}",
+            body,
+            {"bufferId": buffer, "lineId": line_data},
         )
     elif int(highlight):
         buffer_name = weechat.buffer_get_string(
             buffer, "short_name"
         ) or weechat.buffer_get_string(buffer, "name")
         send_push(
-            f"Highlight in {buffer_name}", body, {"bufferId": buffer, "lineId": line}
+            f"Highlight in {buffer_name}",
+            body,
+            {"bufferId": buffer, "lineId": line_data},
         )
 
     return weechat.WEECHAT_RC_OK

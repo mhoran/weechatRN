@@ -94,7 +94,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   scrollToLine = (lineId: string) => {
     const index = this.props.lines.findIndex(
-      (line) => line.pointers[line.pointers.length - 2] === lineId
+      (line) => line.pointers[line.pointers.length - 1] === lineId
     );
     if (index < 0) return;
 

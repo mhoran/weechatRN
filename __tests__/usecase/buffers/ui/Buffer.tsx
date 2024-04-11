@@ -75,7 +75,7 @@ describe(Buffer, () => {
         }
       });
 
-      bufferRef.current?.scrollToLine('8580dcf80');
+      bufferRef.current?.scrollToLine('86c2fefd0');
 
       expect(ScrollView.prototype.scrollTo).toHaveBeenNthCalledWith(1, {
         animated: false,
