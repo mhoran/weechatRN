@@ -13,7 +13,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { ConnectionError } from '../../lib/weechat/connection';
 import { StoreState } from '../../store';
 import UndoTextInput from '../shared/UndoTextInput';
-import { styles } from '../settings/SettingsNavigator';
+import { styles } from '../settings/styles';
 import { setConnectionInfoAction } from '../../store/actions';
 
 const connector = connect((state: StoreState) => ({
