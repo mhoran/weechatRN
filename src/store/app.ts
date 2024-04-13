@@ -15,21 +15,22 @@ export type AppState = {
   connected: boolean;
   currentBufferId: string | null;
   notification: { bufferId: string; lineId: string; identifier: string } | null;
-  notificationBufferLinesFetched: boolean;
+  currentBufferLinesFetched: boolean;
 };
 
 const initialState: AppState = {
   connected: false,
   currentBufferId: null,
   notification: null,
-  notificationBufferLinesFetched: false
+  currentBufferLinesFetched: false
 };
 
 export const app = createReducer(initialState, (builder) => {
   builder.addCase(disconnectAction, (state) => {
     return {
       ...state,
-      connected: false
+      connected: false,
+      currentBufferLinesFetched: false
     };
   });
   builder.addCase(fetchVersionAction, (state) => {
@@ -41,30 +42,29 @@ export const app = createReducer(initialState, (builder) => {
   builder.addCase(changeCurrentBufferAction, (state, action) => {
     return {
       ...state,
-      currentBufferId: action.payload
+      currentBufferId: action.payload,
+      currentBufferLinesFetched: false
     };
   });
   builder.addCase(fetchLinesAction, (state, action) => {
     return {
       ...state,
-      notificationBufferLinesFetched:
-        (state.notification &&
-          action.payload[0].buffer === state.notification.bufferId) ||
-        state.notificationBufferLinesFetched
+      currentBufferLinesFetched:
+        (state.currentBufferId &&
+          action.payload[0].buffer === state.currentBufferId) ||
+        state.currentBufferLinesFetched
     };
   });
   builder.addCase(bufferNotificationAction, (state, action) => {
     return {
       ...state,
-      notification: action.payload,
-      notificationBufferLinesFetched: false
+      notification: action.payload
     };
   });
   builder.addCase(clearBufferNotificationAction, (state) => {
     return {
       ...state,
-      notification: null,
-      notificationBufferLinesFetched: false
+      notification: null
     };
   });
   builder.addCase(bufferClosedAction, (state, action) => {

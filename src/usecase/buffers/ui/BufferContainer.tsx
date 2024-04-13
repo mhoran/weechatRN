@@ -34,7 +34,7 @@ const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   mediaUploadOptions: state.connection.mediaUploadOptions,
   notification:
     bufferId === state.app.notification?.bufferId &&
-    state.app.notificationBufferLinesFetched
+    state.app.currentBufferLinesFetched
       ? state.app.notification
       : null
 }));
@@ -79,17 +79,6 @@ class BufferContainer extends React.Component<Props, State> {
   );
 
   buffer = React.createRef<Buffer>();
-
-  componentDidUpdate(prevProps: Readonly<Props>): void {
-    const { notification } = this.props;
-    if (
-      notification &&
-      notification.identifier !== prevProps.notification?.identifier
-    ) {
-      this.buffer.current?.scrollToLine(notification.lineId);
-      this.props.dispatch(clearBufferNotificationAction());
-    }
-  }
 
   handleOnFocus = () => {
     this.setState({
@@ -210,6 +199,10 @@ class BufferContainer extends React.Component<Props, State> {
     );
   };
 
+  clearNotification = () => {
+    this.props.dispatch(clearBufferNotificationAction());
+  };
+
   render() {
     const {
       bufferId,
@@ -217,7 +210,8 @@ class BufferContainer extends React.Component<Props, State> {
       showTopic,
       lines,
       fetchMoreLines,
-      mediaUploadOptions
+      mediaUploadOptions,
+      notification
     } = this.props;
     const { textValue, showTabButton } = this.state;
 
@@ -240,6 +234,8 @@ class BufferContainer extends React.Component<Props, State> {
           onLongPress={this.onLongPress}
           parseArgs={this.parseArgs}
           fetchMoreLines={fetchMoreLines}
+          notificationLineId={notification?.lineId}
+          clearNotification={this.clearNotification}
         />
         <View style={styles.bottomBox}>
           <UndoTextInput

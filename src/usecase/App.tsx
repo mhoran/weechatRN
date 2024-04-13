@@ -159,11 +159,7 @@ class App extends React.Component<Props, State> {
       notification &&
       notification.identifier !== prevProps.notification?.identifier
     ) {
-      if (currentBufferId !== notification.bufferId)
-        this.changeCurrentBuffer(notification.bufferId);
-      else {
-        this.props.fetchBufferInfo(notification.bufferId);
-      }
+      this.changeCurrentBuffer(notification.bufferId);
 
       return;
     }

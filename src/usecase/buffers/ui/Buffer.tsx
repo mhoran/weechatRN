@@ -20,6 +20,8 @@ interface Props {
   parseArgs: ParseShape[];
   bufferId: string;
   fetchMoreLines: (lines: number) => void;
+  notificationLineId?: string;
+  clearNotification: () => void;
 }
 
 const keyExtractor = (line: WeechatLine) =>
@@ -55,6 +57,7 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
 
 interface State {
   nickWidth: number;
+  listReset: boolean;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
@@ -62,9 +65,30 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   linesList = React.createRef<FlatList<WeechatLine>>();
 
-  state = {
-    nickWidth: 0
+  state: State = {
+    nickWidth: 0,
+    listReset: false
   };
+
+  componentDidUpdate(
+    prevProps: Readonly<Props>,
+    prevState: Readonly<State>
+  ): void {
+    const { notificationLineId, clearNotification } = this.props;
+    const { listReset } = this.state;
+    if (
+      notificationLineId &&
+      notificationLineId !== prevProps.notificationLineId
+    ) {
+      this.setState({ listReset: true });
+    }
+
+    if (notificationLineId && listReset && listReset !== prevState.listReset) {
+      this.scrollToLine(notificationLineId);
+      clearNotification();
+      this.setState({ listReset: false });
+    }
+  }
 
   onCellLayout?: (index: number) => void;
 
@@ -92,7 +116,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
     });
   };
 
-  scrollToLine = (lineId: string) => {
+  scrollToLine = async (lineId: string) => {
     const index = this.props.lines.findIndex(
       (line) => line.pointers[line.pointers.length - 1] === lineId
     );
@@ -148,7 +172,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { bufferId, lines, fetchMoreLines } = this.props;
+    const { bufferId, lines, fetchMoreLines, notificationLineId } = this.props;
+    const resetList = notificationLineId && !this.state.listReset;
 
     if (!this.state.nickWidth) {
       return (
@@ -169,8 +194,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
       <FlatList
         ref={this.linesList}
         accessibilityLabel="Message list"
-        data={lines}
-        key={bufferId}
+        data={resetList ? [] : lines}
+        key={resetList ? null : bufferId}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}

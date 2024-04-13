@@ -54,6 +54,7 @@ describe(Buffer, () => {
           parseArgs={[]}
           bufferId={''}
           fetchMoreLines={() => {}}
+          clearNotification={() => {}}
         />
       );
 
