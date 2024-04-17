@@ -177,12 +177,12 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
     if (!this.state.nickWidth) {
       return (
-        <View style={{ flexDirection: 'row', flex: 1 }} aria-hidden={true}>
+        <View style={{ flex: 1, opacity: 0 }} aria-hidden>
           <Text
             onLayout={(layout) => {
               this.setState({ nickWidth: layout.nativeEvent.layout.width });
             }}
-            style={[lineStyles.text, { opacity: 0 }]}
+            style={[lineStyles.text, { position: 'absolute' }]}
           >
             aaaaaaaa
           </Text>
