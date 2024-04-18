@@ -10,7 +10,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "2"
+      "buildNumber": "3"
     },
     "android": {
       "package": "com.matthoran.weechatrn"
