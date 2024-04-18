@@ -51,7 +51,6 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
 
 interface State {
   nickWidth: number;
-  listReset: boolean;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
@@ -60,38 +59,33 @@ export default class Buffer extends React.PureComponent<Props, State> {
   linesList = React.createRef<FlashList<WeechatLine>>();
 
   state: State = {
-    nickWidth: 0,
-    listReset: false
+    nickWidth: 0
   };
 
-  componentDidUpdate(
-    prevProps: Readonly<Props>,
-    prevState: Readonly<State>
-  ): void {
+  componentDidUpdate(prevProps: Readonly<Props>): void {
     const { notificationLineId, clearNotification } = this.props;
-    const { listReset } = this.state;
     if (
       notificationLineId &&
       notificationLineId !== prevProps.notificationLineId
     ) {
-      this.setState({ listReset: true });
-    }
-
-    if (notificationLineId && listReset && listReset !== prevState.listReset) {
-      this.scrollToLine(notificationLineId);
+      this.linesList.current?.clearLayoutCacheOnUpdate();
+      this.linesList.current?.forceUpdate(() => {
+        this.scrollToLine(notificationLineId);
+      });
       clearNotification();
-      this.setState({ listReset: false });
     }
   }
 
-  resolveViewableItems?: () => void;
-
-  scrollToLine = async (lineId: string) => {
+  scrollToLine = (lineId: string) => {
     const index = this.props.lines.findIndex(
       (line) => line.pointers[line.pointers.length - 1] === lineId
     );
     if (index < 0) return;
 
+    this.scrollToIndex(index);
+  };
+
+  scrollToIndex = async (index: number) => {
     const listView = this.linesList.current?.recyclerlistview_unsafe;
     if (!listView) return;
 
@@ -101,10 +95,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         animated: false
       });
 
-      await new Promise<void>((resolve) => {
-        this.resolveViewableItems = resolve;
-      });
-      this.resolveViewableItems = undefined;
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     this.linesList.current?.scrollToIndex({
@@ -137,8 +128,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { bufferId, lines, fetchMoreLines, notificationLineId } = this.props;
-    const resetList = notificationLineId && !this.state.listReset;
+    const { bufferId, lines, fetchMoreLines } = this.props;
 
     if (!this.state.nickWidth) {
       return (
@@ -158,8 +148,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
     return (
       <FlashList
         ref={this.linesList}
-        data={resetList ? [] : lines}
-        key={resetList ? null : bufferId}
+        data={lines}
+        key={bufferId}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
@@ -171,9 +161,6 @@ export default class Buffer extends React.PureComponent<Props, State> {
             fetchMoreLines={fetchMoreLines}
           />
         }
-        onViewableItemsChanged={() => {
-          this.resolveViewableItems?.();
-        }}
         estimatedItemSize={26.5}
       />
     );
