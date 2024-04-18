@@ -97,8 +97,8 @@ class App extends React.Component<Props, State> {
     this.closeDrawer();
     if (currentBufferId !== bufferId) {
       dispatch(changeCurrentBufferAction(bufferId));
-      clearHotlistForBuffer(currentBufferId);
       fetchBufferInfo(bufferId);
+      clearHotlistForBuffer(bufferId);
     }
   };
 
@@ -140,9 +140,11 @@ class App extends React.Component<Props, State> {
       this.updateWidth
     );
 
-    const { currentBufferId, fetchBufferInfo } = this.props;
+    const { currentBufferId, fetchBufferInfo, clearHotlistForBuffer } =
+      this.props;
     if (currentBufferId) {
       fetchBufferInfo(currentBufferId);
+      clearHotlistForBuffer(currentBufferId);
     }
 
     registerForPushNotificationsAsync();
