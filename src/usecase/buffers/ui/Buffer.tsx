@@ -1,7 +1,13 @@
 import * as React from 'react';
-import { Button, Text, View } from 'react-native';
+import {
+  Button,
+  CellRendererProps,
+  FlatList,
+  ListRenderItem,
+  Text,
+  View
+} from 'react-native';
 
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 import BufferLine from './BufferLine';
@@ -57,7 +63,7 @@ interface State {
 export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
 
-  linesList = React.createRef<FlashList<WeechatLine>>();
+  linesList = React.createRef<FlatList<WeechatLine>>();
 
   state: State = {
     nickWidth: 0,
@@ -84,28 +90,37 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
   }
 
-  resolveViewableItems?: () => void;
+  onCellLayout?: (index: number) => void;
+
+  onScrollToIndexFailed = async (info: {
+    index: number;
+    highestMeasuredFrameIndex: number;
+    averageItemLength: number;
+  }) => {
+    this.linesList.current?.scrollToIndex({
+      index: info.highestMeasuredFrameIndex,
+      animated: false
+    });
+
+    await new Promise<void>((resolve) => {
+      this.onCellLayout = (index: number) => {
+        if (index > info.highestMeasuredFrameIndex) resolve();
+      };
+    });
+    this.onCellLayout = undefined;
+
+    this.linesList.current?.scrollToIndex({
+      index: info.index,
+      animated: false,
+      viewPosition: 0.5
+    });
+  };
 
   scrollToLine = async (lineId: string) => {
     const index = this.props.lines.findIndex(
       (line) => line.pointers[line.pointers.length - 1] === lineId
     );
     if (index < 0) return;
-
-    const listView = this.linesList.current?.recyclerlistview_unsafe;
-    if (!listView) return;
-
-    while (!listView.getLayout(index)?.isOverridden) {
-      this.linesList.current?.scrollToIndex({
-        index: index,
-        animated: false
-      });
-
-      await new Promise<void>((resolve) => {
-        this.resolveViewableItems = resolve;
-      });
-      this.resolveViewableItems = undefined;
-    }
 
     this.linesList.current?.scrollToIndex({
       index: index,
@@ -136,6 +151,26 @@ export default class Buffer extends React.PureComponent<Props, State> {
     );
   };
 
+  renderCell: React.FC<CellRendererProps<WeechatLine>> = ({
+    index,
+    children,
+    onLayout,
+    style
+  }) => {
+    return (
+      <View
+        testID={`renderCell(${index})`}
+        style={style}
+        onLayout={(event) => {
+          onLayout?.(event);
+          this.onCellLayout?.(index);
+        }}
+      >
+        {children}
+      </View>
+    );
+  };
+
   render() {
     const { bufferId, lines, fetchMoreLines, notificationLineId } = this.props;
     const resetList = notificationLineId && !this.state.listReset;
@@ -156,14 +191,20 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
 
     return (
-      <FlashList
+      <FlatList
         ref={this.linesList}
+        accessibilityLabel="Message list"
         data={resetList ? [] : lines}
         key={resetList ? null : bufferId}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
+        initialNumToRender={35}
+        maxToRenderPerBatch={35}
+        removeClippedSubviews={true}
+        windowSize={15}
+        CellRendererComponent={this.renderCell}
         ListFooterComponent={
           <Header
             bufferId={bufferId}
@@ -171,10 +212,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
             fetchMoreLines={fetchMoreLines}
           />
         }
-        onViewableItemsChanged={() => {
-          this.resolveViewableItems?.();
-        }}
-        estimatedItemSize={26.5}
+        onScrollToIndexFailed={this.onScrollToIndexFailed}
       />
     );
   }
