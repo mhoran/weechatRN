@@ -1,13 +1,14 @@
-import { CellContainer } from '@shopify/flash-list';
 import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within
 } from '@testing-library/react-native';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import Buffer from '../../../../src/usecase/buffers/ui/Buffer';
+import { CellContainer } from '@shopify/flash-list';
 
 jest.useFakeTimers();
 
@@ -85,7 +86,7 @@ describe(Buffer, () => {
         }
       });
 
-      jest.runAllTimers();
+      jest.advanceTimersToNextTimer();
 
       bufferRef.current?.scrollToLine('86c2fefd0');
 
@@ -116,12 +117,12 @@ describe(Buffer, () => {
         }
       });
 
-      await jest.runAllTimersAsync();
-
-      expect(ScrollView.prototype.scrollTo).toHaveBeenNthCalledWith(2, {
-        animated: false,
-        x: 0,
-        y: 43
+      await waitFor(() => {
+        expect(ScrollView.prototype.scrollTo).toHaveBeenNthCalledWith(2, {
+          animated: false,
+          x: 0,
+          y: 43
+        });
       });
     });
   });
