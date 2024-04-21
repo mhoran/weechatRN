@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
 
 interface State {
   nickWidth: number;
-  listReset: boolean;
+  linesListKey: number;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
@@ -67,7 +67,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   state: State = {
     nickWidth: 0,
-    listReset: false
+    linesListKey: 0
   };
 
   componentDidUpdate(
@@ -75,18 +75,19 @@ export default class Buffer extends React.PureComponent<Props, State> {
     prevState: Readonly<State>
   ): void {
     const { notificationLineId, clearNotification } = this.props;
-    const { listReset } = this.state;
+    const { linesListKey } = this.state;
+
     if (
-      notificationLineId &&
-      notificationLineId !== prevProps.notificationLineId
+      this.props.bufferId !== prevProps.bufferId ||
+      (notificationLineId &&
+        notificationLineId !== prevProps.notificationLineId)
     ) {
-      this.setState({ listReset: true });
+      this.setState((state) => ({ linesListKey: state.linesListKey + 1 }));
     }
 
-    if (notificationLineId && listReset && listReset !== prevState.listReset) {
+    if (notificationLineId && linesListKey !== prevState.linesListKey) {
       this.scrollToLine(notificationLineId);
       clearNotification();
-      this.setState({ listReset: false });
     }
   }
 
@@ -172,8 +173,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { bufferId, lines, fetchMoreLines, notificationLineId } = this.props;
-    const resetList = notificationLineId && !this.state.listReset;
+    const { bufferId, lines, fetchMoreLines } = this.props;
+    const { linesListKey } = this.state;
 
     if (!this.state.nickWidth) {
       return (
@@ -194,8 +195,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
       <FlatList
         ref={this.linesList}
         accessibilityLabel="Message list"
-        data={resetList ? [] : lines}
-        key={resetList ? null : bufferId}
+        data={lines}
+        key={linesListKey}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
