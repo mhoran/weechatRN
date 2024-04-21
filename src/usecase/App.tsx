@@ -134,6 +134,11 @@ class App extends React.Component<Props, State> {
     }
   };
 
+  fetchMoreLines = (lines: number) => {
+    this.props.currentBufferId &&
+      this.props.fetchBufferInfo(this.props.currentBufferId, lines);
+  };
+
   componentDidMount() {
     this.dimensionsListener = Dimensions.addEventListener(
       'change',
@@ -268,10 +273,7 @@ class App extends React.Component<Props, State> {
                   showTopic={showTopic}
                   sendMessage={this.sendMessage}
                   bufferId={currentBufferId}
-                  fetchMoreLines={(lines: number) => {
-                    currentBufferId &&
-                      this.props.fetchBufferInfo(currentBufferId, lines);
-                  }}
+                  fetchMoreLines={this.fetchMoreLines}
                 />
               </SafeAreaView>
             </Drawer>
