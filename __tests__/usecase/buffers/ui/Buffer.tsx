@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import Buffer from '../../../../src/usecase/buffers/ui/Buffer';
@@ -15,7 +10,7 @@ describe(Buffer, () => {
     const nickWidthText = screen.getByText('aaaaaaaa', { hidden: true });
     fireEvent(nickWidthText, 'layout', {
       nativeEvent: {
-        layout: { height: 26.5, width: 68, x: 0, y: 0 }
+        layout: { height: 16.7, width: 68, x: 0, y: 0 }
       }
     });
   };
@@ -60,9 +55,9 @@ describe(Buffer, () => {
 
       measureNickWidth();
 
-      // Simulate layout event for the FlatList
-      const listElement = screen.getByLabelText('Message list');
-      fireEvent(listElement, 'layout', {
+      // Simulate layout event for the ScrollView
+      const scrollView = screen.getByLabelText('Message list');
+      fireEvent(scrollView, 'layout', {
         nativeEvent: {
           layout: { height: 26.5, width: 1024, x: 0, y: 0 }
         }
@@ -83,18 +78,6 @@ describe(Buffer, () => {
         y: 0
       });
 
-      // This is effectively a no-op, we are already at 0, 0. However, scrollTo
-      // triggers this and the VirtualizedList will update internal state based
-      // on the layout properties, so fire it here as well.
-      fireEvent.scroll(listElement, {
-        nativeEvent: {
-          contentInset: { bottom: 0, left: 0, right: 0, top: 0 },
-          contentOffset: { x: 0, y: 0 },
-          contentSize: { height: 26.5, width: 1024 },
-          layoutMeasurement: { height: 26.5, width: 1024 }
-        }
-      });
-
       // Simulate layout event for second line
       message = screen.getByTestId('renderCell(1)');
       fireEvent(message, 'layout', {
@@ -103,11 +86,11 @@ describe(Buffer, () => {
         }
       });
 
-      await waitFor(() => {
-        expect(ScrollView.prototype.scrollTo).toHaveBeenNthCalledWith(2, {
-          animated: false,
-          y: 26.5
-        });
+      await jest.runAllTimersAsync();
+
+      expect(ScrollView.prototype.scrollTo).toHaveBeenNthCalledWith(2, {
+        animated: false,
+        y: 26.5
       });
     });
   });
