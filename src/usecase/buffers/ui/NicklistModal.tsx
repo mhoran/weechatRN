@@ -1,56 +1,45 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Button,
   FlatList,
-  ListRenderItemInfo,
+  ListRenderItem,
   Modal,
   StyleSheet,
   Text,
   View
 } from 'react-native';
-import { ConnectedProps, connect } from 'react-redux';
-import { StoreState } from '../../../store';
+import { useAppSelector } from '../../../store/hooks';
 
-const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
-  nicklist: (bufferId && state.nicklists[bufferId]) || []
-}));
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-type OwnProps = {
+type Props = {
   bufferId: string | null;
   visible: boolean;
   close: () => void;
 };
 
-type Props = OwnProps & PropsFromRedux;
-
-type ItemProps = {
-  item: ListRenderItemInfo<WeechatNicklist>;
-};
-
-const Item: React.FC<ItemProps> = ({ item }) => {
-  return (
-    <View style={styles.listItem}>
-      <View style={styles.row}>
-        <Text style={styles.listItemText}>{item.item.name}</Text>
-      </View>
+const renderItem: ListRenderItem<WeechatNicklist> = ({ item }) => (
+  <View style={styles.listItem}>
+    <View style={styles.row}>
+      <Text style={styles.listItemText}>{item.name}</Text>
     </View>
-  );
-};
+  </View>
+);
 
-const NicklistModal: React.FC<Props> = ({
-  bufferId,
-  visible,
-  nicklist,
-  close
-}) => {
+const keyExtractor = (item: WeechatNicklist) =>
+  item.pointers[item.pointers.length - 1];
+
+const NicklistModal: React.FC<Props> = ({ bufferId, visible, close }) => {
+  const nicklist = useAppSelector(
+    (state) => (bufferId && state.nicklists[bufferId]) || null
+  );
+
   const lastBufferId = useRef(bufferId);
 
-  if (bufferId !== lastBufferId.current) {
-    lastBufferId.current = bufferId;
-    visible && close();
-  }
+  useEffect(() => {
+    if (bufferId !== lastBufferId.current) {
+      lastBufferId.current = bufferId;
+      visible && close();
+    }
+  });
 
   if (!bufferId) return;
 
@@ -65,10 +54,8 @@ const NicklistModal: React.FC<Props> = ({
         <View style={styles.modalView}>
           <FlatList
             data={nicklist}
-            renderItem={(item) => {
-              return <Item item={item} />;
-            }}
-            keyExtractor={(item) => item.pointers[item.pointers.length - 1]}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
           />
           <Button title="Close" onPress={close} />
         </View>
@@ -77,7 +64,7 @@ const NicklistModal: React.FC<Props> = ({
   );
 };
 
-export default connector(NicklistModal);
+export default NicklistModal;
 
 const styles = StyleSheet.create({
   modalWrapper: {
