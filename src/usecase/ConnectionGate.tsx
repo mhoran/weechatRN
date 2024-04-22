@@ -1,12 +1,9 @@
-import { useEffect } from 'react';
-import { connect, useStore } from 'react-redux';
 import { ConnectionError } from '../lib/weechat/connection';
-import { StoreState } from '../store';
+import { useAppSelector } from '../store/hooks';
 import SettingsNavigator from './settings/SettingsNavigator';
 
 interface Props {
   connecting: boolean;
-  connected: boolean;
   onConnect: (hostname: string, password: string, ssl: boolean) => void;
   children: React.ReactNode;
   connectionError: ConnectionError | null;
@@ -14,23 +11,11 @@ interface Props {
 
 const ConnectionGate: React.FC<Props> = ({
   connecting,
-  connected,
   children,
-  onConnect,
-  connectionError
+  connectionError,
+  ...props
 }) => {
-  const store = useStore<StoreState>();
-
-  useEffect(() => {
-    const connectionSettings = store.getState().connection;
-    if (connectionSettings.hostname && connectionSettings.password) {
-      onConnect(
-        connectionSettings.hostname,
-        connectionSettings.password,
-        connectionSettings.ssl
-      );
-    }
-  }, [onConnect, store]);
+  const connected = useAppSelector((state) => state.app.connected);
 
   if (connected) {
     return children;
@@ -39,12 +24,10 @@ const ConnectionGate: React.FC<Props> = ({
       <SettingsNavigator
         connecting={connecting}
         connectionError={connectionError}
-        onConnect={onConnect}
+        onConnect={props.onConnect}
       />
     );
   }
 };
 
-export default connect((state: StoreState) => ({
-  connected: state.app.connected
-}))(ConnectionGate);
+export default ConnectionGate;

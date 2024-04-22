@@ -116,7 +116,13 @@ export default class WeechatNative extends React.Component<null, State> {
     );
   }
 
+  componentDidMount(): void {
+    const { hostname, password, ssl } = store.getState().connection;
+    if (hostname && password) this.onConnect(hostname, password, ssl);
+  }
+
   componentWillUnmount(): void {
+    this.connection?.disconnect();
     this.appStateListener.remove();
     this.unsubscribeUpgradeListener();
     this.unsubscribeFetchScriptsListener();

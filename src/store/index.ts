@@ -59,7 +59,8 @@ export const reducer = combineReducers({
 });
 
 export const store = configureStore({
-  reducer: persistReducer(
+  // FIXME: https://github.com/reduxjs/redux-toolkit/issues/1831
+  reducer: persistReducer<StoreState>(
     {
       storage: AsyncStorage,
       key: 'state',
