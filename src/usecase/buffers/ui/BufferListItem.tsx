@@ -10,15 +10,16 @@ import {
 interface Props {
   buffer: WeechatBuffer;
   hotlist: Hotlist;
-  currentBufferId: string | null;
+  isCurrentBuffer: boolean;
   onSelectBuffer: (b: WeechatBuffer) => void;
+  filterBuffers: boolean;
 }
 
-export default class BufferListItem extends React.Component<Props> {
+export default class BufferListItem extends React.PureComponent<Props> {
   getBufferViewStyleFromProps = (): TextStyle | null => {
-    const { currentBufferId, buffer, hotlist } = this.props;
+    const { isCurrentBuffer, hotlist } = this.props;
 
-    if (currentBufferId === buffer.id) {
+    if (isCurrentBuffer) {
       return { backgroundColor: '#f2777a' };
     } else if (hotlist.highlight > 0) {
       return { backgroundColor: '#ffcf7f' };
@@ -30,9 +31,9 @@ export default class BufferListItem extends React.Component<Props> {
   };
 
   getBufferTextStyleFromProps = (): TextStyle | null => {
-    const { currentBufferId, buffer, hotlist } = this.props;
+    const { isCurrentBuffer, hotlist } = this.props;
 
-    if (currentBufferId === buffer.id) {
+    if (isCurrentBuffer) {
       return { color: '#fff' };
     } else if (hotlist.highlight > 0) {
       return { color: '#000' };
@@ -44,7 +45,17 @@ export default class BufferListItem extends React.Component<Props> {
   };
 
   render() {
-    const { buffer, hotlist, onSelectBuffer } = this.props;
+    const { buffer, hotlist, onSelectBuffer, filterBuffers, isCurrentBuffer } =
+      this.props;
+
+    if (
+      filterBuffers &&
+      !isCurrentBuffer &&
+      (!buffer.local_variables.type ||
+        buffer.local_variables.type === 'server') &&
+      hotlist.sum === 0
+    )
+      return;
 
     return (
       <TouchableHighlight

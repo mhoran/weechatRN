@@ -1,6 +1,6 @@
 import { HotListState } from './hotlists';
 
-const createEmptyHotlist = (bufferId: string) => ({
+export const createEmptyHotlist = (bufferId: string) => ({
   buffer: bufferId,
   count: [0, 0, 0, 0],
   message: 0,

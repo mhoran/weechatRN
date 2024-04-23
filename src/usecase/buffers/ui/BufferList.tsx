@@ -1,68 +1,68 @@
+import { createSelector } from 'reselect';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { StyleSheet, FlatList, View, ListRenderItem } from 'react-native';
-import BufferListItem from './BufferListItem';
+import { useCallback } from 'react';
+import { FlatList, ListRenderItem, StyleSheet, View } from 'react-native';
 import { StoreState } from '../../../store';
-import { getHotlistForBufferId } from '../../../store/selectors';
+import { useAppSelector } from '../../../store/hooks';
+import { createEmptyHotlist } from '../../../store/selectors';
+import BufferListItem from './BufferListItem';
 import { HotListState } from '../../../store/hotlists';
 
 interface Props {
-  buffers: WeechatBuffer[];
   currentBufferId: string | null;
   onSelectBuffer: (b: WeechatBuffer) => void;
-  hotlists: HotListState;
-  filterBuffers: boolean;
 }
 
 const keyExtractor = (buffer: WeechatBuffer): string => buffer.id;
 
-class BufferList extends React.Component<Props> {
-  renderListItem: ListRenderItem<WeechatBuffer> = ({ item }) => {
-    const { onSelectBuffer, currentBufferId, hotlists } = this.props;
+const selectBuffers = createSelector(
+  [(state: StoreState) => state.buffers],
+  (buffers) => Object.values(buffers).sort((a, b) => a.number - b.number)
+);
 
-    return (
-      <BufferListItem
-        buffer={item}
-        onSelectBuffer={onSelectBuffer}
-        currentBufferId={currentBufferId}
-        hotlist={getHotlistForBufferId(hotlists, item.id)}
-      />
-    );
-  };
+const selectHotlist = createSelector(
+  [
+    (hotlist: HotListState, bufferId: string) => hotlist[bufferId],
+    (hotlist: HotListState, bufferId: string) => bufferId
+  ],
+  (hotlist, bufferId) => hotlist || createEmptyHotlist(bufferId)
+);
 
-  visibleBuffer = (buffer: WeechatBuffer) => {
-    const { filterBuffers, hotlists } = this.props;
-    if (filterBuffers) {
+const BufferList: React.FC<Props> = ({ currentBufferId, onSelectBuffer }) => {
+  const buffers = useAppSelector(selectBuffers);
+  const hotlists = useAppSelector((state) => state.hotlists);
+  const filterBuffers = useAppSelector(
+    (state) => state.connection.filterBuffers
+  );
+
+  const renderListItem: ListRenderItem<WeechatBuffer> = useCallback(
+    ({ item }) => {
       return (
-        (buffer.local_variables.type &&
-          buffer.local_variables.type !== 'server') ||
-        (hotlists[buffer.id] && hotlists[buffer.id].sum !== 0)
-      );
-    } else {
-      return true;
-    }
-  };
-
-  render() {
-    const { buffers } = this.props;
-
-    return (
-      <View style={styles.container}>
-        <FlatList
-          style={styles.container}
-          data={buffers.filter(this.visibleBuffer)}
-          keyExtractor={keyExtractor}
-          renderItem={this.renderListItem}
+        <BufferListItem
+          buffer={item}
+          onSelectBuffer={onSelectBuffer}
+          isCurrentBuffer={currentBufferId === item.id}
+          hotlist={selectHotlist(hotlists, item.id)}
+          filterBuffers={filterBuffers}
         />
-      </View>
-    );
-  }
-}
+      );
+    },
+    [currentBufferId, hotlists, onSelectBuffer, filterBuffers]
+  );
 
-export default connect((state: StoreState) => ({
-  hotlists: state.hotlists,
-  filterBuffers: state.connection.filterBuffers
-}))(BufferList);
+  return (
+    <View style={styles.container}>
+      <FlatList
+        style={styles.container}
+        data={buffers}
+        keyExtractor={keyExtractor}
+        renderItem={renderListItem}
+      />
+    </View>
+  );
+};
+
+export default BufferList;
 
 const styles = StyleSheet.create({
   container: {

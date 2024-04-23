@@ -35,7 +35,6 @@ const connector = connect((state: StoreState) => {
   );
 
   return {
-    buffers: state.buffers,
     currentBufferId,
     currentBuffer,
     hasHighlights: numHighlights > 0,
@@ -177,14 +176,12 @@ class App extends React.Component<Props, State> {
   }
 
   render() {
-    const { buffers, currentBufferId, currentBuffer, hasHighlights } =
-      this.props;
+    const { currentBufferId, currentBuffer, hasHighlights } = this.props;
 
     const { showTopic, drawerWidth, showNicklistModal } = this.state;
 
     const sidebar = () => (
       <BufferList
-        buffers={Object.values(buffers).sort((a, b) => a.number - b.number)}
         currentBufferId={currentBufferId}
         onSelectBuffer={this.changeCurrentBuffer}
       />
