@@ -10,33 +10,26 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ConnectedProps, connect } from 'react-redux';
-import { StoreState } from '../../store';
+import { setMediaUploadOptionsAction } from '../../store/actions';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
-import { setMediaUploadOptionsAction } from '../../store/actions';
-
-const connector = connect((state: StoreState) => ({
-  uploadOptions: {
-    ...state.connection.mediaUploadOptions,
-    headers:
-      state.connection.mediaUploadOptions.headers &&
-      Object.entries(state.connection.mediaUploadOptions.headers)
-  }
-}));
 
 type Props = {
   setShowUploadSettings: (show: boolean) => void;
-} & ConnectedProps<typeof connector>;
+};
 
-const UploadSettings: React.FC<Props> = ({
-  uploadOptions: {
-    headers: uploadOptionsHeaders = [['', '']],
-    ...uploadOptions
-  },
-  dispatch,
-  setShowUploadSettings
-}) => {
+const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
+  const dispatch = useAppDispatch();
+
+  const uploadOptions = useAppSelector(
+    (state) => state.connection.mediaUploadOptions
+  );
+
+  const uploadOptionsHeaders = uploadOptions.headers
+    ? Object.entries(uploadOptions.headers)
+    : [['', '']];
+
   const [uploadOptionsState, setUploadOptionsState] = useState({
     ...uploadOptions,
     headers: uploadOptionsHeaders
@@ -233,4 +226,4 @@ const UploadSettings: React.FC<Props> = ({
   );
 };
 
-export default connector(UploadSettings);
+export default UploadSettings;
