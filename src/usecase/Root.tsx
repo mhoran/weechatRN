@@ -116,11 +116,6 @@ export default class WeechatNative extends React.Component<null, State> {
     );
   }
 
-  componentDidMount(): void {
-    const { hostname, password, ssl } = store.getState().connection;
-    if (hostname && password) this.onConnect(hostname, password, ssl);
-  }
-
   componentWillUnmount(): void {
     this.connection?.disconnect();
     this.appStateListener.remove();
@@ -129,6 +124,11 @@ export default class WeechatNative extends React.Component<null, State> {
     this.responseListener.remove();
     this.unsubscribeFetchBuffersDispatchListener();
   }
+
+  onBeforeLift = (): void => {
+    const { hostname, password, ssl } = store.getState().connection;
+    if (hostname && password) this.onConnect(hostname, password, ssl);
+  };
 
   setNotificationToken = async (): Promise<void> => {
     const token = await getPushNotificationStatusAsync();
@@ -218,7 +218,11 @@ export default class WeechatNative extends React.Component<null, State> {
     return (
       <Provider store={store}>
         <SafeAreaProvider>
-          <PersistGate loading={null} persistor={persistor}>
+          <PersistGate
+            loading={null}
+            persistor={persistor}
+            onBeforeLift={this.onBeforeLift}
+          >
             <ConnectionGate
               connecting={connecting}
               connectionError={connectionError}
