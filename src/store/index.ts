@@ -1,22 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  autoBatchEnhancer,
-  configureStore,
-  createListenerMiddleware
-} from '@reduxjs/toolkit';
+import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import {
-  FLUSH,
-  MigrationManifest,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-  REHYDRATE,
-  createMigrate,
-  persistReducer,
-  persistStore
-} from 'redux-persist';
 
 import { app } from './app';
 import buffers from './buffers';
@@ -24,26 +7,24 @@ import connection from './connection-info';
 import hotlists from './hotlists';
 import lines from './lines';
 import nicklists from './nicklists';
+import { persistMiddleware, persistReducer } from './persist';
 
 export type StoreState = ReturnType<typeof reducer>;
 
 export type AppDispatch = typeof store.dispatch;
 
-// FIXME: https://github.com/rt2zz/redux-persist/issues/1065
-const migrations: MigrationManifest = {
+const migrations: Record<number, (state: unknown) => StoreState> = {
   0: (state) => {
-    if (!state) return;
-    const storeState = state as unknown as StoreState;
     return {
-      ...state,
+      ...(state as object),
       connection: {
-        ...storeState.connection,
+        ...(state as { connection: object }).connection,
         mediaUploadOptions: {
           url: '',
           basicAuth: true
         }
       }
-    };
+    } as StoreState;
   }
 };
 
@@ -59,35 +40,20 @@ export const reducer = combineReducers({
 });
 
 export const store = configureStore({
-  // FIXME: https://github.com/reduxjs/redux-toolkit/issues/1831
-  reducer: persistReducer<StoreState>(
-    {
-      storage: AsyncStorage,
-      key: 'state',
-      whitelist: ['connection'],
-      version: 0,
-      migrate: createMigrate(migrations, {
-        debug: false
-      })
-    },
-    reducer
-  ),
+  reducer: persistReducer<StoreState>(reducer),
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [
-          // https://github.com/rt2zz/redux-persist/issues/988
-          FLUSH,
-          REHYDRATE,
-          PAUSE,
-          PERSIST,
-          PURGE,
-          REGISTER
-        ]
-      }
-    }).prepend(listenerMiddleware.middleware),
-  enhancers: (existingEnhancers) =>
-    existingEnhancers.concat(autoBatchEnhancer())
+    getDefaultMiddleware().prepend(
+      listenerMiddleware.middleware,
+      persistMiddleware<StoreState>({
+        key: 'state',
+        allowlist: ['connection'],
+        version: 0,
+        migrate: (state: unknown, currentVersion: number): StoreState => {
+          if (currentVersion !== 0) {
+            return migrations[0](state);
+          }
+          return state as StoreState;
+        }
+      })
+    )
 });
-
-export const persistor = persistStore(store);

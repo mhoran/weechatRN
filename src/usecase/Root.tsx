@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { AppState, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 import WeechatConnection, { ConnectionError } from '../lib/weechat/connection';
-import { AppDispatch, StoreState, persistor, store } from '../store';
+import { AppDispatch, StoreState, store } from '../store';
 
 import {
-  TypedAddListener,
   UnsubscribeListener,
   addListener,
   createAction
@@ -24,6 +22,7 @@ import {
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
+import PersistGate from './PersistGate';
 
 const fetchBuffersDispatchAction = createAction<
   ReturnType<typeof bufferNotificationAction>
@@ -96,7 +95,7 @@ export default class WeechatNative extends React.Component<null, State> {
       })
     );
     this.unsubscribeFetchBuffersDispatchListener = store.dispatch(
-      (addListener as TypedAddListener<StoreState, AppDispatch>)({
+      addListener.withTypes<StoreState, AppDispatch>()({
         actionCreator: fetchBuffersDispatchAction,
         effect: async (action, listenerApi) => {
           listenerApi.cancelActiveListeners();
@@ -218,11 +217,7 @@ export default class WeechatNative extends React.Component<null, State> {
     return (
       <Provider store={store}>
         <SafeAreaProvider>
-          <PersistGate
-            loading={null}
-            persistor={persistor}
-            onBeforeLift={this.onBeforeLift}
-          >
+          <PersistGate loading={null} onBeforeLift={this.onBeforeLift}>
             <ConnectionGate
               connecting={connecting}
               connectionError={connectionError}

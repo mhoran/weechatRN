@@ -1,4 +1,5 @@
-import { AppDispatch, StoreState } from '../../store';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { StoreState } from '../../store';
 import {
   bufferClearedAction,
   bufferClosedAction,
@@ -18,6 +19,7 @@ import {
   fetchScriptsAction,
   upgradeAction
 } from '../../store/actions';
+import { UnknownAction } from 'redux';
 
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
@@ -28,7 +30,12 @@ const reduceToObjectByKey = <T, U>(
   mapFn: MapFn<T, U> = (a) => a
 ) => array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: mapFn(elem) }), {});
 
-export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
+export const transformToReduxAction = (
+  data: WeechatResponse<unknown>
+):
+  | UnknownAction
+  | ThunkAction<void, StoreState, undefined, UnknownAction>
+  | undefined => {
   switch (data.id) {
     // Weechat internal events starts with "_"
     case '_nicklist_diff': {
@@ -58,7 +65,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;
       const fullName = object.content[0].full_name;
 
-      return (dispatch: AppDispatch, getState: () => StoreState) => {
+      return (
+        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
+        getState: () => StoreState
+      ) => {
         const state: StoreState = getState();
         const buffer = Object.values(state.buffers).find(
           (buffer: WeechatBuffer) => buffer.full_name === fullName
@@ -75,7 +85,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
       >;
       const line = object.content[0];
 
-      return (dispatch: AppDispatch, getState: () => StoreState) => {
+      return (
+        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
+        getState: () => StoreState
+      ) => {
         const state: StoreState = getState();
         const { date, date_printed, ...restLine } = line;
 
@@ -132,7 +145,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
     case 'hotlist': {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
 
-      return (dispatch: AppDispatch, getState: () => StoreState) => {
+      return (
+        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
+        getState: () => StoreState
+      ) => {
         const state: StoreState = getState();
 
         dispatch(
@@ -166,7 +182,10 @@ export const transformToReduxAction = (data: WeechatResponse<unknown>) => {
     case 'buffers': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
 
-      return (dispatch: AppDispatch, getState: () => StoreState) => {
+      return (
+        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
+        getState: () => StoreState
+      ) => {
         const { buffers } = getState();
         const newBuffers = reduceToObjectByKey(
           object.content,

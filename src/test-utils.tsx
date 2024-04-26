@@ -1,4 +1,4 @@
-import { PreloadedState, Store, configureStore } from '@reduxjs/toolkit';
+import { Store, configureStore } from '@reduxjs/toolkit';
 import {
   RenderOptions,
   render as rtlRender
@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { StoreState, reducer } from './store';
 
 interface ExtendedRenderOptions extends RenderOptions {
-  preloadedState?: PreloadedState<StoreState>;
+  preloadedState?: Partial<StoreState>;
   store?: Store<StoreState>;
 }
 

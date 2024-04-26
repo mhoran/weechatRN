@@ -41,7 +41,9 @@ describe('BufferContainer', () => {
             type: 0
           }
         }
-      }
+      },
+      enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers({ autoBatch: false })
     });
 
     render(
@@ -133,7 +135,9 @@ describe('BufferContainer', () => {
             type: 0
           }
         }
-      }
+      },
+      enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers({ autoBatch: false })
     });
 
     render(

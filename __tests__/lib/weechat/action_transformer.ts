@@ -1,4 +1,4 @@
-import { AnyAction, configureStore } from '@reduxjs/toolkit';
+import { UnknownAction, configureStore } from '@reduxjs/toolkit';
 import { StoreState, reducer } from '../../../src/store';
 import { transformToReduxAction } from '../../../src/lib/weechat/action_transformer';
 import { ThunkAction } from 'redux-thunk';
@@ -23,7 +23,12 @@ describe('transformToReduxAction', () => {
           currentBufferId: '8578d9c00'
         } as AppState
       };
-      const store = configureStore({ reducer, preloadedState });
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
 
       const action = transformToReduxAction({
         id: 'buffers',
@@ -67,7 +72,12 @@ describe('transformToReduxAction', () => {
       });
       expect(action).toBeDefined();
 
-      const thunk = action as ThunkAction<void, StoreState, void, AnyAction>;
+      const thunk = action as ThunkAction<
+        void,
+        StoreState,
+        void,
+        UnknownAction
+      >;
       const dispatch = jest.fn();
       thunk(
         dispatch,
@@ -90,7 +100,12 @@ describe('transformToReduxAction', () => {
           currentBufferId: '8578d9c00'
         } as AppState
       };
-      const store = configureStore({ reducer, preloadedState });
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
 
       const action = transformToReduxAction({
         id: 'buffers',
@@ -124,7 +139,12 @@ describe('transformToReduxAction', () => {
           currentBufferId: '83a41cd80'
         } as AppState
       };
-      const store = configureStore({ reducer, preloadedState });
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
 
       const action = transformToReduxAction({
         id: '_buffer_closing',
@@ -166,7 +186,12 @@ describe('transformToReduxAction', () => {
           currentBufferId: '83a41cd80'
         } as AppState
       };
-      const store = configureStore({ reducer, preloadedState });
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
 
       const action = transformToReduxAction({
         id: '_buffer_closing',
@@ -193,7 +218,12 @@ describe('transformToReduxAction', () => {
           '83d204d80': { full_name: 'irc.libera.#weechat' } as WeechatBuffer
         }
       };
-      const store = configureStore({ reducer, preloadedState });
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
 
       const action = transformToReduxAction({
         id: 'last_read_lines',
@@ -235,7 +265,12 @@ describe('transformToReduxAction', () => {
           ]
         }
       };
-      const store = configureStore({ reducer, preloadedState });
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
 
       const action = transformToReduxAction({
         id: '_nicklist_diff',
