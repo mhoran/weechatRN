@@ -74,7 +74,8 @@ export const styles = StyleSheet.create({
   text: {
     fontFamily: 'Menlo',
     color: '#eee',
-    fontSize: 14
+    fontSize: 14,
+    lineHeight: 16.8
   },
   highlight: {
     backgroundColor: 'magenta',

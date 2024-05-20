@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
 import BufferLine from './BufferLine';
+import Measurer from './Measurer';
 import { styles as lineStyles } from './themes/Default';
 
 interface Props {
@@ -57,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
 
 interface State {
   nickWidth: number;
-  linesListKey: number;
+  messageWidth?: number;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
@@ -66,58 +67,30 @@ export default class Buffer extends React.PureComponent<Props, State> {
   linesList = React.createRef<FlatList<WeechatLine>>();
 
   state: State = {
-    nickWidth: 0,
-    linesListKey: 0
+    nickWidth: 0
   };
+
+  measurer = new Measurer();
 
   componentDidUpdate(
     prevProps: Readonly<Props>,
     prevState: Readonly<State>
   ): void {
     const { notificationLineId, clearNotification } = this.props;
-    const { linesListKey } = this.state;
 
     if (
-      this.props.bufferId !== prevProps.bufferId ||
-      (notificationLineId &&
-        notificationLineId !== prevProps.notificationLineId)
+      notificationLineId &&
+      notificationLineId !== prevProps.notificationLineId
     ) {
-      this.setState((state) => ({ linesListKey: state.linesListKey + 1 }));
-    }
-
-    if (notificationLineId && linesListKey !== prevState.linesListKey) {
       this.scrollToLine(notificationLineId);
       clearNotification();
     }
+
+    if (this.state.messageWidth !== prevState.messageWidth)
+      this.measurer.messageWidth = this.state.messageWidth;
   }
 
-  onCellLayout?: (index: number) => void;
-
-  onScrollToIndexFailed = async (info: {
-    index: number;
-    highestMeasuredFrameIndex: number;
-    averageItemLength: number;
-  }) => {
-    this.linesList.current?.scrollToIndex({
-      index: info.highestMeasuredFrameIndex,
-      animated: false
-    });
-
-    await new Promise<void>((resolve) => {
-      this.onCellLayout = (index: number) => {
-        if (index > info.highestMeasuredFrameIndex) resolve();
-      };
-    });
-    this.onCellLayout = undefined;
-
-    this.linesList.current?.scrollToIndex({
-      index: info.index,
-      animated: false,
-      viewPosition: 0.5
-    });
-  };
-
-  scrollToLine = async (lineId: string) => {
+  scrollToLine = (lineId: string) => {
     const index = this.props.lines.findIndex(
       (line) => line.pointers[line.pointers.length - 1] === lineId
     );
@@ -125,7 +98,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
     this.linesList.current?.scrollToIndex({
       index: index,
-      animated: false,
+      animated: true,
       viewPosition: 0.5
     });
   };
@@ -152,6 +125,15 @@ export default class Buffer extends React.PureComponent<Props, State> {
     );
   };
 
+  getItemLayout = (
+    data: ArrayLike<WeechatLine> | null | undefined,
+    index: number
+  ): { length: number; offset: number; index: number } => {
+    console.log('getItemLayout', index);
+    const result = this.measurer.measure(data, index);
+    return { length: result.height, offset: result.offset, index: index };
+  };
+
   renderCell: React.FC<CellRendererProps<WeechatLine>> = ({
     index,
     children,
@@ -164,7 +146,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         style={style}
         onLayout={(event) => {
           onLayout?.(event);
-          this.onCellLayout?.(index);
+          console.log('onLayout', index, event.nativeEvent.layout);
         }}
       >
         {children}
@@ -174,19 +156,35 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
   render() {
     const { bufferId, lines, fetchMoreLines } = this.props;
-    const { linesListKey } = this.state;
 
-    if (!this.state.nickWidth) {
+    if (!this.state.nickWidth || !this.state.messageWidth) {
       return (
-        <View style={{ flex: 1, opacity: 0 }} aria-hidden>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            opacity: 100,
+            paddingHorizontal: 10,
+            alignItems: 'flex-start'
+          }}
+          aria-hidden
+        >
           <Text
             onLayout={(layout) => {
               this.setState({ nickWidth: layout.nativeEvent.layout.width });
             }}
-            style={[lineStyles.text, { position: 'absolute' }]}
+            style={[lineStyles.text]}
           >
             aaaaaaaa
           </Text>
+          <Text> </Text>
+          <Text
+            onLayout={(layout) => {
+              this.setState({ messageWidth: layout.nativeEvent.layout.width });
+            }}
+            style={[lineStyles.text, { flex: 1 }]}
+          ></Text>
+          <Text style={lineStyles.text}> 00:00</Text>
         </View>
       );
     }
@@ -196,7 +194,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         ref={this.linesList}
         accessibilityLabel="Message list"
         data={lines}
-        key={linesListKey}
+        key={bufferId}
         inverted
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
@@ -204,7 +202,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         initialNumToRender={35}
         maxToRenderPerBatch={35}
         removeClippedSubviews={true}
-        windowSize={15}
+        windowSize={3}
         CellRendererComponent={this.renderCell}
         ListFooterComponent={
           <Header
@@ -213,7 +211,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
             fetchMoreLines={fetchMoreLines}
           />
         }
-        onScrollToIndexFailed={this.onScrollToIndexFailed}
+        getItemLayout={this.getItemLayout}
       />
     );
   }
