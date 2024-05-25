@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
 export const registerForPushNotificationsAsync = async (): Promise<void> => {
@@ -17,7 +18,7 @@ export const getPushNotificationStatusAsync = async (): Promise<
   string | undefined
 > => {
   let token;
-  if (Constants.isDevice) {
+  if (Device.isDevice) {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
