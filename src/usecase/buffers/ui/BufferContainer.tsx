@@ -246,9 +246,11 @@ class BufferContainer extends React.Component<Props, State> {
             onBlur={this.handleOnBlur}
             onSelectionChange={this.handleSelectionChange}
             returnKeyType="send"
-            blurOnSubmit={false}
+            submitBehavior="submit"
             onSubmitEditing={this.handleSubmit}
             enablesReturnKeyAutomatically={true}
+            multiline={true}
+            autoCorrect={false}
           />
           <UploadButton
             onUpload={this.handleOnUpload}
