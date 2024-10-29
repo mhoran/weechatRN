@@ -7,6 +7,7 @@ import {
   NativeSyntheticEvent,
   StyleSheet,
   Text,
+  TextInput,
   TextInputSelectionChangeEventData,
   TouchableOpacity,
   View
@@ -23,7 +24,6 @@ import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
-import UndoTextInput from '../../shared/UndoTextInput';
 import UploadButton from './UploadButton';
 import { clearBufferNotificationAction } from '../../../store/actions';
 
@@ -238,7 +238,7 @@ class BufferContainer extends React.Component<Props, State> {
           clearNotification={this.clearNotification}
         />
         <View style={styles.bottomBox}>
-          <UndoTextInput
+          <TextInput
             style={styles.inputBox}
             value={textValue}
             onChangeText={this.handleChangeText}
@@ -246,6 +246,7 @@ class BufferContainer extends React.Component<Props, State> {
             onBlur={this.handleOnBlur}
             onSelectionChange={this.handleSelectionChange}
             returnKeyType="send"
+            // @ts-expect-error submitBehavior missing from TextInput type declaration
             submitBehavior="submit"
             onSubmitEditing={this.handleSubmit}
             enablesReturnKeyAutomatically={true}
