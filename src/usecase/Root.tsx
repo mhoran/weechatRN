@@ -23,6 +23,7 @@ import App from './App';
 import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
 import PersistGate from './PersistGate';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const fetchBuffersDispatchAction = createAction<
   ReturnType<typeof bufferNotificationAction>
@@ -218,19 +219,21 @@ export default class WeechatNative extends React.Component<null, State> {
       <Provider store={store}>
         <SafeAreaProvider>
           <PersistGate loading={null} onBeforeLift={this.onBeforeLift}>
-            <ConnectionGate
-              connecting={connecting}
-              connectionError={connectionError}
-              onConnect={this.onConnect}
-            >
-              <StatusBar barStyle="light-content" />
-              <App
-                disconnect={this.disconnect}
-                clearHotlistForBuffer={this.clearHotlistForBuffer}
-                sendMessageToBuffer={this.sendMessageToBuffer}
-                fetchBufferInfo={this.fetchBufferInfo}
-              />
-            </ConnectionGate>
+            <GestureHandlerRootView>
+              <ConnectionGate
+                connecting={connecting}
+                connectionError={connectionError}
+                onConnect={this.onConnect}
+              >
+                <StatusBar barStyle="light-content" />
+                <App
+                  disconnect={this.disconnect}
+                  clearHotlistForBuffer={this.clearHotlistForBuffer}
+                  sendMessageToBuffer={this.sendMessageToBuffer}
+                  fetchBufferInfo={this.fetchBufferInfo}
+                />
+              </ConnectionGate>
+            </GestureHandlerRootView>
           </PersistGate>
         </SafeAreaProvider>
       </Provider>

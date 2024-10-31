@@ -6,9 +6,9 @@ import {
   Switch,
   Text,
   TextInput,
-  TouchableOpacity,
   View
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
