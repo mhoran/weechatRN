@@ -90,5 +90,4 @@ interface WeechatLine {
   tags_array: string[];
   buffer: string;
   highlight: number;
-  y: number;
 }

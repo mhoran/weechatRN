@@ -78,8 +78,6 @@ class BufferContainer extends React.Component<Props, State> {
     this.handleOnLongPress
   );
 
-  buffer = React.createRef<Buffer>();
-
   handleOnFocus = () => {
     this.setState({
       showTabButton: true
@@ -227,7 +225,6 @@ class BufferContainer extends React.Component<Props, State> {
           </View>
         )}
         <Buffer
-          ref={this.buffer}
           bufferId={bufferId}
           lines={lines}
           lastReadLine={buffer.last_read_line}

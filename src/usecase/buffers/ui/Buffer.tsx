@@ -3,6 +3,7 @@ import {
   Button,
   CellRendererProps,
   FlatList,
+  LayoutChangeEvent,
   ListRenderItem,
   Text,
   View
@@ -58,80 +59,58 @@ const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
 interface State {
   nickWidth: number;
   linesListKey: number;
+  initialNumToRender: number;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
+  static readonly NUM_LINES_TO_RENDER = 35;
 
   linesList = React.createRef<FlatList<WeechatLine>>();
 
   state: State = {
     nickWidth: 0,
-    linesListKey: 0
+    linesListKey: 0,
+    initialNumToRender: 35
   };
 
-  componentDidUpdate(
-    prevProps: Readonly<Props>,
-    prevState: Readonly<State>
-  ): void {
-    const { notificationLineId, clearNotification } = this.props;
-    const { linesListKey } = this.state;
+  notificationLineId: string | null = null;
+
+  componentDidUpdate(prevProps: Readonly<Props>): void {
+    const { notificationLineId, clearNotification, lines } = this.props;
 
     if (
-      this.props.bufferId !== prevProps.bufferId ||
-      (notificationLineId &&
-        notificationLineId !== prevProps.notificationLineId)
+      notificationLineId &&
+      notificationLineId !== prevProps.notificationLineId
     ) {
-      this.setState((state) => ({ linesListKey: state.linesListKey + 1 }));
+      clearNotification();
+
+      const index = lines.findIndex(
+        (line) => line.pointers.at(-1) === notificationLineId
+      );
+      if (index < 0) return;
+
+      this.notificationLineId = notificationLineId;
+      this.setState((state) => ({
+        linesListKey: state.linesListKey + 1,
+        initialNumToRender: index + 1 + Buffer.NUM_LINES_TO_RENDER
+      }));
+
+      return;
     }
 
-    if (notificationLineId && linesListKey !== prevState.linesListKey) {
-      this.scrollToLine(notificationLineId);
-      clearNotification();
+    if (this.props.bufferId !== prevProps.bufferId) {
+      this.setState((state) => ({
+        linesListKey: state.linesListKey + 1,
+        initialNumToRender: 35
+      }));
     }
   }
 
-  onCellLayout?: (index: number) => void;
-
-  onScrollToIndexFailed = async (info: {
-    index: number;
-    highestMeasuredFrameIndex: number;
-    averageItemLength: number;
-  }) => {
-    this.linesList.current?.scrollToIndex({
-      index: info.highestMeasuredFrameIndex,
-      animated: false
-    });
-
-    await new Promise<void>((resolve) => {
-      this.onCellLayout = (index: number) => {
-        if (index > info.highestMeasuredFrameIndex) resolve();
-      };
-    });
-    this.onCellLayout = undefined;
-
-    this.linesList.current?.scrollToIndex({
-      index: info.index,
-      animated: false,
-      viewPosition: 0.5
-    });
-  };
-
-  scrollToLine = async (lineId: string) => {
-    const index = this.props.lines.findIndex(
-      (line) => line.pointers[line.pointers.length - 1] === lineId
-    );
-    if (index < 0) return;
-
-    this.linesList.current?.scrollToIndex({
-      index: index,
-      animated: false,
-      viewPosition: 0.5
-    });
-  };
-
   renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
     const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
+    const { nickWidth } = this.state;
+
     let lastMessage;
     for (let i = index + 1; i < lines.length; i++) {
       if (lines[i].displayed) {
@@ -145,7 +124,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         line={item}
         onLongPress={onLongPress}
         parseArgs={parseArgs}
-        nickWidth={this.state.nickWidth}
+        nickWidth={nickWidth}
         lastReadLine={lastReadLine}
         lastMessageDate={lastMessage?.date}
       />
@@ -153,28 +132,39 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   renderCell: React.FC<CellRendererProps<WeechatLine>> = ({
+    cellKey,
     index,
-    children,
-    onLayout,
-    style
+    item,
+    ...props
   }) => {
+    const isNotificationLine =
+      this.notificationLineId &&
+      this.notificationLineId === item.pointers.at(-1);
+
+    const onLayout = (event: LayoutChangeEvent) => {
+      props.onLayout?.(event);
+
+      this.notificationLineId = null;
+
+      this.linesList.current?.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5
+      });
+    };
+
     return (
       <View
+        {...props}
         testID={`renderCell(${index})`}
-        style={style}
-        onLayout={(event) => {
-          onLayout?.(event);
-          this.onCellLayout?.(index);
-        }}
-      >
-        {children}
-      </View>
+        onLayout={isNotificationLine ? onLayout : props.onLayout}
+      />
     );
   };
 
   render() {
     const { bufferId, lines, fetchMoreLines } = this.props;
-    const { linesListKey } = this.state;
+    const { linesListKey, initialNumToRender } = this.state;
 
     if (!this.state.nickWidth) {
       return (
@@ -201,8 +191,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
         keyboardDismissMode="interactive"
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
-        initialNumToRender={35}
-        maxToRenderPerBatch={35}
+        initialNumToRender={initialNumToRender}
+        maxToRenderPerBatch={Buffer.NUM_LINES_TO_RENDER}
         removeClippedSubviews={true}
         windowSize={15}
         CellRendererComponent={this.renderCell}
@@ -213,7 +203,6 @@ export default class Buffer extends React.PureComponent<Props, State> {
             fetchMoreLines={fetchMoreLines}
           />
         }
-        onScrollToIndexFailed={this.onScrollToIndexFailed}
       />
     );
   }
