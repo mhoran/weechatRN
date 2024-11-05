@@ -8,15 +8,18 @@ import { AppDispatch, StoreState, store } from '../store';
 import {
   UnsubscribeListener,
   addListener,
-  createAction
+  createAction,
+  isAnyOf
 } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
 import {
   bufferNotificationAction,
+  disconnectAction,
   fetchBuffersAction,
   fetchScriptsAction,
+  pongAction,
   upgradeAction
 } from '../store/actions';
 import App from './App';
@@ -73,9 +76,6 @@ export default class WeechatNative extends React.Component<null, State> {
   unsubscribeFetchScriptsListener: UnsubscribeListener;
   unsubscribeFetchBuffersDispatchListener: UnsubscribeListener;
 
-  private readonly FETCH_BUFFERS_COMMAND =
-    '(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type';
-
   constructor(props: null) {
     super(props);
     this.unsubscribeUpgradeListener = store.dispatch(
@@ -101,11 +101,19 @@ export default class WeechatNative extends React.Component<null, State> {
         effect: async (action, listenerApi) => {
           listenerApi.cancelActiveListeners();
 
+          let reallyConnected = false;
+
           if (this.connection?.isConnected()) {
-            this.connection.send(this.FETCH_BUFFERS_COMMAND);
+            this.connection.send('ping');
+            const [responseAction] = await listenerApi.take(
+              isAnyOf(pongAction, disconnectAction)
+            );
+            reallyConnected = pongAction.match(responseAction);
           }
 
-          await listenerApi.condition(fetchBuffersAction.match);
+          if (!reallyConnected) {
+            await listenerApi.condition(fetchBuffersAction.match);
+          }
 
           const wrappedAction = action.payload;
           if (listenerApi.getState().buffers[wrappedAction.payload.bufferId]) {
@@ -139,7 +147,9 @@ export default class WeechatNative extends React.Component<null, State> {
     this.connectOnResume = true;
     this.setState({ connecting: false });
     connection.send('(hotlist) hdata hotlist:gui_hotlist(*)');
-    connection.send(this.FETCH_BUFFERS_COMMAND);
+    connection.send(
+      '(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type'
+    );
     connection.send('(scripts) hdata python_script:scripts(*) name');
     connection.send('sync');
   };

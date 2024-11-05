@@ -5,6 +5,7 @@ import { HotListState } from './hotlists';
 
 export const disconnectAction = createAction('DISCONNECT');
 export const fetchVersionAction = createAction<string>('FETCH_VERSION');
+export const pongAction = createAction('PONG');
 export const upgradeAction = createAction('UPGRADE');
 export const setConnectionInfoAction = createAction<ConnectionOptions>(
   'SET_CONNECTION_INFO'

@@ -17,7 +17,8 @@ import {
   lastReadLinesAction,
   nicklistUpdatedAction,
   fetchScriptsAction,
-  upgradeAction
+  upgradeAction,
+  pongAction
 } from '../../store/actions';
 import { UnknownAction } from 'redux';
 
@@ -141,6 +142,9 @@ export const transformToReduxAction = (
     }
     case '_upgrade': {
       return upgradeAction();
+    }
+    case '_pong': {
+      return pongAction();
     }
     case 'hotlist': {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
