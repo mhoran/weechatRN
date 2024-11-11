@@ -21,7 +21,7 @@ interface Props {
   parseArgs: ParseShape[];
   bufferId: string;
   fetchMoreLines: (lines: number) => void;
-  notificationLineId?: string;
+  notificationLineId?: number;
   clearNotification: () => void;
 }
 
@@ -74,20 +74,18 @@ export default class Buffer extends React.PureComponent<Props, State> {
     initialNumToRender: 35
   };
 
-  notificationLineId: string | null = null;
+  notificationLineId: number | null = null;
 
   componentDidUpdate(prevProps: Readonly<Props>): void {
     const { notificationLineId, clearNotification, lines } = this.props;
 
     if (
-      notificationLineId &&
+      notificationLineId !== undefined &&
       notificationLineId !== prevProps.notificationLineId
     ) {
       clearNotification();
 
-      const index = lines.findIndex(
-        (line) => line.pointers.at(-1) === notificationLineId
-      );
+      const index = lines.findIndex((line) => line.id === notificationLineId);
       if (index < 0) return;
 
       this.notificationLineId = notificationLineId;
@@ -138,8 +136,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
     ...props
   }) => {
     const isNotificationLine =
-      this.notificationLineId &&
-      this.notificationLineId === item.pointers.at(-1);
+      this.notificationLineId !== undefined &&
+      item.id === this.notificationLineId;
 
     const onLayout = (event: LayoutChangeEvent) => {
       props.onLayout?.(event);

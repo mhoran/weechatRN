@@ -24,6 +24,7 @@ describe('BufferContainer', () => {
       preloadedState: {
         buffers: {
           [bufferId]: {
+            _id: 1730555173010842,
             full_name: 'irc.libera.#weechat',
             hidden: 0,
             id: bufferId,
@@ -64,7 +65,7 @@ describe('BufferContainer', () => {
       store.dispatch(
         bufferNotificationAction({
           bufferId,
-          lineId: '86c2ff040',
+          lineId: 0,
           identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
         })
       );
@@ -82,6 +83,7 @@ describe('BufferContainer', () => {
       store.dispatch(
         fetchLinesAction([
           {
+            id: 1730555173010842,
             buffer: '86c417600',
             date: '2024-04-05T02:40:09.000Z',
             date_printed: '2024-04-06T17:20:30.000Z',
@@ -98,7 +100,7 @@ describe('BufferContainer', () => {
 
     expect(bufferContainer.props.notification).toEqual({
       bufferId,
-      lineId: '86c2ff040',
+      lineId: 0,
       identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
     });
   });
@@ -118,6 +120,7 @@ describe('BufferContainer', () => {
       preloadedState: {
         buffers: {
           [bufferId]: {
+            _id: 1730555173010842,
             full_name: 'irc.libera.#weechat',
             hidden: 0,
             id: bufferId,
@@ -154,7 +157,7 @@ describe('BufferContainer', () => {
       store.dispatch(
         bufferNotificationAction({
           bufferId,
-          lineId: '86c2ff040',
+          lineId: 0,
           identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
         })
       );
@@ -170,6 +173,7 @@ describe('BufferContainer', () => {
       store.dispatch(
         fetchLinesAction([
           {
+            id: 0,
             buffer: '86c417600',
             date: '2024-04-05T02:40:09.000Z',
             date_printed: '2024-04-06T17:20:30.000Z',
@@ -185,7 +189,7 @@ describe('BufferContainer', () => {
     });
 
     expect(ActualBuffer.prototype.componentDidUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({ notificationLineId: '86c2ff040' }),
+      expect.objectContaining({ notificationLineId: 0 }),
       expect.anything(),
       undefined
     );

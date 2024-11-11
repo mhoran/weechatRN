@@ -18,6 +18,7 @@ describe(Buffer, () => {
       const bufferRef = React.createRef<Buffer>();
       const lines = [
         {
+          id: 1,
           buffer: '86c417600',
           date: '2024-04-05T02:40:09.000Z',
           date_printed: '2024-04-06T17:20:30.000Z',
@@ -29,6 +30,7 @@ describe(Buffer, () => {
           tags_array: ['irc_privmsg', 'notify_message']
         } as WeechatLine,
         {
+          id: 0,
           buffer: '86c417600',
           date: '2024-04-05T02:40:09.000Z',
           date_printed: '2024-04-06T17:20:30.000Z',
@@ -64,7 +66,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           fetchMoreLines={() => {}}
           clearNotification={() => {}}
-          notificationLineId="86c2fefd0"
+          notificationLineId={0}
         />
       );
 

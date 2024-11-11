@@ -19,9 +19,14 @@ export const changeCurrentBufferAction = createAction<string>(
   'CHANGE_CURRENT_BUFFER'
 );
 
+export const pendingBufferNotificationAction = createAction<{
+  identifier: string;
+  bufferId: number;
+  lineId: number;
+}>('PENDING_BUFFER_NOTIFICATION');
 export const bufferNotificationAction = createAction<{
   bufferId: string;
-  lineId: string;
+  lineId: number;
   identifier: string;
 }>('BUFFER_NOTIFICATION');
 export const clearBufferNotificationAction = createAction(

@@ -79,12 +79,24 @@ def priv_msg_cb(
     if not script_options.notify_current_buffer and weechat.current_buffer() == buffer:
         return weechat.WEECHAT_RC_OK
 
-    line_data = ""
+    version = weechat.info_get("version_number", "") or 0
+    buffer_id = (
+        weechat.hdata_longlong(weechat.hdata_get("buffer"), buffer, "id")
+        if int(version) >= 0x04030000
+        else buffer
+    )
+    line = line_data = line_id = None
     own_lines = weechat.hdata_pointer(weechat.hdata_get("buffer"), buffer, "own_lines")
     if own_lines:
         line = weechat.hdata_pointer(weechat.hdata_get("lines"), own_lines, "last_line")
-        if line:
-            line_data = weechat.hdata_pointer(weechat.hdata_get("line"), line, "data")
+    if line:
+        line_data = weechat.hdata_pointer(weechat.hdata_get("line"), line, "data")
+    if line_data:
+        line_id = (
+            weechat.hdata_integer(weechat.hdata_get("line_data"), line_data, "id")
+            if int(version) >= 0x04040000
+            else line_data
+        )
 
     body = f"<{prefix}> {message}"
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
@@ -92,7 +104,7 @@ def priv_msg_cb(
         send_push(
             f"Private message from {prefix}",
             body,
-            {"bufferId": buffer, "lineId": line_data},
+            {"bufferId": buffer_id, "lineId": line_id},
         )
     elif int(highlight):
         buffer_name = weechat.buffer_get_string(
@@ -101,13 +113,13 @@ def priv_msg_cb(
         send_push(
             f"Highlight in {buffer_name}",
             body,
-            {"bufferId": buffer, "lineId": line_data},
+            {"bufferId": buffer_id, "lineId": line_id},
         )
 
     return weechat.WEECHAT_RC_OK
 
 
-def send_push(title: str, body: str, data: dict[str, str]) -> None:
+def send_push(title: str, body: str, data: dict[str, object]) -> None:
     """
     Send push notification to Expo server. Message JSON encoded in the format:
     [{ "to": "EXPO_PUSH_TOKEN",
@@ -173,7 +185,7 @@ def main():
     if weechat.register(
         "WeechatRN",
         "mhoran",
-        "1.2.0",
+        "1.3.0",
         "MIT",
         "WeechatRN push notification plugin",
         "",

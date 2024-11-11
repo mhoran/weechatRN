@@ -123,6 +123,112 @@ describe('transformToReduxAction', () => {
 
       expect(store.getState().app.currentBufferId).toEqual('8578d9c00');
     });
+
+    it('sets _id to the id provided by the relay', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'buffers',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ id: '1730555173010842', pointers: ['83a41cd80'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer._id).toEqual(1730555173010842);
+    });
+
+    it('defaults _id to the buffer pointer', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'buffers',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ pointers: ['83a41cd80'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer._id).toEqual(parseInt('83a41cd80', 16));
+    });
+  });
+
+  describe('on _buffer_opened', () => {
+    it('sets _id to the id provided by the relay', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_opened',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ id: '1730555173010842', pointers: ['83a41cd80'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer._id).toEqual(1730555173010842);
+    });
+
+    it('defaults _id to the buffer pointer', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_opened',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ pointers: ['83a41cd80'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer._id).toEqual(parseInt('83a41cd80', 16));
+    });
   });
 
   describe('on _buffer_closing', () => {
@@ -302,6 +408,179 @@ describe('transformToReduxAction', () => {
       expect(store.getState().nicklists).toMatchObject({
         '84ed37600': [{ name: 'newnick', pointers: ['84ed37600', '85139f000'] }]
       });
+    });
+  });
+
+  describe('on lines', () => {
+    it('sets id to the id provided by the relay', () => {
+      const preloadedState = {
+        app: {
+          version: '4.4.0'
+        } as AppState
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'lines',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: 0,
+                buffer: '83a41cd80',
+                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                date_printed: new Date('2024-11-10T17:28:48.000Z')
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0].id).toEqual(0);
+    });
+
+    it('defaults id to the line pointer', () => {
+      const preloadedState = {
+        app: {
+          version: '3.7.0'
+        } as AppState
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'lines',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                buffer: '83a41cd80',
+                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                date_printed: new Date('2024-11-10T17:28:48.000Z')
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0].id).toEqual(parseInt('85d064440', 16));
+    });
+  });
+
+  describe('on _buffer_line_added', () => {
+    it('sets id to the id provided by the relay', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_line_added',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: 0,
+                buffer: '83a41cd80',
+                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                date_printed: new Date('2024-11-10T17:28:48.000Z'),
+                tags_array: []
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0].id).toEqual(0);
+    });
+
+    it('defaults id to the line pointer', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_line_added',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                buffer: '83a41cd80',
+                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                date_printed: new Date('2024-11-10T17:28:48.000Z'),
+                tags_array: []
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0].id).toEqual(parseInt('85d064440', 16));
+    });
+  });
+
+  describe('on version', () => {
+    it('stores the version', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'version',
+        header: { compression: 0, length: 0 },
+        objects: [{ content: { key: 'version', value: '4.4.3' }, type: 'inf' }]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().app.version).toEqual('4.4.3');
     });
   });
 });

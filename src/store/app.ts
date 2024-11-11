@@ -14,15 +14,17 @@ import {
 export type AppState = {
   connected: boolean;
   currentBufferId: string | null;
-  notification: { bufferId: string; lineId: string; identifier: string } | null;
+  notification: { bufferId: string; lineId: number; identifier: string } | null;
   currentBufferLinesFetched: boolean;
+  version: string;
 };
 
 const initialState: AppState = {
   connected: false,
   currentBufferId: null,
   notification: null,
-  currentBufferLinesFetched: false
+  currentBufferLinesFetched: false,
+  version: ''
 };
 
 export const app = createReducer(initialState, (builder) => {
@@ -33,10 +35,11 @@ export const app = createReducer(initialState, (builder) => {
       currentBufferLinesFetched: false
     };
   });
-  builder.addCase(fetchVersionAction, (state) => {
+  builder.addCase(fetchVersionAction, (state, action) => {
     return {
       ...state,
-      connected: true
+      connected: true,
+      version: action.payload
     };
   });
   builder.addCase(changeCurrentBufferAction, (state, action) => {

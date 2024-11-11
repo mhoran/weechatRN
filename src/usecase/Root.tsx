@@ -5,39 +5,44 @@ import { Provider } from 'react-redux';
 import WeechatConnection, { ConnectionError } from '../lib/weechat/connection';
 import { AppDispatch, StoreState, store } from '../store';
 
-import {
-  UnsubscribeListener,
-  addListener,
-  createAction,
-  isAnyOf
-} from '@reduxjs/toolkit';
+import { UnsubscribeListener, addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
 import {
-  bufferNotificationAction,
-  disconnectAction,
-  fetchBuffersAction,
   fetchScriptsAction,
-  pongAction,
+  pendingBufferNotificationAction,
   upgradeAction
 } from '../store/actions';
 import App from './App';
-import ConnectionGate from './ConnectionGate';
 import Buffer from './buffers/ui/Buffer';
+import ConnectionGate from './ConnectionGate';
 import PersistGate from './PersistGate';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-const fetchBuffersDispatchAction = createAction<
-  ReturnType<typeof bufferNotificationAction>
->('FETCH_BUFFERS_DISPATCH');
+import { PendingBufferNotificationListener } from '../store/listeners';
 
 interface State {
   connecting: boolean;
   connectionError: ConnectionError | null;
 }
 
+export interface RelayClient {
+  isConnected: () => boolean;
+  ping: () => void;
+}
+
 export default class WeechatNative extends React.Component<null, State> {
+  static RelayClient = class implements RelayClient {
+    parent: WeechatNative;
+
+    constructor(parent: WeechatNative) {
+      this.parent = parent;
+    }
+
+    isConnected = () => this.parent.connection?.isConnected() || false;
+    ping = () => this.parent.connection?.send('ping');
+  };
+
   state: State = {
     connecting: false,
     connectionError: null
@@ -46,6 +51,8 @@ export default class WeechatNative extends React.Component<null, State> {
   connectOnResume = true;
 
   connection?: WeechatConnection;
+
+  client = new WeechatNative.RelayClient(this);
 
   appStateListener = AppState.addEventListener('change', (nextAppState) => {
     if (nextAppState === 'active') {
@@ -61,20 +68,18 @@ export default class WeechatNative extends React.Component<null, State> {
       if (!bufferId || !lineId) return;
 
       store.dispatch(
-        fetchBuffersDispatchAction(
-          bufferNotificationAction({
-            identifier: request.identifier,
-            bufferId: bufferId.replace(/^0x/, ''),
-            lineId: lineId.replace(/^0x/, '')
-          })
-        )
+        pendingBufferNotificationAction({
+          identifier: request.identifier,
+          bufferId: Number(bufferId),
+          lineId: Number(lineId)
+        })
       );
     }
   );
 
   unsubscribeUpgradeListener: UnsubscribeListener;
   unsubscribeFetchScriptsListener: UnsubscribeListener;
-  unsubscribeFetchBuffersDispatchListener: UnsubscribeListener;
+  unsubscribePendingBufferNotificationListener: UnsubscribeListener;
 
   constructor(props: null) {
     super(props);
@@ -95,32 +100,10 @@ export default class WeechatNative extends React.Component<null, State> {
         }
       })
     );
-    this.unsubscribeFetchBuffersDispatchListener = store.dispatch(
-      addListener.withTypes<StoreState, AppDispatch>()({
-        actionCreator: fetchBuffersDispatchAction,
-        effect: async (action, listenerApi) => {
-          listenerApi.cancelActiveListeners();
-
-          let reallyConnected = false;
-
-          if (this.connection?.isConnected()) {
-            this.connection.send('ping');
-            const [responseAction] = await listenerApi.take(
-              isAnyOf(pongAction, disconnectAction)
-            );
-            reallyConnected = pongAction.match(responseAction);
-          }
-
-          if (!reallyConnected) {
-            await listenerApi.condition(fetchBuffersAction.match);
-          }
-
-          const wrappedAction = action.payload;
-          if (listenerApi.getState().buffers[wrappedAction.payload.bufferId]) {
-            listenerApi.dispatch(wrappedAction);
-          }
-        }
-      })
+    this.unsubscribePendingBufferNotificationListener = store.dispatch(
+      addListener.withTypes<StoreState, AppDispatch>()(
+        PendingBufferNotificationListener(this.client)
+      )
     );
   }
 
@@ -130,7 +113,7 @@ export default class WeechatNative extends React.Component<null, State> {
     this.unsubscribeUpgradeListener();
     this.unsubscribeFetchScriptsListener();
     this.responseListener.remove();
-    this.unsubscribeFetchBuffersDispatchListener();
+    this.unsubscribePendingBufferNotificationListener();
   }
 
   onBeforeLift = (): void => {
@@ -148,7 +131,7 @@ export default class WeechatNative extends React.Component<null, State> {
     this.setState({ connecting: false });
     connection.send('(hotlist) hdata hotlist:gui_hotlist(*)');
     connection.send(
-      '(buffers) hdata buffer:gui_buffers(*) local_variables,notify,number,full_name,short_name,title,hidden,type'
+      '(buffers) hdata buffer:gui_buffers(*) id,local_variables,notify,number,full_name,short_name,title,hidden,type'
     );
     connection.send('(scripts) hdata python_script:scripts(*) name');
     connection.send('sync');

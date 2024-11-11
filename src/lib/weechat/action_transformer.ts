@@ -31,6 +31,11 @@ const reduceToObjectByKey = <T, U>(
   mapFn: MapFn<T, U> = (a) => a
 ) => array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: mapFn(elem) }), {});
 
+const parseVersion = (version: string) => {
+  const parts = version.split('.').map((part) => parseInt(part) || 0);
+  return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
+};
+
 export const transformToReduxAction = (
   data: WeechatResponse<unknown>
 ):
@@ -91,13 +96,18 @@ export const transformToReduxAction = (
         getState: () => StoreState
       ) => {
         const state: StoreState = getState();
-        const { date, date_printed, ...restLine } = line;
+        const { id, date, date_printed, ...restLine } = line;
+        const pointers = restLine.pointers as string[];
 
         dispatch(
           bufferLineAddedAction({
             currentBufferId: state.app.currentBufferId,
             line: {
               ...restLine,
+              id:
+                id !== undefined
+                  ? id
+                  : parseInt(pointers[pointers.length - 1], 16),
               date: (date as Date).toISOString(),
               date_printed: (date_printed as Date).toISOString()
             } as WeechatLine
@@ -114,6 +124,10 @@ export const transformToReduxAction = (
     case '_buffer_opened': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
+      buffer._id =
+        buffer.id !== undefined
+          ? parseInt(buffer.id)
+          : parseInt(buffer.pointers[0], 16);
       buffer.id = buffer.pointers[0];
 
       return bufferOpenedAction(buffer);
@@ -194,7 +208,14 @@ export const transformToReduxAction = (
         const newBuffers = reduceToObjectByKey(
           object.content,
           (buffer) => buffer.pointers[0],
-          (buf) => ({ ...buf, id: buf.pointers[0] })
+          (buf) => ({
+            ...buf,
+            id: buf.pointers[0],
+            _id:
+              buf.id !== undefined
+                ? parseInt(buf.id)
+                : parseInt(buf.pointers[0], 16)
+          })
         );
         const removed = Object.keys(buffers).filter((buffer) => {
           return !(buffer in newBuffers);
@@ -214,17 +235,29 @@ export const transformToReduxAction = (
         Record<string, unknown>[]
       >;
       if (!object.content[0]) return undefined;
-      return fetchLinesAction(
-        object.content.map((line) => {
-          const { date, date_printed, ...restLine } = line;
+      return (
+        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
+        getState: () => StoreState
+      ) => {
+        dispatch(
+          fetchLinesAction(
+            object.content.map((line) => {
+              const { id, date, date_printed, ...restLine } = line;
+              const pointers = restLine.pointers as string[];
 
-          return {
-            ...restLine,
-            date: (date as Date).toISOString(),
-            date_printed: (date_printed as Date).toISOString()
-          } as WeechatLine;
-        })
-      );
+              return {
+                ...restLine,
+                id:
+                  parseVersion(getState().app.version) >= 0x04040000
+                    ? id
+                    : parseInt(pointers[pointers.length - 1], 16),
+                date: (date as Date).toISOString(),
+                date_printed: (date_printed as Date).toISOString()
+              } as WeechatLine;
+            })
+          )
+        );
+      };
     }
     case 'last_read_lines': {
       const object = data.objects[0] as WeechatObject<unknown>;

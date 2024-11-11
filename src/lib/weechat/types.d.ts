@@ -18,6 +18,7 @@ interface WeechatInfoList {
 
 interface WeechatBuffer {
   id: string;
+  _id: number;
   pointers: string[];
   local_variables: Localvariables;
   notify: number;
@@ -77,6 +78,7 @@ interface Header {
 }
 
 interface WeechatLine {
+  id: number;
   pointers: string[];
   prefix_length: number;
   prefix: string;
@@ -90,4 +92,5 @@ interface WeechatLine {
   tags_array: string[];
   buffer: string;
   highlight: number;
+  y: number;
 }

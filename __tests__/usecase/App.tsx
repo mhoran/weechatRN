@@ -18,6 +18,7 @@ describe('App', () => {
         preloadedState: {
           buffers: {
             [bufferId]: {
+              _id: 1730555173010842,
               full_name: 'irc.libera.#weechat',
               hidden: 0,
               id: bufferId,
@@ -67,6 +68,7 @@ describe('App', () => {
         preloadedState: {
           buffers: {
             [bufferId]: {
+              _id: 1730555173010842,
               full_name: 'irc.libera.#weechat',
               hidden: 0,
               id: bufferId,
@@ -104,7 +106,7 @@ describe('App', () => {
         store.dispatch(
           bufferNotificationAction({
             bufferId,
-            lineId: '8580dcc40',
+            lineId: 0,
             identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
           })
         );
