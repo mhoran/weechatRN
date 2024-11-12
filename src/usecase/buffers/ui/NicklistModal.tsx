@@ -37,7 +37,7 @@ const NicklistModal: React.FC<Props> = ({ bufferId, visible, close }) => {
   useEffect(() => {
     if (bufferId !== lastBufferId.current) {
       lastBufferId.current = bufferId;
-      visible && close();
+      if (visible) close();
     }
   });
 

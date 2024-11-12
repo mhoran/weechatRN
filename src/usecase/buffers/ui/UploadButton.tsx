@@ -68,7 +68,7 @@ const UploadButton: React.FC<Props> = ({
         if (!matches) return alert('Failed to extract URL from response');
         onUpload(matches[1] || matches[0]);
       }
-    } catch (e) {
+    } catch {
       alert('Upload failed');
     } finally {
       setShowSpinner(false);

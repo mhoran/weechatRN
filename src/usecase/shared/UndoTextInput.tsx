@@ -9,7 +9,7 @@ const UndoTextInput: React.FC<Props> = ({ value, onChangeText, ...rest }) => {
 
   const handleChangeText = (textValue: string) => {
     lastValue.current = textValue;
-    onChangeText && onChangeText(textValue);
+    onChangeText?.(textValue);
   };
 
   useEffect(() => {

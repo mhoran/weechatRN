@@ -149,7 +149,7 @@ export default class WeechatNative extends React.Component<null, State> {
 
   disconnect = (): void => {
     this.connectOnResume = false;
-    this.connection && this.connection.disconnect();
+    this.connection?.disconnect();
   };
 
   onConnect = (hostname: string, password: string, ssl: boolean): void => {
@@ -188,8 +188,7 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   sendMessageToBuffer = (bufferIdOrFullName: string, message: string): void => {
-    this.connection &&
-      this.connection.send(`(input) input ${bufferIdOrFullName} ${message}`);
+    this.connection?.send(`(input) input ${bufferIdOrFullName} ${message}`);
   };
 
   clearHotlistForBuffer = (currentBufferId: string | null): void => {

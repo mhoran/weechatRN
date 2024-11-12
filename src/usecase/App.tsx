@@ -134,7 +134,7 @@ class App extends React.Component<Props, State> {
   };
 
   fetchMoreLines = (lines: number) => {
-    this.props.currentBufferId &&
+    if (this.props.currentBufferId)
       this.props.fetchBufferInfo(this.props.currentBufferId, lines);
   };
 
