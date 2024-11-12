@@ -243,7 +243,6 @@ class BufferContainer extends React.Component<Props, State> {
             onBlur={this.handleOnBlur}
             onSelectionChange={this.handleSelectionChange}
             returnKeyType="send"
-            // @ts-expect-error submitBehavior missing from TextInput type declaration
             submitBehavior="submit"
             onSubmitEditing={this.handleSubmit}
             enablesReturnKeyAutomatically={true}
