@@ -48,7 +48,7 @@ const nicklistsReducer = createReducer(initialState, (builder) => {
   builder.addCase(fetchBuffersRemovedAction, (state, action) => {
     return Object.fromEntries(
       Object.entries(state).filter(
-        ([bufferId]) => !(action.payload as string[]).includes(bufferId)
+        ([bufferId]) => !action.payload.includes(bufferId)
       )
     );
   });

@@ -1,3 +1,5 @@
-export const getPermissionsAsync = jest.fn(() =>
-  Promise.resolve({ status: 'granted' })
-);
+import { PermissionStatus } from 'expo-modules-core';
+module.exports = {
+  PermissionStatus: PermissionStatus,
+  getPermissionsAsync: jest.fn(() => ({ status: 'granted' }))
+};

@@ -2,9 +2,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import UploadSpinner from './UploadSpinner';
-import { useState } from 'react';
 
 interface Props {
   onUpload: (url: string) => void;
@@ -38,21 +38,21 @@ const UploadButton: React.FC<Props> = ({
     if (!permission.granted) return;
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsMultipleSelection: false
     });
 
-    handleImagePicked(result);
+    void handleImagePicked(result);
   };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsMultipleSelection: false,
       quality: 1
     });
 
-    handleImagePicked(result);
+    void handleImagePicked(result);
   };
 
   const handleImagePicked = async (
@@ -92,7 +92,7 @@ const UploadButton: React.FC<Props> = ({
     });
 
     if (response.status === 200) return response.body;
-    else throw 'Upload failed';
+    else throw Error('Upload failed');
   };
 
   if (

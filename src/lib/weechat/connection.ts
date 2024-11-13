@@ -112,7 +112,7 @@ export default class WeechatConnection {
   }
 
   onmessage(event: WebSocketMessageEvent): void {
-    const parsed = protocol.parse(event.data);
+    const parsed = protocol.parse(event.data as ArrayBuffer);
 
     if (parsed.id === 'version') {
       this.state = State.CONNECTED;

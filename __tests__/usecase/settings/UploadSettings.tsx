@@ -107,7 +107,7 @@ describe('UploadSettings', () => {
     expect(uploadOptions.headers).toBeUndefined();
   });
 
-  it('populates form fields with values from the store', async () => {
+  it('populates form fields with values from the store', () => {
     const preloadedState = {
       connection: {
         hostname: null,

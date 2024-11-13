@@ -53,7 +53,7 @@ describe(UploadButton, () => {
     await screen.findByLabelText('Upload Image');
 
     expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalledWith({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsMultipleSelection: false,
       quality: 1
     });

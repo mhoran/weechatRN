@@ -45,7 +45,7 @@ const getPersistedState = async <S>(
 
   if (!persisted) return null;
 
-  const outer: Record<string, string> = JSON.parse(persisted || '{}');
+  const outer = JSON.parse(persisted || '{}') as Record<string, string>;
   const parsed = Object.fromEntries(
     Object.entries(outer).map(([key, value]) => [key, JSON.parse(value)])
   );
@@ -61,7 +61,7 @@ const setPersistedState = <S>(
   const inner = Object.fromEntries(
     persistedKeys.map((key) => [key, JSON.stringify(state[key as keyof S])])
   );
-  AsyncStorage.setItem(`persist:${key}`, JSON.stringify(inner));
+  void AsyncStorage.setItem(`persist:${key}`, JSON.stringify(inner));
 };
 
 export const persistMiddleware = <
@@ -76,15 +76,14 @@ export const persistMiddleware = <
   const persistedKeys = ['_persist', ...options.allowlist];
 
   return (store) => {
-    getPersistedState<S>(options.key).then((parsed) => {
+    void getPersistedState<S>(options.key).then((parsed) => {
       const migrated =
         parsed && options.migrate
           ? options.migrate(parsed, parsed._persist.version)
           : parsed;
 
       const _persist = {
-        version:
-          options.version !== undefined ? options.version : DEFAULT_VERSION,
+        version: options.version ?? DEFAULT_VERSION,
         rehydrated: true
       };
 

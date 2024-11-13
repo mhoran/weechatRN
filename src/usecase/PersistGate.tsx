@@ -16,7 +16,9 @@ const PersistGate: React.FC<Props> = ({ loading, onBeforeLift, children }) => {
 
   useEffect(() => {
     if (rehydrated && !bootstrapped) {
-      Promise.resolve(onBeforeLift?.()).finally(() => setBootstrapped(true));
+      void Promise.resolve(onBeforeLift?.()).finally(() =>
+        setBootstrapped(true)
+      );
     }
   }, [rehydrated, bootstrapped, setBootstrapped, onBeforeLift]);
 

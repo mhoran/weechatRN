@@ -21,15 +21,14 @@ import * as Clipboard from 'expo-clipboard';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
-import { WeeChatProtocol } from '../../../lib/weechat/parser';
 import { StoreState } from '../../../store';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
 import { clearBufferNotificationAction } from '../../../store/actions';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
-  lines: state.lines[bufferId] || [],
-  nicklist: state.nicklists[bufferId] || [],
+  lines: state.lines[bufferId] ?? [],
+  nicklist: state.nicklists[bufferId] ?? [],
   buffer: state.buffers[bufferId],
   mediaUploadOptions: state.connection.mediaUploadOptions,
   notification:
@@ -92,7 +91,7 @@ class BufferContainer extends React.Component<Props, State> {
     });
   };
 
-  handleOnLongPress(type: string, text: string) {
+  handleOnLongPress(this: void, type: string, text: string) {
     ActionSheetIOS.showShareActionSheetWithOptions(
       {
         url: formatUrl(type, text)
@@ -102,8 +101,8 @@ class BufferContainer extends React.Component<Props, State> {
     );
   }
 
-  handleOnPress(type: string, text: string) {
-    Linking.openURL(formatUrl(type, text));
+  handleOnPress(this: void, type: string, text: string) {
+    void Linking.openURL(formatUrl(type, text));
   }
 
   handleChangeText = (textValue: string) => {
@@ -179,10 +178,12 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   onLongPress = (line: WeechatLine) => {
-    const formattedPrefix = WeeChatProtocol.rawText2Rich(line.prefix);
-    const prefix = formattedPrefix.map((node) => node.text);
-    const formattedMessage = WeeChatProtocol.rawText2Rich(line.message);
-    const message = formattedMessage.map((node) => node.text);
+    const prefix = renderWeechatFormat(line.prefix).map(
+      (value) => value.children
+    );
+    const message = renderWeechatFormat(line.message).map(
+      (value) => value.children
+    );
 
     ActionSheetIOS.showActionSheetWithOptions(
       { options: ['Copy', 'Cancel'], cancelButtonIndex: 2 },
@@ -190,7 +191,7 @@ class BufferContainer extends React.Component<Props, State> {
         const encloseNick =
           line.tags_array.includes('irc_privmsg') &&
           !line.tags_array.includes('irc_action');
-        Clipboard.setStringAsync(
+        void Clipboard.setStringAsync(
           `${encloseNick ? '<' : ''}${prefix.join('')}${encloseNick ? '>' : ''} ${message.join('')}`
         );
       }

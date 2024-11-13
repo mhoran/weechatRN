@@ -25,7 +25,7 @@ const selectHotlist = createSelector(
     (hotlist: HotListState, bufferId: string) => hotlist[bufferId],
     (hotlist: HotListState, bufferId: string) => bufferId
   ],
-  (hotlist, bufferId) => hotlist || createEmptyHotlist(bufferId)
+  (hotlist, bufferId) => hotlist ?? createEmptyHotlist(bufferId)
 );
 
 const BufferList: React.FC<Props> = ({ currentBufferId, onSelectBuffer }) => {

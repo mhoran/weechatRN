@@ -39,7 +39,7 @@ export default class WeechatNative extends React.Component<null, State> {
       this.parent = parent;
     }
 
-    isConnected = () => this.parent.connection?.isConnected() || false;
+    isConnected = () => this.parent.connection?.isConnected() ?? false;
     ping = () => this.parent.connection?.send('ping');
   };
 
@@ -96,7 +96,7 @@ export default class WeechatNative extends React.Component<null, State> {
         actionCreator: fetchScriptsAction,
         effect: (scripts) => {
           if (scripts.payload.includes('WeechatRN'))
-            this.setNotificationToken();
+            void this.setNotificationToken();
         }
       })
     );

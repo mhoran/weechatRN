@@ -138,7 +138,7 @@ class LoginForm extends React.Component<Props, State> {
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}
           >
-            {connectionError && (
+            {connectionError !== null && (
               <Text style={[styles.text, { color: 'red' }]}>
                 {this.connectionErrorToMessage(connectionError)}
               </Text>

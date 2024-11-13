@@ -33,7 +33,7 @@ const linesReducer = createReducer(initialState, (builder) => {
     return {
       ...state,
       [action.payload.line.buffer]: [
-        action.payload.line as WeechatLine,
+        action.payload.line,
         ...(state[action.payload.line.buffer] || [])
       ]
     };
@@ -41,7 +41,7 @@ const linesReducer = createReducer(initialState, (builder) => {
   builder.addCase(fetchBuffersRemovedAction, (state, action) => {
     return Object.fromEntries(
       Object.entries(state).filter(
-        ([bufferId]) => !(action.payload as string[]).includes(bufferId)
+        ([bufferId]) => !action.payload.includes(bufferId)
       )
     );
   });

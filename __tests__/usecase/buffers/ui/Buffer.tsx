@@ -14,7 +14,7 @@ describe(Buffer, () => {
   };
 
   describe('when notificationLineId is provided', () => {
-    it('scrolls to the corresponding line', async () => {
+    it('scrolls to the corresponding line', () => {
       const bufferRef = React.createRef<Buffer>();
       const lines = [
         {

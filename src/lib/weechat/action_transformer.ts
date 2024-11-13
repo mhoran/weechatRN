@@ -104,10 +104,7 @@ export const transformToReduxAction = (
             currentBufferId: state.app.currentBufferId,
             line: {
               ...restLine,
-              id:
-                id !== undefined
-                  ? id
-                  : parseInt(pointers[pointers.length - 1], 16),
+              id: id ?? parseInt(pointers[pointers.length - 1], 16),
               date: (date as Date).toISOString(),
               date_printed: (date_printed as Date).toISOString()
             } as WeechatLine
@@ -260,7 +257,7 @@ export const transformToReduxAction = (
       };
     }
     case 'last_read_lines': {
-      const object = data.objects[0] as WeechatObject<unknown>;
+      const object = data.objects[0];
 
       return lastReadLinesAction(object.content);
     }

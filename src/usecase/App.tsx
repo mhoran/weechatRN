@@ -151,7 +151,7 @@ class App extends React.Component<Props, State> {
       clearHotlistForBuffer(currentBufferId);
     }
 
-    registerForPushNotificationsAsync();
+    void registerForPushNotificationsAsync();
   }
 
   componentWillUnmount() {
@@ -196,7 +196,7 @@ class App extends React.Component<Props, State> {
               renderDrawerContent={sidebar}
               keyboardDismissMode={'on-drag'}
               drawerStyle={{
-                width: drawerWidth + (insets?.left || 0),
+                width: drawerWidth + (insets?.left ?? 0),
                 backgroundColor: '#121212',
                 paddingTop: insets?.top,
                 paddingBottom: insets?.bottom,
