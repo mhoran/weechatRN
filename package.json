@@ -14,7 +14,7 @@
     "@reduxjs/toolkit": "^2.2.3",
     "date-fns": "^4.1.0",
     "emoji-regex": "^10.3.0",
-    "expo": "^52.0.3",
+    "expo": "^52.0.6",
     "expo-clipboard": "~7.0.0",
     "expo-dev-client": "~5.0.1",
     "expo-device": "~7.0.1",
