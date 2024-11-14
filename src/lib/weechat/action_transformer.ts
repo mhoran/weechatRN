@@ -1,9 +1,11 @@
+import { UnknownAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { StoreState } from '../../store';
 import {
   bufferClearedAction,
   bufferClosedAction,
   bufferLineAddedAction,
+  bufferLineDataChangedAction,
   bufferLocalvarRemoveAction,
   bufferLocalvarUpdateAction,
   bufferOpenedAction,
@@ -13,14 +15,13 @@ import {
   fetchHotlistsAction,
   fetchLinesAction,
   fetchNicklistAction,
+  fetchScriptsAction,
   fetchVersionAction,
   lastReadLinesAction,
   nicklistUpdatedAction,
-  fetchScriptsAction,
-  upgradeAction,
-  pongAction
+  pongAction,
+  upgradeAction
 } from '../../store/actions';
-import { UnknownAction } from 'redux';
 
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
@@ -32,7 +33,7 @@ const reduceToObjectByKey = <T, U>(
 ) => array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: mapFn(elem) }), {});
 
 const parseVersion = (version: string) => {
-  const parts = version.split('.').map((part) => parseInt(part) || 0);
+  const parts = version.split('.').map((part) => parseInt(part) ?? 0);
   return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
 };
 
@@ -111,6 +112,22 @@ export const transformToReduxAction = (
           })
         );
       };
+    }
+    case '_buffer_line_data_changed': {
+      const object = data.objects[0] as WeechatObject<
+        Record<string, unknown>[]
+      >;
+      const line = object.content[0];
+      const { id, date, date_printed, ...restLine } = line;
+
+      if (id === undefined) return;
+
+      return bufferLineDataChangedAction({
+        ...restLine,
+        id,
+        date: (date as Date).toISOString(),
+        date_printed: (date_printed as Date).toISOString()
+      } as WeechatLine);
     }
     case '_buffer_closing': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;

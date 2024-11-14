@@ -563,6 +563,47 @@ describe('transformToReduxAction', () => {
     });
   });
 
+  describe('on buffer_line_data_changed', () => {
+    it('updates the line', () => {
+      const preloadedState = {
+        lines: { '83d204d80': [{ id: 0 } as WeechatLine] }
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_line_data_changed',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: 0,
+                buffer: '83d204d80',
+                pointers: ['83d204d80', '83c016280', '838a65900', '83c000420'],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                date_printed: new Date('2024-11-10T17:28:48.000Z'),
+                message: 'Beep boop'
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83d204d80');
+      const lines = store.getState().lines['83d204d80'];
+      expect(lines[0].message).toEqual('Beep boop');
+    });
+  });
+
   describe('on version', () => {
     it('stores the version', () => {
       const store = configureStore({

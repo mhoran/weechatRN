@@ -88,6 +88,10 @@ export const bufferLineAddedAction = createAction(
   'BUFFER_LINE_ADDED',
   prepareAutoBatched<{ line: WeechatLine; currentBufferId: string | null }>()
 );
+export const bufferLineDataChangedAction = createAction(
+  'BUFFER_LINE_DATA_CHANGED',
+  prepareAutoBatched<WeechatLine>()
+);
 export const bufferClearedAction = createAction(
   'BUFFER_CLEARED',
   prepareAutoBatched<string>()

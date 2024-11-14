@@ -3,6 +3,7 @@ import {
   bufferClearedAction,
   bufferClosedAction,
   bufferLineAddedAction,
+  bufferLineDataChangedAction,
   fetchBuffersRemovedAction,
   fetchLinesAction,
   upgradeAction
@@ -36,6 +37,18 @@ const linesReducer = createReducer(initialState, (builder) => {
         action.payload.line,
         ...(state[action.payload.line.buffer] || [])
       ]
+    };
+  });
+  builder.addCase(bufferLineDataChangedAction, (state, action) => {
+    const lines = state[action.payload.buffer];
+    if (lines === undefined) return state;
+
+    const lineIndex = lines.findIndex((line) => line.id === action.payload.id);
+    if (lineIndex < 0) return state;
+
+    return {
+      ...state,
+      [action.payload.buffer]: lines.toSpliced(lineIndex, 1, action.payload)
     };
   });
   builder.addCase(fetchBuffersRemovedAction, (state, action) => {
