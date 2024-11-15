@@ -19,27 +19,17 @@ const nicklistsReducer = createReducer(initialState, (builder) => {
     };
   });
   builder.addCase(nicklistUpdatedAction, (state, action) => {
-    const { added, removed } = action.payload;
+    const { added, removed, bufferId } = action.payload;
+    const nicklist = state[bufferId] ?? [];
 
-    const removedState = removed.reduce((state, removed) => {
-      const [bufferId] = removed.pointers;
-      return {
-        ...state,
-        [bufferId]: (state[bufferId] || []).filter(
-          (nick) => nick.name !== removed.name
+    const filtered = nicklist.filter(
+      (nick) =>
+        !removed.some(
+          (removed) => nick.pointers.at(-1) === removed.pointers.at(-1)
         )
-      };
-    }, state);
+    );
 
-    const updatedState = added.reduce((state, added) => {
-      const [bufferId] = added.pointers;
-      return {
-        ...state,
-        [bufferId]: [...(state[bufferId] || []), added]
-      };
-    }, removedState);
-
-    return updatedState;
+    return { ...state, [bufferId]: [...filtered, ...added] };
   });
   builder.addCase(bufferClosedAction, (state, action) => {
     const { [action.payload]: _, ...rest } = state;

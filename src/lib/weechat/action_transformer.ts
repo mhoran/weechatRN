@@ -50,23 +50,26 @@ export const transformToReduxAction = (
       const nicklistDiffs = object.content;
 
       const nicks = nicklistDiffs.filter((diff) => diff.group === 0);
+      if (nicks.length === 0) return;
 
-      const updates = nicks.reduce(
-        ({ added, removed }, nick) => {
-          switch (String.fromCharCode(nick._diff)) {
-            case '+': {
-              return { added: [...added, nick], removed };
-            }
-            case '-': {
-              return { removed: [...removed, nick], added };
-            }
+      const [bufferId] = nicks[0].pointers;
+      const added = [] as WeechatNicklist[];
+      const removed = [] as WeechatNicklist[];
+
+      nicks.forEach((nick) => {
+        switch (String.fromCharCode(nick._diff)) {
+          case '+': {
+            added.push(nick);
+            break;
           }
-          return { added, removed };
-        },
-        { added: [] as WeechatNicklist[], removed: [] as WeechatNicklist[] }
-      );
+          case '-': {
+            removed.push(nick);
+            break;
+          }
+        }
+      });
 
-      return nicklistUpdatedAction(updates);
+      return nicklistUpdatedAction({ added, removed, bufferId });
     }
     case '_buffer_cleared': {
       const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;

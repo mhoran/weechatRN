@@ -109,5 +109,6 @@ export const nicklistUpdatedAction = createAction(
   prepareAutoBatched<{
     added: WeechatNicklist[];
     removed: WeechatNicklist[];
+    bufferId: string;
   }>()
 );
