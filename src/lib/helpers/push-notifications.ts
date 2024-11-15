@@ -27,7 +27,7 @@ export const getPushNotificationStatusAsync = async (): Promise<
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
-    if (finalStatus !== Notifications.PermissionStatus.DENIED) {
+    if (finalStatus !== Notifications.PermissionStatus.GRANTED) {
       return;
     }
     token = (
