@@ -1,6 +1,7 @@
 import type { UnsubscribeListener } from '@reduxjs/toolkit';
 import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { AppState, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -16,6 +17,8 @@ import { PendingBufferNotificationListener } from '../store/listeners';
 import App from './App';
 import ConnectionGate from './ConnectionGate';
 import PersistGate from './PersistGate';
+
+void SplashScreen.preventAutoHideAsync();
 
 interface State {
   connecting: boolean;
@@ -125,6 +128,8 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   onBeforeLift = (): void => {
+    SplashScreen.hide();
+
     const { hostname, password, ssl } = store.getState().connection;
     if (hostname && password) this.onConnect(hostname, password, ssl);
   };
@@ -147,7 +152,7 @@ export default class WeechatNative extends React.Component<null, State> {
     return (
       <Provider store={store}>
         <SafeAreaProvider>
-          <PersistGate loading={null} onBeforeLift={this.onBeforeLift}>
+          <PersistGate onBeforeLift={this.onBeforeLift}>
             <GestureHandlerRootView>
               <ConnectionGate
                 connecting={connecting}

@@ -30,11 +30,16 @@ export default {
   platforms: ['ios', 'android'],
   version: '1.3.0',
   icon: './assets/icon.png',
-  splash: {
-    image: './assets/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#ffffff'
-  },
+  plugins: [
+    [
+      'expo-splash-screen',
+      {
+        backgroundColor: '#ffffff',
+        image: './assets/splash.png',
+        imageWidth: 1242
+      }
+    ]
+  ],
   updates: {
     fallbackToCacheTimeout: 0,
     url: 'https://u.expo.dev/5e51d3f0-dc9c-11e8-9dfe-b9e5abc941a4'
