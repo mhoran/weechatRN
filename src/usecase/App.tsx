@@ -26,9 +26,9 @@ import NicklistModal from './buffers/ui/NicklistModal';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
-  const currentBuffer =
-    (currentBufferId && state.buffers[currentBufferId]) || null;
-
+  const currentBuffer = currentBufferId
+    ? (state.buffers[currentBufferId] ?? null)
+    : null;
   const numHighlights = Object.values(state.hotlists).reduce(
     (sum, hlist) => sum + hlist.highlight,
     0

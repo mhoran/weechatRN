@@ -41,7 +41,7 @@ const bufferReducer = createReducer(initialState, (builder) => {
     };
   });
   builder.addCase(bufferLocalvarRemoveAction, (state, action) => {
-    if (state[action.payload.id]) {
+    if (state[action.payload.id] !== undefined) {
       return {
         ...state,
         [action.payload.id]: {

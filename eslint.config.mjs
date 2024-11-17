@@ -37,7 +37,7 @@ export default tseslint.config(
       'no-param-reassign': ['error', { props: true }],
 
       '@typescript-eslint/consistent-type-assertions': 'error',
-      '@typescript-eslint/no-deprecated': 'warn',
+      '@typescript-eslint/no-deprecated': 'error',
       '@typescript-eslint/no-misused-promises': [
         'error',
         {
@@ -51,8 +51,9 @@ export default tseslint.config(
         { ignoreRestSiblings: true }
       ],
       '@typescript-eslint/strict-boolean-expressions': [
-        'warn',
+        'error',
         {
+          allowNullableBoolean: true,
           allowNullableString: true
         }
       ],

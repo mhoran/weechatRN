@@ -13,7 +13,7 @@ export const getHotlistForBufferId = (
   state: HotListState,
   bufferId: string
 ): Hotlist => {
-  if (bufferId && state[bufferId]) {
+  if (bufferId && state[bufferId] !== undefined) {
     return state[bufferId];
   } else {
     return createEmptyHotlist(bufferId);

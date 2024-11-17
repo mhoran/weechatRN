@@ -33,7 +33,7 @@ const reduceToObjectByKey = <T, U>(
 ) => array.reduce((acc, elem) => ({ ...acc, [keyFn(elem)]: mapFn(elem) }), {});
 
 const parseVersion = (version: string) => {
-  const parts = version.split('.').map((part) => parseInt(part) ?? 0);
+  const parts = version.split('.').map((part) => parseInt(part) || 0);
   return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
 };
 
@@ -251,7 +251,7 @@ export const transformToReduxAction = (
       const object = data.objects[0] as WeechatObject<
         Record<string, unknown>[]
       >;
-      if (!object.content[0]) return undefined;
+      if (object.content.length === 0) return;
       return (
         dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
         getState: () => StoreState

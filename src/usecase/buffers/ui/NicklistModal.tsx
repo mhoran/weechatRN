@@ -28,8 +28,8 @@ const keyExtractor = (item: WeechatNicklist) =>
   item.pointers[item.pointers.length - 1];
 
 const NicklistModal: React.FC<Props> = ({ bufferId, visible, close }) => {
-  const nicklist = useAppSelector(
-    (state) => (bufferId && state.nicklists[bufferId]) || null
+  const nicklist = useAppSelector((state) =>
+    bufferId ? (state.nicklists[bufferId] ?? null) : null
   );
 
   const lastBufferId = useRef(bufferId);
