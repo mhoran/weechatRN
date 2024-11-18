@@ -2,10 +2,7 @@ import { UnknownAction, configureStore } from '@reduxjs/toolkit';
 import { StoreState, reducer } from '../../../src/store';
 import { transformToReduxAction } from '../../../src/lib/weechat/action_transformer';
 import { ThunkAction } from 'redux-thunk';
-import {
-  fetchBuffersAction,
-  fetchBuffersRemovedAction
-} from '../../../src/store/actions';
+import * as actions from '../../../src/store/actions';
 import { AppState } from '../../../src/store/app';
 
 describe('transformToReduxAction', () => {
@@ -85,9 +82,12 @@ describe('transformToReduxAction', () => {
       );
       expect(dispatch).toHaveBeenNthCalledWith(
         1,
-        fetchBuffersRemovedAction([])
+        actions.fetchBuffersRemovedAction([])
       );
-      expect(dispatch).toHaveBeenNthCalledWith(2, fetchBuffersAction({}));
+      expect(dispatch).toHaveBeenNthCalledWith(
+        2,
+        actions.fetchBuffersAction({})
+      );
     });
 
     it('preserves currentBufferId if the buffer is still open', () => {

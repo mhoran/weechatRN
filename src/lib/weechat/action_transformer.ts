@@ -1,27 +1,13 @@
 import { UnknownAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { StoreState } from '../../store';
-import {
-  bufferClearedAction,
-  bufferClosedAction,
-  bufferLineAddedAction,
-  bufferLineDataChangedAction,
-  bufferLocalvarRemoveAction,
-  bufferLocalvarUpdateAction,
-  bufferOpenedAction,
-  bufferRenamedAction,
-  fetchBuffersAction,
-  fetchBuffersRemovedAction,
-  fetchHotlistsAction,
-  fetchLinesAction,
-  fetchNicklistAction,
-  fetchScriptsAction,
-  fetchVersionAction,
-  lastReadLinesAction,
-  nicklistUpdatedAction,
-  pongAction,
-  upgradeAction
-} from '../../store/actions';
+import * as actions from '../../store/actions';
+
+interface RelayLine extends Omit<WeechatLine, 'id' | 'date' | 'date_printed'> {
+  id: number;
+  date: Date;
+  date_printed: Date;
+}
 
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
@@ -69,7 +55,7 @@ export const transformToReduxAction = (
         }
       });
 
-      return nicklistUpdatedAction({ added, removed, bufferId });
+      return actions.nicklistUpdatedAction({ added, removed, bufferId });
     }
     case '_buffer_cleared': {
       const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;
@@ -86,13 +72,11 @@ export const transformToReduxAction = (
 
         if (!buffer) return undefined;
 
-        dispatch(bufferClearedAction(buffer.id));
+        dispatch(actions.bufferClearedAction(buffer.id));
       };
     }
     case '_buffer_line_added': {
-      const object = data.objects[0] as WeechatObject<
-        Record<string, unknown>[]
-      >;
+      const object = data.objects[0] as WeechatObject<RelayLine[]>;
       const line = object.content[0];
 
       return (
@@ -100,43 +84,39 @@ export const transformToReduxAction = (
         getState: () => StoreState
       ) => {
         const state: StoreState = getState();
-        const { id, date, date_printed, ...restLine } = line;
-        const pointers = restLine.pointers as string[];
+        const { id, pointers, date, date_printed } = line;
 
         dispatch(
-          bufferLineAddedAction({
+          actions.bufferLineAddedAction({
             currentBufferId: state.app.currentBufferId,
             line: {
-              ...restLine,
+              ...line,
               id: id ?? parseInt(pointers[pointers.length - 1], 16),
-              date: (date as Date).toISOString(),
-              date_printed: (date_printed as Date).toISOString()
-            } as WeechatLine
+              date: date.toISOString(),
+              date_printed: date_printed.toISOString()
+            }
           })
         );
       };
     }
     case '_buffer_line_data_changed': {
-      const object = data.objects[0] as WeechatObject<
-        Record<string, unknown>[]
-      >;
+      const object = data.objects[0] as WeechatObject<RelayLine[]>;
       const line = object.content[0];
-      const { id, date, date_printed, ...restLine } = line;
+      const { id, date, date_printed } = line;
 
       if (id === undefined) return;
 
-      return bufferLineDataChangedAction({
-        ...restLine,
-        id,
-        date: (date as Date).toISOString(),
-        date_printed: (date_printed as Date).toISOString()
-      } as WeechatLine);
+      return actions.bufferLineDataChangedAction({
+        ...line,
+        date: date.toISOString(),
+        date_printed: date_printed.toISOString()
+      });
     }
     case '_buffer_closing': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
 
-      return bufferClosedAction(buffer.pointers[0]);
+      return actions.bufferClosedAction(buffer.pointers[0]);
     }
     case '_buffer_opened': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
@@ -147,21 +127,21 @@ export const transformToReduxAction = (
           : parseInt(buffer.pointers[0], 16);
       buffer.id = buffer.pointers[0];
 
-      return bufferOpenedAction(buffer);
+      return actions.bufferOpenedAction(buffer);
     }
     case '_buffer_renamed': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return bufferRenamedAction(buffer);
+      return actions.bufferRenamedAction(buffer);
     }
     case '_buffer_localvar_removed': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return bufferLocalvarRemoveAction(buffer);
+      return actions.bufferLocalvarRemoveAction(buffer);
     }
     case '_buffer_title_changed':
     case '_buffer_localvar_added': {
@@ -169,13 +149,13 @@ export const transformToReduxAction = (
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
-      return bufferLocalvarUpdateAction(buffer);
+      return actions.bufferLocalvarUpdateAction(buffer);
     }
     case '_upgrade': {
-      return upgradeAction();
+      return actions.upgradeAction();
     }
     case '_pong': {
-      return pongAction();
+      return actions.pongAction();
     }
     case 'hotlist': {
       const object = data.objects[0] as WeechatObject<WeechatHotlist[]>;
@@ -187,7 +167,7 @@ export const transformToReduxAction = (
         const state: StoreState = getState();
 
         dispatch(
-          fetchHotlistsAction({
+          actions.fetchHotlistsAction({
             hotlists: reduceToObjectByKey(
               object.content,
               (hotlist) => hotlist.buffer,
@@ -209,7 +189,7 @@ export const transformToReduxAction = (
 
       const nicks = nicklistDiffs.filter((diff) => diff.group === 0);
 
-      return fetchNicklistAction({
+      return actions.fetchNicklistAction({
         bufferId: object.content[0].pointers[0],
         nicklist: nicks
       });
@@ -238,39 +218,36 @@ export const transformToReduxAction = (
           return !(buffer in newBuffers);
         });
 
-        dispatch(fetchBuffersRemovedAction(removed));
-        dispatch(fetchBuffersAction(newBuffers));
+        dispatch(actions.fetchBuffersRemovedAction(removed));
+        dispatch(actions.fetchBuffersAction(newBuffers));
       };
     }
     case 'version': {
       const infolist = data.objects[0] as WeechatObject<WeechatInfoList>;
 
-      return fetchVersionAction(infolist.content.value);
+      return actions.fetchVersionAction(infolist.content.value);
     }
     case 'lines': {
-      const object = data.objects[0] as WeechatObject<
-        Record<string, unknown>[]
-      >;
+      const object = data.objects[0] as WeechatObject<RelayLine[]>;
       if (object.content.length === 0) return;
       return (
         dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
         getState: () => StoreState
       ) => {
         dispatch(
-          fetchLinesAction(
+          actions.fetchLinesAction(
             object.content.map((line) => {
-              const { id, date, date_printed, ...restLine } = line;
-              const pointers = restLine.pointers as string[];
+              const { id, pointers, date, date_printed } = line;
 
               return {
-                ...restLine,
+                ...line,
                 id:
                   parseVersion(getState().app.version) >= 0x04040000
                     ? id
                     : parseInt(pointers[pointers.length - 1], 16),
-                date: (date as Date).toISOString(),
-                date_printed: (date_printed as Date).toISOString()
-              } as WeechatLine;
+                date: date.toISOString(),
+                date_printed: date_printed.toISOString()
+              };
             })
           )
         );
@@ -279,12 +256,12 @@ export const transformToReduxAction = (
     case 'last_read_lines': {
       const object = data.objects[0];
 
-      return lastReadLinesAction(object.content);
+      return actions.lastReadLinesAction(object.content);
     }
     case 'scripts': {
       const object = data.objects[0] as WeechatObject<{ name: string }[]>;
 
-      return fetchScriptsAction(object.content.map(({ name }) => name));
+      return actions.fetchScriptsAction(object.content.map(({ name }) => name));
     }
     default:
       console.log('unhandled event!', data.id, data);
