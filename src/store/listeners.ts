@@ -1,6 +1,6 @@
 import { ListenerEffectAPI, isAnyOf } from '@reduxjs/toolkit';
 import { AppDispatch, StoreState } from '.';
-import { RelayClient } from '../usecase/Root';
+import RelayClient from '../lib/weechat/client';
 import {
   bufferNotificationAction,
   disconnectAction,

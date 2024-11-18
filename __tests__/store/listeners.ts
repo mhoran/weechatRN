@@ -1,21 +1,16 @@
 import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
 import { AppDispatch, reducer, StoreState } from '../../src/store';
-import {
-  fetchBuffersAction,
-  pendingBufferNotificationAction,
-  pongAction
-} from '../../src/store/actions';
+import * as actions from '../../src/store/actions';
 import { PendingBufferNotificationListener } from '../../src/store/listeners';
-import { RelayClient } from '../../src/usecase/Root';
+import RelayClient from '../../src/lib/weechat/client';
 
 jest.useFakeTimers();
 
 describe(PendingBufferNotificationListener, () => {
   it('ensures that the relay is connected before dispatching the notification', async () => {
-    const client = new (class implements RelayClient {
-      isConnected = jest.fn();
-      ping = jest.fn();
-    })();
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+    client.isConnected = jest.fn(() => true);
+    client.ping = jest.fn();
 
     const listenerMiddleware = createListenerMiddleware();
     const store = configureStore({
@@ -51,17 +46,15 @@ describe(PendingBufferNotificationListener, () => {
       PendingBufferNotificationListener(client)
     );
 
-    client.isConnected.mockReturnValue(true);
-
     store.dispatch(
-      pendingBufferNotificationAction({
+      actions.pendingBufferNotificationAction({
         identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9',
         bufferId: 1730555173010842,
         lineId: 0
       })
     );
 
-    store.dispatch(pongAction());
+    store.dispatch(actions.pongAction());
     await jest.runAllTimersAsync();
 
     expect(client.isConnected).toHaveBeenCalled();
@@ -75,10 +68,9 @@ describe(PendingBufferNotificationListener, () => {
   });
 
   it('refreshes the buffer list when disconnected before dispatching the notification', async () => {
-    const client = new (class implements RelayClient {
-      isConnected = jest.fn();
-      ping = jest.fn();
-    })();
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+    client.isConnected = jest.fn(() => false);
+    client.ping = jest.fn();
 
     const listenerMiddleware = createListenerMiddleware();
     const store = configureStore({
@@ -92,10 +84,8 @@ describe(PendingBufferNotificationListener, () => {
       PendingBufferNotificationListener(client)
     );
 
-    client.isConnected.mockReturnValue(false);
-
     store.dispatch(
-      pendingBufferNotificationAction({
+      actions.pendingBufferNotificationAction({
         identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9',
         bufferId: 1730555173010842,
         lineId: 0
@@ -103,7 +93,7 @@ describe(PendingBufferNotificationListener, () => {
     );
 
     store.dispatch(
-      fetchBuffersAction({
+      actions.fetchBuffersAction({
         ['83a41cd80']: {
           _id: 1730555173010842,
           full_name: 'irc.libera.#weechat',
@@ -136,10 +126,9 @@ describe(PendingBufferNotificationListener, () => {
   });
 
   it('does not dispatch the notification if the buffer is not in the buffer list', async () => {
-    const client = new (class implements RelayClient {
-      isConnected = jest.fn();
-      ping = jest.fn();
-    })();
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+    client.isConnected = jest.fn(() => false);
+    client.ping = jest.fn();
 
     const listenerMiddleware = createListenerMiddleware();
     const store = configureStore({
@@ -153,17 +142,15 @@ describe(PendingBufferNotificationListener, () => {
       PendingBufferNotificationListener(client)
     );
 
-    client.isConnected.mockReturnValue(false);
-
     store.dispatch(
-      pendingBufferNotificationAction({
+      actions.pendingBufferNotificationAction({
         identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9',
         bufferId: 1730555173010842,
         lineId: 0
       })
     );
 
-    store.dispatch(fetchBuffersAction({}));
+    store.dispatch(actions.fetchBuffersAction({}));
     await jest.runAllTimersAsync();
 
     expect(client.isConnected).toHaveBeenCalled();
