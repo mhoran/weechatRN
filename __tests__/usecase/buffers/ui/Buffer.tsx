@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import Buffer from '../../../../src/usecase/buffers/ui/Buffer';
+import RelayClient from '../../../../src/lib/weechat/client';
 
 describe(Buffer, () => {
   const measureNickWidth = () => {
@@ -42,6 +43,7 @@ describe(Buffer, () => {
           tags_array: ['irc_privmsg', 'notify_message']
         } as WeechatLine
       ];
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
       render(
         <Buffer
@@ -50,7 +52,7 @@ describe(Buffer, () => {
           onLongPress={() => {}}
           parseArgs={[]}
           bufferId={'86c417600'}
-          fetchMoreLines={() => {}}
+          client={client}
           clearNotification={() => {}}
         />
       );
@@ -64,7 +66,7 @@ describe(Buffer, () => {
           onLongPress={() => {}}
           parseArgs={[]}
           bufferId={'86c417600'}
-          fetchMoreLines={() => {}}
+          client={client}
           clearNotification={() => {}}
           notificationLineId={0}
         />

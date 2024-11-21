@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   CellRendererProps,
@@ -8,9 +9,8 @@ import {
   Text,
   View
 } from 'react-native';
-
-import { useEffect, useState } from 'react';
 import { ParseShape } from 'react-native-parsed-text';
+import RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
 import { styles as lineStyles } from './themes/Default';
 
@@ -20,7 +20,7 @@ interface Props {
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
   bufferId: string;
-  fetchMoreLines: (lines: number) => void;
+  client: RelayClient;
   notificationLineId?: number;
   clearNotification: () => void;
 }
@@ -105,6 +105,10 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
   }
 
+  fetchMoreLines = (lines: number) => {
+    this.props.client.fetchBufferInfo(this.props.bufferId, lines);
+  };
+
   renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
     const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
     const { nickWidth } = this.state;
@@ -161,7 +165,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { bufferId, lines, fetchMoreLines } = this.props;
+    const { bufferId, lines } = this.props;
     const { linesListKey, initialNumToRender } = this.state;
 
     if (!this.state.nickWidth) {
@@ -198,7 +202,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
           <Header
             bufferId={bufferId}
             lines={lines.length}
-            fetchMoreLines={fetchMoreLines}
+            fetchMoreLines={this.fetchMoreLines}
           />
         }
       />

@@ -1,3 +1,4 @@
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as React from 'react';
 import {
   Dimensions,
@@ -15,14 +16,13 @@ import {
   SafeAreaView
 } from 'react-native-safe-area-context';
 import { ConnectedProps, connect } from 'react-redux';
-
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import { StoreState } from '../store';
-import { changeCurrentBufferAction } from '../store/actions';
+import * as actions from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
+import RelayClient from '../lib/weechat/client';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -46,9 +46,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
   disconnect: () => void;
-  fetchBufferInfo: (bufferId: string, numLines?: number) => void;
-  sendMessageToBuffer: (fullBufferName: string, message: string) => void;
-  clearHotlistForBuffer: (currentBufferId: string | null) => void;
+  client: RelayClient;
 };
 
 interface State {
@@ -85,19 +83,14 @@ class App extends React.Component<Props, State> {
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer | string) => {
-    const {
-      currentBufferId,
-      dispatch,
-      clearHotlistForBuffer,
-      fetchBufferInfo
-    } = this.props;
+    const { currentBufferId, dispatch, client } = this.props;
     const bufferId = typeof buffer === 'string' ? buffer : buffer.id;
 
     this.closeDrawer();
     if (currentBufferId !== bufferId) {
-      dispatch(changeCurrentBufferAction(bufferId));
-      fetchBufferInfo(bufferId);
-      clearHotlistForBuffer(bufferId);
+      dispatch(actions.changeCurrentBufferAction(bufferId));
+      client.fetchBufferInfo(bufferId);
+      client.clearHotlistForBuffer(bufferId);
     }
   };
 
@@ -120,22 +113,10 @@ class App extends React.Component<Props, State> {
     this.setState({ drawerOpen: false });
   };
 
-  sendMessage = (message: string) => {
-    const { currentBuffer, sendMessageToBuffer } = this.props;
-
-    if (!currentBuffer) return;
-    sendMessageToBuffer(currentBuffer.full_name, message);
-  };
-
   updateWidth = () => {
     if (this.state.drawerWidth !== this.drawerWidth()) {
       this.setState({ drawerWidth: this.drawerWidth() });
     }
-  };
-
-  fetchMoreLines = (lines: number) => {
-    if (this.props.currentBufferId)
-      this.props.fetchBufferInfo(this.props.currentBufferId, lines);
   };
 
   componentDidMount() {
@@ -144,11 +125,10 @@ class App extends React.Component<Props, State> {
       this.updateWidth
     );
 
-    const { currentBufferId, fetchBufferInfo, clearHotlistForBuffer } =
-      this.props;
+    const { currentBufferId, client } = this.props;
     if (currentBufferId) {
-      fetchBufferInfo(currentBufferId);
-      clearHotlistForBuffer(currentBufferId);
+      client.fetchBufferInfo(currentBufferId);
+      client.clearHotlistForBuffer(currentBufferId);
     }
 
     void registerForPushNotificationsAsync();
@@ -176,7 +156,8 @@ class App extends React.Component<Props, State> {
   }
 
   render() {
-    const { currentBufferId, currentBuffer, hasHighlights } = this.props;
+    const { currentBufferId, currentBuffer, hasHighlights, client } =
+      this.props;
 
     const { showTopic, drawerWidth, showNicklistModal } = this.state;
 
@@ -267,10 +248,9 @@ class App extends React.Component<Props, State> {
                   </View>
                 </View>
                 <BufferGate
-                  showTopic={showTopic}
-                  sendMessage={this.sendMessage}
                   bufferId={currentBufferId}
-                  fetchMoreLines={this.fetchMoreLines}
+                  showTopic={showTopic}
+                  client={client}
                 />
               </SafeAreaView>
             </Drawer>

@@ -4,11 +4,8 @@ import BufferContainer from '../../../../src/usecase/buffers/ui/BufferContainer'
 import { act, render, screen } from '../../../../src/test-utils';
 import { reducer } from '../../../../src/store';
 import { configureStore } from '@reduxjs/toolkit';
-import {
-  bufferNotificationAction,
-  changeCurrentBufferAction,
-  fetchLinesAction
-} from '../../../../src/store/actions';
+import * as actions from '../../../../src/store/actions';
+import RelayClient from '../../../../src/lib/weechat/client';
 
 jest.mock('../../../../src/usecase/buffers/ui/Buffer');
 
@@ -46,14 +43,10 @@ describe('BufferContainer', () => {
       enhancers: (getDefaultEnhancers) =>
         getDefaultEnhancers({ autoBatch: false })
     });
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
     render(
-      <BufferContainer
-        bufferId={bufferId}
-        showTopic={false}
-        sendMessage={() => {}}
-        fetchMoreLines={() => {}}
-      />,
+      <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
@@ -63,7 +56,7 @@ describe('BufferContainer', () => {
 
     act(() => {
       store.dispatch(
-        bufferNotificationAction({
+        actions.bufferNotificationAction({
           bufferId,
           lineId: 0,
           identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
@@ -74,14 +67,14 @@ describe('BufferContainer', () => {
     expect(bufferContainer.props.notification).toBeNull();
 
     act(() => {
-      store.dispatch(changeCurrentBufferAction(bufferId));
+      store.dispatch(actions.changeCurrentBufferAction(bufferId));
     });
 
     expect(bufferContainer.props.notification).toBeNull();
 
     act(() => {
       store.dispatch(
-        fetchLinesAction([
+        actions.fetchLinesAction([
           {
             id: 1730555173010842,
             buffer: '86c417600',
@@ -142,20 +135,16 @@ describe('BufferContainer', () => {
       enhancers: (getDefaultEnhancers) =>
         getDefaultEnhancers({ autoBatch: false })
     });
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
     render(
-      <BufferContainer
-        bufferId={bufferId}
-        showTopic={false}
-        sendMessage={() => {}}
-        fetchMoreLines={() => {}}
-      />,
+      <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
     act(() => {
       store.dispatch(
-        bufferNotificationAction({
+        actions.bufferNotificationAction({
           bufferId,
           lineId: 0,
           identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
@@ -166,12 +155,12 @@ describe('BufferContainer', () => {
     expect(store.getState().app.notification).not.toBeNull();
 
     act(() => {
-      store.dispatch(changeCurrentBufferAction(bufferId));
+      store.dispatch(actions.changeCurrentBufferAction(bufferId));
     });
 
     act(() => {
       store.dispatch(
-        fetchLinesAction([
+        actions.fetchLinesAction([
           {
             id: 0,
             buffer: '86c417600',

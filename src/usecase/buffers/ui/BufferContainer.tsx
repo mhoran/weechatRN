@@ -1,3 +1,5 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
 import {
   ActionSheetIOS,
@@ -12,19 +14,16 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-
 import ParsedText from 'react-native-parsed-text';
 import { connect, ConnectedProps } from 'react-redux';
-
-import { MaterialIcons } from '@expo/vector-icons';
-import * as Clipboard from 'expo-clipboard';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { StoreState } from '../../../store';
+import * as actions from '../../../store/actions';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
-import { clearBufferNotificationAction } from '../../../store/actions';
+import RelayClient from '../../../lib/weechat/client';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] ?? [],
@@ -43,8 +42,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type OwnProps = {
   bufferId: string;
   showTopic: boolean;
-  sendMessage: (message: string) => void;
-  fetchMoreLines: (lines: number) => void;
+  client: RelayClient;
 };
 
 type Props = OwnProps & PropsFromRedux;
@@ -113,7 +111,7 @@ class BufferContainer extends React.Component<Props, State> {
   handleSubmit = () => {
     const { textValue } = this.state;
     textValue.split('\n').forEach((line) => {
-      this.props.sendMessage(line);
+      this.props.client.sendMessageToBuffer(this.props.buffer.full_name, line);
     });
     this.handleChangeText('');
   };
@@ -199,7 +197,7 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   clearNotification = () => {
-    this.props.dispatch(clearBufferNotificationAction());
+    this.props.dispatch(actions.clearBufferNotificationAction());
   };
 
   render() {
@@ -208,7 +206,7 @@ class BufferContainer extends React.Component<Props, State> {
       buffer,
       showTopic,
       lines,
-      fetchMoreLines,
+      client,
       mediaUploadOptions,
       notification
     } = this.props;
@@ -231,7 +229,7 @@ class BufferContainer extends React.Component<Props, State> {
           lastReadLine={buffer.last_read_line}
           onLongPress={this.onLongPress}
           parseArgs={this.parseArgs}
-          fetchMoreLines={fetchMoreLines}
+          client={client}
           notificationLineId={notification?.lineId}
           clearNotification={this.clearNotification}
         />

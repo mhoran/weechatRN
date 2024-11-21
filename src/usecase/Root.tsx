@@ -153,12 +153,7 @@ export default class WeechatNative extends React.Component<null, State> {
                 onConnect={this.onConnect}
               >
                 <StatusBar barStyle="light-content" />
-                <App
-                  disconnect={this.disconnect}
-                  clearHotlistForBuffer={this.client.clearHotlistForBuffer}
-                  sendMessageToBuffer={this.client.sendMessageToBuffer}
-                  fetchBufferInfo={this.client.fetchBufferInfo}
-                />
+                <App disconnect={this.disconnect} client={this.client} />
               </ConnectionGate>
             </GestureHandlerRootView>
           </PersistGate>

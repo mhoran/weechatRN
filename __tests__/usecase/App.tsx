@@ -5,7 +5,8 @@ import { act, render } from '../../src/test-utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from '../../src/store';
 import { AppState } from '../../src/store/app';
-import { bufferNotificationAction } from '../../src/store/actions';
+import * as actions from '../../src/store/actions';
+import RelayClient from '../../src/lib/weechat/client';
 
 jest.mock('react-native-drawer-layout');
 
@@ -39,18 +40,11 @@ describe('App', () => {
           app: { currentBufferId: bufferId } as AppState
         }
       });
-      const clearHotlistForBuffer = jest.fn();
-      const fetchBufferInfo = jest.fn();
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+      const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
+      const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(
-        <App
-          disconnect={() => {}}
-          fetchBufferInfo={fetchBufferInfo}
-          sendMessageToBuffer={() => {}}
-          clearHotlistForBuffer={clearHotlistForBuffer}
-        />,
-        { store }
-      );
+      render(<App disconnect={() => {}} client={client} />, { store });
 
       expect(fetchBufferInfo).toHaveBeenCalledWith(bufferId);
       expect(clearHotlistForBuffer).toHaveBeenCalledWith(bufferId);
@@ -89,22 +83,15 @@ describe('App', () => {
           app: { currentBufferId: null } as AppState
         }
       });
-      const clearHotlistForBuffer = jest.fn();
-      const fetchBufferInfo = jest.fn();
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+      const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
+      const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(
-        <App
-          disconnect={() => {}}
-          fetchBufferInfo={fetchBufferInfo}
-          sendMessageToBuffer={() => {}}
-          clearHotlistForBuffer={clearHotlistForBuffer}
-        />,
-        { store }
-      );
+      render(<App disconnect={() => {}} client={client} />, { store });
 
       act(() => {
         store.dispatch(
-          bufferNotificationAction({
+          actions.bufferNotificationAction({
             bufferId,
             lineId: 0,
             identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
