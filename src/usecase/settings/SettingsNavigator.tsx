@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ConnectionError } from '../../lib/weechat/connection';
+import type { ConnectionError } from '../../lib/weechat/connection';
 import LoginForm from '../login/LoginForm';
 import UploadSettings from './UploadSettings';
 

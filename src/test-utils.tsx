@@ -1,12 +1,13 @@
-import { Store, configureStore } from '@reduxjs/toolkit';
-import {
-  RenderOptions,
-  render as rtlRender
-} from '@testing-library/react-native';
-import React, { PropsWithChildren } from 'react';
+import type { Store } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
+import type { RenderOptions } from '@testing-library/react-native';
+import { render as rtlRender } from '@testing-library/react-native';
+import type React from 'react';
+import type { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 
-import { StoreState, reducer } from './store';
+import type { StoreState } from './store';
+import { reducer } from './store';
 
 interface ExtendedRenderOptions extends RenderOptions {
   preloadedState?: Partial<StoreState>;

@@ -1,6 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAction } from '@reduxjs/toolkit';
-import { Action, Dispatch, Middleware, Reducer, UnknownAction } from 'redux';
+import type {
+  Action,
+  Dispatch,
+  Middleware,
+  Reducer,
+  UnknownAction
+} from 'redux';
 
 export const initializeStoreAction = createAction<unknown>(
   'persist/INITIALIZE_STORE'

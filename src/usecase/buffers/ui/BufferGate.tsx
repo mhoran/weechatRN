@@ -1,6 +1,6 @@
 import { View } from 'react-native';
+import type RelayClient from '../../../lib/weechat/client';
 import BufferContainer, { styles } from './BufferContainer';
-import RelayClient from '../../../lib/weechat/client';
 
 type Props = {
   bufferId: string | null;

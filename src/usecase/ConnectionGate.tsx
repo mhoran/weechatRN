@@ -1,4 +1,4 @@
-import { ConnectionError } from '../lib/weechat/connection';
+import type { ConnectionError } from '../lib/weechat/connection';
 import { useAppSelector } from '../store/hooks';
 import SettingsNavigator from './settings/SettingsNavigator';
 

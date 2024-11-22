@@ -1,13 +1,6 @@
 import { useEffect, useRef } from 'react';
-import {
-  Button,
-  FlatList,
-  ListRenderItem,
-  Modal,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import type { ListRenderItem } from 'react-native';
+import { Button, FlatList, Modal, StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '../../../store/hooks';
 
 type Props = {

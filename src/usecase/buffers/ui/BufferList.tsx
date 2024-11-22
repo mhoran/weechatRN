@@ -1,12 +1,13 @@
-import { createSelector } from 'reselect';
-import * as React from 'react';
+import type * as React from 'react';
 import { useCallback } from 'react';
-import { FlatList, ListRenderItem, StyleSheet, View } from 'react-native';
-import { StoreState } from '../../../store';
+import type { ListRenderItem } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { createSelector } from 'reselect';
+import type { StoreState } from '../../../store';
 import { useAppSelector } from '../../../store/hooks';
+import type { HotListState } from '../../../store/hotlists';
 import { createEmptyHotlist } from '../../../store/selectors';
 import BufferListItem from './BufferListItem';
-import { HotListState } from '../../../store/hotlists';
 
 interface Props {
   currentBufferId: string | null;

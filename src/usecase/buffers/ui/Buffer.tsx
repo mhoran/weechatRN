@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import {
-  Button,
+import type {
   CellRendererProps,
-  FlatList,
   LayoutChangeEvent,
-  ListRenderItem,
-  Text,
-  View
+  ListRenderItem
 } from 'react-native';
-import { ParseShape } from 'react-native-parsed-text';
-import RelayClient from '../../../lib/weechat/client';
+import { Button, FlatList, Text, View } from 'react-native';
+import type { ParseShape } from 'react-native-parsed-text';
+import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
 import { styles as lineStyles } from './themes/Default';
 

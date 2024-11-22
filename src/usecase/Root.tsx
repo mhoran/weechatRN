@@ -1,4 +1,5 @@
-import { UnsubscribeListener, addListener } from '@reduxjs/toolkit';
+import type { UnsubscribeListener } from '@reduxjs/toolkit';
+import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
 import * as React from 'react';
 import { AppState, StatusBar } from 'react-native';
@@ -7,8 +8,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
 import RelayClient from '../lib/weechat/client';
-import { ConnectionError } from '../lib/weechat/connection';
-import { AppDispatch, StoreState, store } from '../store';
+import type { ConnectionError } from '../lib/weechat/connection';
+import type { AppDispatch, StoreState } from '../store';
+import { store } from '../store';
 import * as actions from '../store/actions';
 import { PendingBufferNotificationListener } from '../store/listeners';
 import App from './App';

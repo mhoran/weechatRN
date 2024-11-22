@@ -1,8 +1,9 @@
 import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
-import { AppDispatch, reducer, StoreState } from '../../src/store';
+import RelayClient from '../../src/lib/weechat/client';
+import type { AppDispatch, StoreState } from '../../src/store';
+import { reducer } from '../../src/store';
 import * as actions from '../../src/store/actions';
 import { PendingBufferNotificationListener } from '../../src/store/listeners';
-import RelayClient from '../../src/lib/weechat/client';
 
 jest.useFakeTimers();
 

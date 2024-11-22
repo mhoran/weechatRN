@@ -1,7 +1,7 @@
-import { WeeChatProtocol } from './parser';
-import { transformToReduxAction } from './action_transformer';
-import { AppDispatch } from '../../store';
+import type { AppDispatch } from '../../store';
 import { disconnectAction } from '../../store/actions';
+import { transformToReduxAction } from './action_transformer';
+import { WeeChatProtocol } from './parser';
 
 const protocol = new WeeChatProtocol();
 

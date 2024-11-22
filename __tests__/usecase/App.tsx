@@ -1,12 +1,12 @@
 import 'react-native';
 import App from '../../src/usecase/App';
 
-import { act, render } from '../../src/test-utils';
 import { configureStore } from '@reduxjs/toolkit';
-import { reducer } from '../../src/store';
-import { AppState } from '../../src/store/app';
-import * as actions from '../../src/store/actions';
 import RelayClient from '../../src/lib/weechat/client';
+import { reducer } from '../../src/store';
+import * as actions from '../../src/store/actions';
+import type { AppState } from '../../src/store/app';
+import { act, render } from '../../src/test-utils';
 
 jest.mock('react-native-drawer-layout');
 

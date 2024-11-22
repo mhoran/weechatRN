@@ -1,6 +1,6 @@
-import { UnknownAction } from 'redux';
-import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { StoreState } from '../../store';
+import type { UnknownAction } from 'redux';
+import type { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import type { StoreState } from '../../store';
 import * as actions from '../../store/actions';
 
 interface RelayLine extends Omit<WeechatLine, 'id' | 'date' | 'date_printed'> {

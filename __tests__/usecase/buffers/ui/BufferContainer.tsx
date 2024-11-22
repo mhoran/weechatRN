@@ -100,6 +100,7 @@ describe('BufferContainer', () => {
 
   it('clears notification after being handled by the buffer component', () => {
     const ActualBuffer = jest.requireActual<
+      // eslint-disable-next-line @typescript-eslint/consistent-type-imports
       typeof import('../../../../src/usecase/buffers/ui/Buffer')
     >('../../../../src/usecase/buffers/ui/Buffer').default;
     jest.mocked(Buffer).mockImplementation((props) => {

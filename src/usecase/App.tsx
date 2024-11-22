@@ -1,8 +1,8 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as React from 'react';
+import type { EmitterSubscription } from 'react-native';
 import {
   Dimensions,
-  EmitterSubscription,
   Keyboard,
   Platform,
   StyleSheet,
@@ -15,14 +15,15 @@ import {
   SafeAreaInsetsContext,
   SafeAreaView
 } from 'react-native-safe-area-context';
-import { ConnectedProps, connect } from 'react-redux';
+import type { ConnectedProps } from 'react-redux';
+import { connect } from 'react-redux';
 import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
-import { StoreState } from '../store';
+import type RelayClient from '../lib/weechat/client';
+import type { StoreState } from '../store';
 import * as actions from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
-import RelayClient from '../lib/weechat/client';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;

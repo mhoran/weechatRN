@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { EASConfig } from 'expo/config';
+import type { EASConfig } from 'expo/config';
 
 export const registerForPushNotificationsAsync = async (): Promise<void> => {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();

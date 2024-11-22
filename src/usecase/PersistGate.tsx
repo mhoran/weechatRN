@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PersistPartial } from '../store/persist';
+import type { PersistPartial } from '../store/persist';
 
 interface Props {
   loading?: React.ReactNode;

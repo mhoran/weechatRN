@@ -1,10 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  Reducer,
-  configureStore,
-  createAction,
-  createReducer
-} from '@reduxjs/toolkit';
+import type { Reducer } from '@reduxjs/toolkit';
+import { configureStore, createAction, createReducer } from '@reduxjs/toolkit';
 import {
   initializeStoreAction,
   persistMiddleware,

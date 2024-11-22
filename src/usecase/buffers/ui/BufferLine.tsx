@@ -1,11 +1,10 @@
-import { ParseShape } from 'react-native-parsed-text';
-
+import { isSameDay } from 'date-fns';
+import { memo } from 'react';
 import { Text, View } from 'react-native';
+import type { ParseShape } from 'react-native-parsed-text';
 import { formatDateDayChange } from '../../../lib/helpers/date-formatter';
 import { cof } from '../../../lib/weechat/colors';
 import Default, { styles } from './themes/Default';
-import { isSameDay } from 'date-fns';
-import { memo } from 'react';
 
 interface Props {
   line: WeechatLine;

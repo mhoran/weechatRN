@@ -1,6 +1,7 @@
-import { AppDispatch } from '../../store';
+import type { AppDispatch } from '../../store';
 import Buffer from '../../usecase/buffers/ui/Buffer';
-import WeechatConnection, { ConnectionError } from './connection';
+import type { ConnectionError } from './connection';
+import WeechatConnection from './connection';
 
 export default class RelayClient {
   private connection?: WeechatConnection;

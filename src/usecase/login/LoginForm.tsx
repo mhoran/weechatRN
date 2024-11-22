@@ -9,12 +9,13 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ConnectedProps, connect } from 'react-redux';
+import type { ConnectedProps } from 'react-redux';
+import { connect } from 'react-redux';
 import { ConnectionError } from '../../lib/weechat/connection';
-import { StoreState } from '../../store';
-import UndoTextInput from '../shared/UndoTextInput';
-import { styles } from '../settings/styles';
+import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
+import { styles } from '../settings/styles';
+import UndoTextInput from '../shared/UndoTextInput';
 
 const connector = connect((state: StoreState) => ({
   hostname: state.connection.hostname || '',

@@ -1,9 +1,9 @@
-import * as React from 'react';
+import type * as React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-
-import ParsedText, { ParseShape } from 'react-native-parsed-text';
-import { renderWeechatFormat } from '../../../../lib/weechat/color-formatter';
+import type { ParseShape } from 'react-native-parsed-text';
+import ParsedText from 'react-native-parsed-text';
 import { formatDate } from '../../../../lib/helpers/date-formatter';
+import { renderWeechatFormat } from '../../../../lib/weechat/color-formatter';
 
 interface Props {
   line: WeechatLine;

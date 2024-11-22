@@ -37,6 +37,8 @@ export default tseslint.config(
       'no-param-reassign': ['error', { props: true }],
 
       '@typescript-eslint/consistent-type-assertions': 'error',
+      '@typescript-eslint/consistent-type-exports': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-deprecated': 'error',
       '@typescript-eslint/no-misused-promises': [
         'error',

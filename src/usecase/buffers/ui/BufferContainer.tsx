@@ -1,29 +1,32 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
+import type {
+  NativeSyntheticEvent,
+  TextInputSelectionChangeEventData
+} from 'react-native';
 import {
   ActionSheetIOS,
   KeyboardAvoidingView,
   LayoutAnimation,
   Linking,
-  NativeSyntheticEvent,
   StyleSheet,
   Text,
   TextInput,
-  TextInputSelectionChangeEventData,
   TouchableOpacity,
   View
 } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
-import { connect, ConnectedProps } from 'react-redux';
+import type { ConnectedProps } from 'react-redux';
+import { connect } from 'react-redux';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
+import type RelayClient from '../../../lib/weechat/client';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
-import { StoreState } from '../../../store';
+import type { StoreState } from '../../../store';
 import * as actions from '../../../store/actions';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
-import RelayClient from '../../../lib/weechat/client';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] ?? [],

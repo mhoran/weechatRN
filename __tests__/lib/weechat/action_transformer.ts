@@ -1,9 +1,11 @@
-import { UnknownAction, configureStore } from '@reduxjs/toolkit';
-import { StoreState, reducer } from '../../../src/store';
+import type { UnknownAction } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
+import type { ThunkAction } from 'redux-thunk';
 import { transformToReduxAction } from '../../../src/lib/weechat/action_transformer';
-import { ThunkAction } from 'redux-thunk';
+import type { StoreState } from '../../../src/store';
+import { reducer } from '../../../src/store';
 import * as actions from '../../../src/store/actions';
-import { AppState } from '../../../src/store/app';
+import type { AppState } from '../../../src/store/app';
 
 describe('transformToReduxAction', () => {
   describe('on buffers', () => {

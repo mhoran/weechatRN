@@ -1,6 +1,6 @@
 import emojiRegex from 'emoji-regex';
-import { TextStyle } from 'react-native';
-import { ParseShape } from 'react-native-parsed-text';
+import type { TextStyle } from 'react-native';
+import type { ParseShape } from 'react-native-parsed-text';
 
 export const getParseArgs = (
   style: TextStyle,

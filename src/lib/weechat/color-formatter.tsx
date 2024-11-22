@@ -1,7 +1,6 @@
-import { TextStyle, TextProps } from 'react-native';
-
+import type { TextProps, TextStyle } from 'react-native';
+import { ceb, cef, cob, cof, cwb, cwf } from './colors';
 import { WeeChatProtocol } from './parser';
-import { ceb, cwb, cob, cef, cwf, cof } from './colors';
 
 type AttributedStringNode = {
   attrs: {

@@ -1,11 +1,6 @@
 import * as React from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableHighlight,
-  View
-} from 'react-native';
+import type { TextStyle } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 interface Props {
   buffer: WeechatBuffer;
