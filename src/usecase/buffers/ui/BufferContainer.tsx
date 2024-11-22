@@ -72,10 +72,24 @@ class BufferContainer extends React.Component<Props, State> {
   tabCompleteWordStart = 0;
   tabCompleteWordEnd = 0;
 
+  handleLinkOnPress = (type: string, text: string) => {
+    void Linking.openURL(formatUrl(type, text));
+  };
+
+  handleLinkOnLongPress = (type: string, text: string) => {
+    ActionSheetIOS.showShareActionSheetWithOptions(
+      {
+        url: formatUrl(type, text)
+      },
+      () => null,
+      () => null
+    );
+  };
+
   parseArgs = getParseArgs(
     styles.link,
-    this.handleOnPress,
-    this.handleOnLongPress
+    this.handleLinkOnPress,
+    this.handleLinkOnLongPress
   );
 
   handleOnFocus = () => {
@@ -91,20 +105,6 @@ class BufferContainer extends React.Component<Props, State> {
       showTabButton: false
     });
   };
-
-  handleOnLongPress(this: void, type: string, text: string) {
-    ActionSheetIOS.showShareActionSheetWithOptions(
-      {
-        url: formatUrl(type, text)
-      },
-      () => null,
-      () => null
-    );
-  }
-
-  handleOnPress(this: void, type: string, text: string) {
-    void Linking.openURL(formatUrl(type, text));
-  }
 
   handleChangeText = (textValue: string) => {
     this.tabCompleteInProgress = false;
@@ -178,7 +178,7 @@ class BufferContainer extends React.Component<Props, State> {
     this.setState({ selection });
   };
 
-  onLongPress = (line: WeechatLine) => {
+  handleLinOnLongPress = (line: WeechatLine) => {
     const prefix = renderWeechatFormat(line.prefix).map(
       (value) => value.children
     );
@@ -230,7 +230,7 @@ class BufferContainer extends React.Component<Props, State> {
           bufferId={bufferId}
           lines={lines}
           lastReadLine={buffer.last_read_line}
-          onLongPress={this.onLongPress}
+          onLongPress={this.handleLinOnLongPress}
           parseArgs={this.parseArgs}
           client={client}
           notificationLineId={notification?.lineId}
