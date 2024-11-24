@@ -15,7 +15,6 @@ import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-import UndoTextInput from '../shared/UndoTextInput';
 
 const connector = connect((state: StoreState) => ({
   hostname: state.connection.hostname || '',
@@ -98,7 +97,7 @@ class ConnectionSettings extends React.PureComponent<Props, State> {
             click the connect icon. Hostname will be prepended with the
             appropriate scheme (http(s)://) and suffixed with /weechat.
           </Text>
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             keyboardType="url"
