@@ -15,7 +15,6 @@ import { ConnectionError } from '../../lib/weechat/connection';
 import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
 import { styles } from '../settings/styles';
-import UndoTextInput from '../shared/UndoTextInput';
 
 const connector = connect((state: StoreState) => ({
   hostname: state.connection.hostname || '',
@@ -97,7 +96,7 @@ class LoginForm extends React.Component<Props, State> {
           <Text style={styles.header}>
             Connect to Weechat relay via websocket
           </Text>
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             keyboardType="url"
