@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     color: '#eee',
-    fontFamily: 'Thonburi',
     fontWeight: 'bold',
     fontSize: 15
   },

@@ -288,7 +288,6 @@ const styles = StyleSheet.create({
   channelsButtonText: {
     textAlign: 'center',
     fontSize: 20,
-    fontFamily: 'Gill Sans',
     color: '#eee',
     fontWeight: 'bold'
   },
@@ -298,7 +297,6 @@ const styles = StyleSheet.create({
   },
   topbarText: {
     color: '#eee',
-    fontFamily: 'Thonburi',
     fontWeight: 'bold',
     fontSize: 15
   },

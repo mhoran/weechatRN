@@ -1,5 +1,11 @@
 import type * as React from 'react';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View
+} from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import ParsedText from 'react-native-parsed-text';
 import { formatDate } from '../../../../lib/helpers/date-formatter';
@@ -72,7 +78,7 @@ export const styles = StyleSheet.create({
     flex: 1
   },
   text: {
-    fontFamily: 'Menlo',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     color: '#eee',
     fontSize: 14
   },
