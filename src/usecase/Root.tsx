@@ -159,7 +159,11 @@ export default class WeechatNative extends React.Component<null, State> {
                 connectionError={connectionError}
                 onConnect={this.onConnect}
               >
-                <StatusBar barStyle="light-content" />
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor="transparent"
+                  translucent={true}
+                />
                 <App disconnect={this.disconnect} client={this.client} />
               </ConnectionGate>
             </GestureHandlerRootView>
