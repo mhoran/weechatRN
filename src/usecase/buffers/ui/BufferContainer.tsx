@@ -183,7 +183,7 @@ class BufferContainer extends React.Component<Props, State> {
     this.setState({ selection });
   };
 
-  handleLinOnLongPress = (line: WeechatLine) => {
+  handleLineOnLongPress = (line: WeechatLine) => {
     const prefix = renderWeechatFormat(line.prefix).map(
       (value) => value.children
     );
@@ -235,7 +235,7 @@ class BufferContainer extends React.Component<Props, State> {
           bufferId={bufferId}
           lines={lines}
           lastReadLine={buffer.last_read_line}
-          onLongPress={this.handleLinOnLongPress}
+          onLongPress={this.handleLineOnLongPress}
           parseArgs={this.parseArgs}
           client={client}
           notificationLineId={notification?.lineId}
