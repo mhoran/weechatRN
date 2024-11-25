@@ -189,14 +189,17 @@ class App extends React.Component<Props, State> {
               swipeEdgeWidth={60}
               drawerPosition={'left'}
             >
-              <SafeAreaView style={styles.container}>
+              <SafeAreaView
+                style={[styles.container]}
+                edges={['right', 'bottom', 'left']}
+              >
                 <NicklistModal
                   bufferId={currentBufferId}
                   visible={showNicklistModal}
                   close={this.toggleShowNicklistModal}
                 />
 
-                <View style={styles.topbar}>
+                <View style={[styles.topbar, { paddingTop: insets?.top }]}>
                   <View style={styles.channelsButtonWrapper}>
                     <TouchableOpacity
                       style={styles.topbarButton}

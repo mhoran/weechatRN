@@ -7,7 +7,8 @@
     "test": "jest",
     "lint": "eslint .",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -23,6 +24,7 @@
     "expo-notifications": "~0.29.8",
     "expo-splash-screen": "~0.29.13",
     "expo-updates": "~0.26.9",
+    "patch-package": "^8.0.0",
     "react": "18.3.1",
     "react-native": "0.76.3",
     "react-native-drawer-layout": "^3.2.2",

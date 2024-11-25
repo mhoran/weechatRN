@@ -7,7 +7,6 @@ import type {
 } from 'react-native';
 import {
   ActionSheetIOS,
-  KeyboardAvoidingView,
   LayoutAnimation,
   Linking,
   StyleSheet,
@@ -27,6 +26,7 @@ import type { StoreState } from '../../../store';
 import * as actions from '../../../store/actions';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
+import { KeyboardAvoidingView } from '../../shared/KeyboardAvoidingView';
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] ?? [],
@@ -216,7 +216,7 @@ class BufferContainer extends React.Component<Props, State> {
     const { textValue, showTabButton } = this.state;
 
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <KeyboardAvoidingView style={styles.container}>
         {showTopic && (
           <View>
             <Text>
@@ -286,7 +286,8 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#222'
+    backgroundColor: '#222',
+    zIndex: -1
   },
   main: {
     paddingVertical: 20
