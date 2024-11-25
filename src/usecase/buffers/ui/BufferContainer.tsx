@@ -7,7 +7,6 @@ import type {
 } from 'react-native';
 import {
   ActionSheetIOS,
-  LayoutAnimation,
   Linking,
   StyleSheet,
   Text,
@@ -16,6 +15,11 @@ import {
   View
 } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
+import Animated, {
+  FadeInRight,
+  FadeOutRight,
+  LinearTransition
+} from 'react-native-reanimated';
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
@@ -24,9 +28,12 @@ import type RelayClient from '../../../lib/weechat/client';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import type { StoreState } from '../../../store';
 import * as actions from '../../../store/actions';
+import { KeyboardAvoidingView } from '../../shared/KeyboardAvoidingView';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
-import { KeyboardAvoidingView } from '../../shared/KeyboardAvoidingView';
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+const AnimatedIcon = Animated.createAnimatedComponent(MaterialIcons);
 
 const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] ?? [],
@@ -96,11 +103,9 @@ class BufferContainer extends React.Component<Props, State> {
     this.setState({
       showTabButton: true
     });
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   };
 
   handleOnBlur = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.setState({
       showTabButton: false
     });
@@ -237,7 +242,8 @@ class BufferContainer extends React.Component<Props, State> {
           clearNotification={this.clearNotification}
         />
         <View style={styles.bottomBox}>
-          <TextInput
+          <AnimatedTextInput
+            layout={LinearTransition}
             style={styles.inputBox}
             value={textValue}
             onChangeText={this.handleChangeText}
@@ -251,17 +257,25 @@ class BufferContainer extends React.Component<Props, State> {
             multiline={true}
             autoCorrect={false}
           />
-          <UploadButton
-            onUpload={this.handleOnUpload}
-            style={styles.uploadButton}
-            uploadOptions={mediaUploadOptions}
-          />
+          <Animated.View layout={LinearTransition}>
+            <UploadButton
+              onUpload={this.handleOnUpload}
+              style={styles.uploadButton}
+              uploadOptions={mediaUploadOptions}
+            />
+          </Animated.View>
           {showTabButton && (
             <TouchableOpacity
               style={styles.tabButton}
               onPress={this.tabCompleteNick}
             >
-              <MaterialIcons name="keyboard-tab" size={27} color="white" />
+              <AnimatedIcon
+                entering={FadeInRight}
+                exiting={FadeOutRight}
+                name="keyboard-tab"
+                size={27}
+                color="white"
+              />
             </TouchableOpacity>
           )}
         </View>

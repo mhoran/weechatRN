@@ -12,7 +12,7 @@ jest.mock('expo-file-system', () => {
 });
 const mockedFileSystem = jest.mocked(FileSystem);
 
-describe(UploadButton, () => {
+describe('UploadButton', () => {
   let resolveUpload: (result: FileSystem.FileSystemUploadResult) => void;
 
   beforeEach(() => {
