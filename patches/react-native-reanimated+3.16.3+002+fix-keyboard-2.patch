@@ -1,0 +1,64 @@
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+index 21ca00b..5473fdf 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+@@ -25,6 +25,7 @@ @implementation REAKeyboardEventObserver {
+   float _targetKeyboardHeight;
+   REAUIView *_keyboardView;
+   bool _isKeyboardObserverAttached;
++  bool _isInteractiveDismissalCanceled;
+ }
+ 
+ - (instancetype)init
+@@ -35,6 +36,7 @@ - (instancetype)init
+   _state = UNKNOWN;
+   _animationStartTimestamp = 0;
+   _isKeyboardObserverAttached = false;
++  _isInteractiveDismissalCanceled = false;
+   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+ 
+   [notificationCenter addObserver:self
+@@ -213,20 +215,21 @@ - (void)keyboardWillChangeFrame:(NSNotification *)notification
+   }
+ 
+   /*
+-    This may seem a bit confusing, but usually, the state should be either OPENED or CLOSED.
+-    However, if it shows as OPENING, it means that the interactive dismissal was canceled.
++   If interactive dismissal was canceled, beginFrame may not reflect the latest position
++   of the keyboard. We need to check whether interactive dismissal was canceled, get the
++   latest frame directly from the keyboardView, then reset the flag.
+   */
+-  bool isInteractiveMode = _state == OPENING && _isKeyboardObserverAttached;
++  bool isInteractiveDismissalCanceled = _isInteractiveDismissalCanceled;
+   auto keyboardView = [self getKeyboardView];
+   if (_state == CLOSING) {
+     _targetKeyboardHeight = 0;
+-  } else if (isInteractiveMode) {
+-    // This condition can be met after canceling interactive dismissal.
++  } else if (isInteractiveDismissalCanceled) {
+     _initialKeyboardHeight = windowSize.height - keyboardView.frame.origin.y;
++    _isInteractiveDismissalCanceled = false;
+   }
+ 
+   bool hasKeyboardAnimation = [self hasAnyAnimation:keyboardView];
+-  if (hasKeyboardAnimation || isInteractiveMode) {
++  if (hasKeyboardAnimation || isInteractiveDismissalCanceled) {
+     _measuringView.frame = CGRectMake(0, -1, 0, _initialKeyboardHeight);
+     [UIView animateWithDuration:animationDuration
+                      animations:^{
+@@ -327,6 +330,7 @@ - (void)keyboardWillHide:(NSNotification *)notification
+ - (void)updateKeyboardHeightDuringInteractiveDismiss:(CGPoint)oldKeyboardFrame
+                                     newKeyboardFrame:(CGPoint)newKeyboardFrame
+ {
++  _isInteractiveDismissalCanceled = false;
+   auto keyboardView = [self getKeyboardView];
+   bool hasKeyboardAnimation = [self hasAnyAnimation:keyboardView];
+   if (hasKeyboardAnimation) {
+@@ -340,6 +344,7 @@ - (void)updateKeyboardHeightDuringInteractiveDismiss:(CGPoint)oldKeyboardFrame
+   float visibleKeyboardHeight = windowHeight - (newKeyboardFrame.y - keyboardHeight / 2);
+   if (oldKeyboardFrame.y > newKeyboardFrame.y) {
+     _state = OPENING;
++    _isInteractiveDismissalCanceled = true;
+   } else if (oldKeyboardFrame.y < newKeyboardFrame.y) {
+     _state = CLOSING;
+   }
