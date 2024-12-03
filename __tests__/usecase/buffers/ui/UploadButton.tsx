@@ -1,6 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import type { TapGesture } from 'react-native-gesture-handler';
+import {
+  fireGestureHandler,
+  getByGestureTestId
+} from 'react-native-gesture-handler/jest-utils';
 import UploadButton from '../../../../src/usecase/buffers/ui/UploadButton';
 
 jest.mock('expo-file-system', () => {
@@ -39,9 +44,8 @@ describe('UploadButton', () => {
       password: 'changeme'
     };
     render(<UploadButton onUpload={onUpload} uploadOptions={uploadOptions} />);
-    const button = screen.getByLabelText('Upload Image');
 
-    fireEvent(button, 'press');
+    fireGestureHandler<TapGesture>(getByGestureTestId('uploadButtonSingleTap'));
 
     await screen.findByLabelText('Image Uploading');
 
@@ -115,9 +119,10 @@ describe('UploadButton', () => {
       render(
         <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
       );
-      const button = screen.getByLabelText('Upload Image');
 
-      fireEvent(button, 'press');
+      fireGestureHandler<TapGesture>(
+        getByGestureTestId('uploadButtonSingleTap')
+      );
 
       await screen.findByLabelText('Image Uploading');
 

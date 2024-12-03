@@ -1,10 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
+import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import UploadSpinner from './UploadSpinner';
 
 interface Props {
@@ -56,8 +58,19 @@ const UploadButton: React.FC<Props> = ({
     void handleImagePicked(result);
   };
 
+  const pickDocument = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      multiple: false,
+      type: 'image/*'
+    });
+
+    void handleImagePicked(result);
+  };
+
   const handleImagePicked = async (
-    pickerResult: ImagePicker.ImagePickerResult
+    pickerResult:
+      | ImagePicker.ImagePickerResult
+      | DocumentPicker.DocumentPickerResult
   ) => {
     try {
       if (pickerResult.canceled) {
@@ -96,6 +109,20 @@ const UploadButton: React.FC<Props> = ({
     else throw Error('Upload failed');
   };
 
+  const singleTap = Gesture.Tap()
+    .onStart(() => void pickImage())
+    .runOnJS(true)
+    .withTestId('uploadButtonSingleTap');
+
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onStart(() => void pickDocument())
+    .runOnJS(true);
+
+  const longPress = Gesture.LongPress()
+    .onStart(() => void takePhoto())
+    .runOnJS(true);
+
   if (
     !uploadOptions.url ||
     !uploadOptionsFieldName ||
@@ -113,14 +140,13 @@ const UploadButton: React.FC<Props> = ({
   }
 
   return (
-    <TouchableOpacity
-      onPress={pickImage}
-      onLongPress={takePhoto}
-      style={style}
-      accessibilityLabel="Upload Image"
+    <GestureDetector
+      gesture={Gesture.Exclusive(doubleTap, singleTap, longPress)}
     >
-      <MaterialIcons name="photo-library" size={27} color="white" />
-    </TouchableOpacity>
+      <View style={style} accessibilityLabel="Upload Image">
+        <MaterialIcons name="photo-library" size={27} color="white" />
+      </View>
+    </GestureDetector>
   );
 };
 

@@ -107,6 +107,14 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
         <ScrollView alwaysBounceVertical={false}>
           <StatusBar barStyle="dark-content" />
           <Text style={styles.header}>Media Upload Settings</Text>
+          <Text style={styles.text}>
+            Use the form below to configure media upload settings. This allows
+            for uploading media to hosting provider and will automatically paste
+            the link in the input box. When configured, an upload button will
+            appear next to the input box. Press the button once to upload media
+            from the camera roll. Press the button twice to upload media from
+            elsewhere on your device. Press and hold the button to take a photo.
+          </Text>
           <UndoTextInput
             style={styles.input}
             placeholderTextColor="#4157af"
