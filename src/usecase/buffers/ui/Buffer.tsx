@@ -68,7 +68,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   state: State = {
     nickWidth: 0,
     linesListKey: 0,
-    initialNumToRender: 35
+    initialNumToRender: Buffer.NUM_LINES_TO_RENDER
   };
 
   notificationLineId: number | null = null;
@@ -97,7 +97,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
     if (this.props.bufferId !== prevProps.bufferId) {
       this.setState((state) => ({
         linesListKey: state.linesListKey + 1,
-        initialNumToRender: 35
+        initialNumToRender: Buffer.NUM_LINES_TO_RENDER
       }));
     }
   }
