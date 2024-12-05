@@ -192,7 +192,6 @@ export default class Buffer extends React.PureComponent<Props, State> {
         renderItem={this.renderBuffer}
         initialNumToRender={initialNumToRender}
         maxToRenderPerBatch={Buffer.NUM_LINES_TO_RENDER}
-        removeClippedSubviews={true}
         windowSize={15}
         CellRendererComponent={this.renderCell}
         ListFooterComponent={

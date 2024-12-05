@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import type { LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
 import Animated, {
+  KeyboardState,
   runOnUI,
   useAnimatedKeyboard,
   useAnimatedStyle,
@@ -55,7 +56,10 @@ export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
     if (behavior === 'padding') {
       return { paddingBottom: offset };
     } else if (behavior === 'transform') {
-      return { transform: [{ translateY: -offset }] };
+      return {
+        transform: [{ translateY: -offset }],
+        paddingTop: keyboard.state.value === KeyboardState.OPEN ? offset : 0
+      };
     } else {
       return {};
     }
