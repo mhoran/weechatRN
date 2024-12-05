@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  KeyboardAvoidingView,
   ScrollView,
   StatusBar,
   Switch,
@@ -12,6 +11,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { KeyboardAvoidingView } from '../shared/KeyboardAvoidingView';
 import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
 
@@ -103,7 +103,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView behavior="padding">
+      <KeyboardAvoidingView behavior='padding'>
         <ScrollView alwaysBounceVertical={false}>
           <StatusBar barStyle="dark-content" />
           <Text style={styles.header}>Media Upload Settings</Text>
