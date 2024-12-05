@@ -221,7 +221,7 @@ class BufferContainer extends React.Component<Props, State> {
     const { textValue, showTabButton } = this.state;
 
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior="transform">
         {showTopic && (
           <View>
             <Text>

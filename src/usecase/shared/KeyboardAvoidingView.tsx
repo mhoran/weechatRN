@@ -2,15 +2,23 @@ import { useCallback } from 'react';
 import type { LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
 import Animated, {
+  runOnUI,
   useAnimatedKeyboard,
   useAnimatedStyle,
   useSharedValue
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export const KeyboardAvoidingView: React.FC<
-  React.PropsWithChildren<{ style: ViewStyle }>
-> = ({ children, style }) => {
+interface Props {
+  style?: ViewStyle;
+  behavior: string;
+}
+
+export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
+  children,
+  style,
+  behavior
+}) => {
   const keyboard = useAnimatedKeyboard({
     isStatusBarTranslucentAndroid: true
   });
@@ -19,23 +27,38 @@ export const KeyboardAvoidingView: React.FC<
   const safeAreaInsets = useSafeAreaInsets();
   const topPadding = Platform.OS === 'android' ? safeAreaInsets.top : 0;
 
-  const onLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      currentFrame.value = event.nativeEvent.layout;
+  const setCurrentFrame = useCallback(
+    (layout: LayoutRectangle) => {
+      'worklet';
+      currentFrame.value = layout;
     },
     [currentFrame]
   );
 
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      runOnUI(setCurrentFrame)(event.nativeEvent.layout);
+    },
+    [setCurrentFrame]
+  );
+
   const animatedStyles = useAnimatedStyle(() => {
     if (!currentFrame.value) return {};
-    const translateY = -Math.max(
+
+    const offset = Math.max(
       currentFrame.value.y +
         currentFrame.value.height -
         (screenHeight + topPadding - keyboard.height.value),
       0
     );
 
-    return { transform: [{ translateY }] };
+    if (behavior === 'padding') {
+      return { paddingBottom: offset };
+    } else if (behavior === 'transform') {
+      return { transform: [{ translateY: -offset }] };
+    } else {
+      return {};
+    }
   });
 
   return (
