@@ -18,7 +18,8 @@ import ParsedText from 'react-native-parsed-text';
 import Animated, {
   FadeInRight,
   FadeOutRight,
-  LinearTransition
+  LinearTransition,
+  runOnJS
 } from 'react-native-reanimated';
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
@@ -59,6 +60,7 @@ type Props = OwnProps & PropsFromRedux;
 
 interface State {
   showTabButton: boolean;
+  needsAnimation: boolean;
   textValue: string;
   selection: { start: number; end: number };
 }
@@ -66,6 +68,7 @@ interface State {
 class BufferContainer extends React.Component<Props, State> {
   state = {
     showTabButton: false,
+    needsAnimation: false,
     textValue: '',
     selection: {
       start: 0,
@@ -101,13 +104,15 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleOnFocus = () => {
     this.setState({
-      showTabButton: true
+      showTabButton: true,
+      needsAnimation: true
     });
   };
 
   handleOnBlur = () => {
     this.setState({
-      showTabButton: false
+      showTabButton: false,
+      needsAnimation: true
     });
   };
 
@@ -208,6 +213,13 @@ class BufferContainer extends React.Component<Props, State> {
     this.props.dispatch(actions.clearBufferNotificationAction());
   };
 
+  disableAnimation = () => this.setState({ needsAnimation: false });
+
+  animationComplete = ((disableAnimation) => () => {
+    'worklet';
+    runOnJS(disableAnimation)();
+  })(this.disableAnimation);
+
   render() {
     const {
       bufferId,
@@ -218,7 +230,7 @@ class BufferContainer extends React.Component<Props, State> {
       mediaUploadOptions,
       notification
     } = this.props;
-    const { textValue, showTabButton } = this.state;
+    const { textValue, showTabButton, needsAnimation } = this.state;
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="transform">
@@ -243,7 +255,11 @@ class BufferContainer extends React.Component<Props, State> {
         />
         <View style={styles.bottomBox}>
           <AnimatedTextInput
-            layout={LinearTransition}
+            layout={
+              needsAnimation
+                ? LinearTransition.withCallback(this.animationComplete)
+                : undefined
+            }
             style={styles.inputBox}
             value={textValue}
             onChangeText={this.handleChangeText}
@@ -257,7 +273,7 @@ class BufferContainer extends React.Component<Props, State> {
             multiline={true}
             autoCorrect={false}
           />
-          <Animated.View layout={LinearTransition}>
+          <Animated.View layout={needsAnimation ? LinearTransition : undefined}>
             <UploadButton
               onUpload={this.handleOnUpload}
               style={styles.uploadButton}
