@@ -5,7 +5,9 @@ import Animated, {
   KeyboardState,
   runOnUI,
   useAnimatedKeyboard,
+  useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,30 +45,47 @@ export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
     [setCurrentFrame]
   );
 
-  const animatedStyles = useAnimatedStyle(() => {
-    if (!currentFrame.value) return {};
+  const offset = useDerivedValue(() => {
+    const frame = currentFrame.value;
+    if (!frame) return 0;
 
-    const offset = Math.max(
-      currentFrame.value.y +
-        currentFrame.value.height -
+    return Math.max(
+      frame.y +
+        frame.height -
         (screenHeight + topPadding - keyboard.height.value),
       0
     );
+  });
 
+  const paddingTop = useSharedValue<number | null>(null);
+
+  useAnimatedReaction(
+    () => keyboard.state.value,
+    (newState, oldState) => {
+      if (newState === oldState) paddingTop.value = null;
+      else if (newState === KeyboardState.OPEN) paddingTop.value = offset.value;
+      else paddingTop.value = 0;
+    }
+  );
+
+  const offsetStyle = useAnimatedStyle(() => {
     if (behavior === 'padding') {
-      return { paddingBottom: offset };
+      return { paddingBottom: offset.value };
     } else if (behavior === 'transform') {
-      return {
-        transform: [{ translateY: -offset }],
-        paddingTop: keyboard.state.value === KeyboardState.OPEN ? offset : 0
+      const style: ViewStyle = {
+        transform: [{ translateY: -offset.value }]
       };
+      if (paddingTop.value !== null) {
+        style.paddingTop = paddingTop.value;
+      }
+      return style;
     } else {
       return {};
     }
   });
 
   return (
-    <Animated.View onLayout={onLayout} style={[style, animatedStyles]}>
+    <Animated.View onLayout={onLayout} style={[style, offsetStyle]}>
       {children}
     </Animated.View>
   );
