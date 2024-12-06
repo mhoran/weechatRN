@@ -1,47 +1,15 @@
 import * as React from 'react';
-import { forwardRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   CellRendererProps,
-  FlatListProps,
   LayoutChangeEvent,
   ListRenderItem
 } from 'react-native';
 import { Button, FlatList, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
-import Animated, {
-  useAnimatedKeyboard,
-  useAnimatedProps
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
 import { styles as lineStyles } from './themes/Default';
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const KeyboardInsetFlatList = forwardRef<FlatList, FlatListProps<any>>(
-  function KeyboardInsetFlatList(props, ref) {
-    const keyboard = useAnimatedKeyboard({
-      isStatusBarTranslucentAndroid: true
-    });
-    const safeAreaInsets = useSafeAreaInsets();
-
-    const animatedProps = useAnimatedProps(() => {
-      const offset = Math.max(keyboard.height.value - safeAreaInsets.bottom, 0);
-
-      return {
-        contentInset: { bottom: offset },
-        scrollIndicatorInsets: { bottom: offset }
-      };
-    });
-
-    return (
-      <AnimatedFlatList ref={ref} {...props} animatedProps={animatedProps} />
-    );
-  }
-);
 
 interface Props {
   lines: WeechatLine[];
@@ -213,15 +181,13 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
 
     return (
-      <KeyboardInsetFlatList
+      <FlatList
         ref={this.linesList}
         accessibilityLabel="Message list"
         data={lines}
         key={linesListKey}
         inverted
         keyboardDismissMode="interactive"
-        automaticallyAdjustsScrollIndicatorInsets={false}
-        automaticallyAdjustContentInsets={false}
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
         initialNumToRender={initialNumToRender}
