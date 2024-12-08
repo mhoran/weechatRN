@@ -13,7 +13,7 @@ import { styles as lineStyles } from './themes/Default';
 
 interface Props {
   lines: WeechatLine[];
-  lastReadLine?: string;
+  lastReadLine?: number;
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
   bufferId: string;

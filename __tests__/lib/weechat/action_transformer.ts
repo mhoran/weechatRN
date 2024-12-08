@@ -320,11 +320,58 @@ describe('transformToReduxAction', () => {
   });
 
   describe('on last_read_lines', () => {
-    it('merges the last read line with buffer state', () => {
+    it('sets the buffer last read line to the line id', () => {
       const preloadedState = {
         buffers: {
           '83d204d80': { full_name: 'irc.libera.#weechat' } as WeechatBuffer
+        },
+        app: {
+          version: '4.4.0'
+        } as AppState
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'last_read_lines',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: 0,
+                buffer: '83d204d80',
+                pointers: ['83d204d80', '83c016280', '838a65900', '83c000420']
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toMatchObject({
+        '83d204d80': {
+          full_name: 'irc.libera.#weechat',
+          last_read_line: 0
         }
+      });
+    });
+
+    it('defaults the buffer last read line to the line pointer', () => {
+      const preloadedState = {
+        buffers: {
+          '83d204d80': { full_name: 'irc.libera.#weechat' } as WeechatBuffer
+        },
+        app: {
+          version: '3.7.0'
+        } as AppState
       };
       const store = configureStore({
         reducer,
@@ -355,7 +402,7 @@ describe('transformToReduxAction', () => {
       expect(store.getState().buffers).toMatchObject({
         '83d204d80': {
           full_name: 'irc.libera.#weechat',
-          last_read_line: '83c000420'
+          last_read_line: 35366372384
         }
       });
     });

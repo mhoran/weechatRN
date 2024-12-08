@@ -254,9 +254,25 @@ export const transformToReduxAction = (
       };
     }
     case 'last_read_lines': {
-      const object = data.objects[0];
+      const object = data.objects[0] as WeechatObject<
+        Pick<WeechatLine, 'id' | 'pointers' | 'buffer'>[]
+      >;
 
-      return actions.lastReadLinesAction(object.content);
+      return (
+        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
+        getState: () => StoreState
+      ) => {
+        const lines = object.content.map((line) => {
+          const { pointers, buffer } = line;
+          const id =
+            parseVersion(getState().app.version) >= 0x04040000
+              ? line.id
+              : parseInt(pointers[pointers.length - 1], 16);
+
+          return { id, buffer };
+        });
+        dispatch(actions.lastReadLinesAction(lines));
+      };
     }
     case 'scripts': {
       const object = data.objects[0] as WeechatObject<{ name: string }[]>;

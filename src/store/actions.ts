@@ -77,7 +77,7 @@ export const fetchScriptsAction = createAction(
 
 export const lastReadLinesAction = createAction(
   'LAST_READ_LINES',
-  prepareAutoBatched()
+  prepareAutoBatched<Pick<WeechatLine, 'id' | 'buffer'>[]>()
 );
 
 export const fetchLinesAction = createAction(

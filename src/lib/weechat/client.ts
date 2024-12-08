@@ -64,7 +64,7 @@ export default class RelayClient {
     if (!this.connection) return;
 
     this.connection.send(
-      `(last_read_lines) hdata buffer:0x${bufferId}/own_lines/last_read_line/data buffer`
+      `(last_read_lines) hdata buffer:0x${bufferId}/own_lines/last_read_line/data id,buffer`
     );
     this.connection.send(
       `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`

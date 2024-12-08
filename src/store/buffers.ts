@@ -66,19 +66,11 @@ const bufferReducer = createReducer(initialState, (builder) => {
     };
   });
   builder.addCase(lastReadLinesAction, (state, action) => {
-    const s = (
-      action.payload as [{ buffer: string; pointers: [string] }]
-    ).reduce((s, { buffer, pointers }) => {
-      return {
-        ...s,
-        [buffer]: {
-          ...state[buffer],
-          last_read_line: pointers.at(-1)
-        }
-      };
-    }, state);
-
-    return s;
+    const newState = { ...state };
+    action.payload.forEach(({ id, buffer }) => {
+      newState[buffer] = { ...state[buffer], last_read_line: id };
+    });
+    return newState;
   });
   builder.addCase(upgradeAction, () => {
     return initialState;

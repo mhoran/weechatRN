@@ -11,7 +11,7 @@ interface Props {
   onLongPress: (line: WeechatLine) => void;
   parseArgs: ParseShape[];
   nickWidth: number;
-  lastReadLine?: string;
+  lastReadLine?: number;
   lastMessageDate?: string;
 }
 
@@ -25,7 +25,7 @@ const BufferLine: React.FC<Props> = ({
 }) => {
   const showLine = line.displayed !== 0;
   const showDate = !(lastMessageDate && isSameDay(line.date, lastMessageDate));
-  const showReadMarker = line.pointers.at(-1) === lastReadLine;
+  const showReadMarker = line.id === lastReadLine;
 
   return (
     <View>
