@@ -12,7 +12,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { KeyboardAvoidingView } from '../shared/KeyboardAvoidingView';
-import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
 
 type Props = {
@@ -112,7 +111,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
             from the camera roll. Press the button twice to upload media from
             elsewhere on your device. Press and hold the button to take a photo.
           </Text>
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             keyboardType="url"
@@ -135,7 +134,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
           </View>
           {uploadOptionsState.basicAuth && (
             <>
-              <UndoTextInput
+              <TextInput
                 style={styles.input}
                 placeholderTextColor="#4157af"
                 keyboardType="email-address"
@@ -156,7 +155,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
               />
             </>
           )}
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             autoCapitalize="none"
@@ -165,7 +164,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
             onChangeText={setUploadOptionsFieldName}
             value={uploadOptionsState.fieldName}
           />
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             autoCapitalize="none"
@@ -186,7 +185,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
                     columnGap: 10
                   }}
                 >
-                  <UndoTextInput
+                  <TextInput
                     style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
                     placeholderTextColor="#4157af"
                     autoCapitalize="none"
@@ -197,7 +196,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
                       setUploadOptionsHeaderName(index, text)
                     }
                   />
-                  <UndoTextInput
+                  <TextInput
                     style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
                     placeholderTextColor="#4157af"
                     autoCapitalize="none"
