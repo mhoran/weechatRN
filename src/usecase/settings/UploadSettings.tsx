@@ -26,7 +26,7 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
     (state) => state.connection.mediaUploadOptions
   );
 
-  const uploadOptionsHeaders = uploadOptions.headers
+  const uploadOptionsHeaders: [string, string][] = uploadOptions.headers
     ? Object.entries(uploadOptions.headers)
     : [['', '']];
 
@@ -79,13 +79,8 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
 
   const setUploadOptions = () => {
     const { headers, ...rest } = uploadOptionsState;
-    const headersObject = headers.reduce<Record<string, string>>(
-      (headers, [headerName, headerValue]) => {
-        if (headerName && headerValue)
-          return { ...headers, [headerName]: headerValue };
-        return headers;
-      },
-      {}
+    const filteredHeaders = Object.fromEntries(
+      headers.filter(([name, value]) => name && value)
     );
 
     dispatch(
@@ -95,7 +90,9 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
         password: rest.password || undefined,
         fieldName: rest.fieldName || undefined,
         regexp: rest.regexp || undefined,
-        ...(Object.keys(headersObject).length > 0 && { headers: headersObject })
+        ...(Object.keys(filteredHeaders).length > 0 && {
+          headers: filteredHeaders
+        })
       })
     );
     setShowUploadSettings(false);
