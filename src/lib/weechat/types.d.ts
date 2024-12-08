@@ -94,4 +94,5 @@ interface WeechatLine {
   buffer: string;
   highlight: number;
   y: number;
+  notify_level?: number;
 }

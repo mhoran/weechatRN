@@ -542,14 +542,24 @@ describe('transformToReduxAction', () => {
   });
 
   describe('on _buffer_line_added', () => {
-    it('sets id to the id provided by the relay', () => {
-      const store = configureStore({
-        reducer,
-        enhancers: (getDefaultEnhancers) =>
-          getDefaultEnhancers({ autoBatch: false })
-      });
-
-      const action = transformToReduxAction({
+    const createBufferLineAddedAction = ({
+      id,
+      buffer,
+      pointer,
+      date,
+      tags,
+      notify_level,
+      highlight
+    }: {
+      id?: number;
+      buffer: string;
+      pointer: string;
+      date: Date;
+      tags: string[];
+      notify_level?: number;
+      highlight?: number;
+    }) => {
+      return transformToReduxAction({
         id: '_buffer_line_added',
         header: { compression: 0, length: 0 },
         objects: [
@@ -557,16 +567,36 @@ describe('transformToReduxAction', () => {
             type: 'hda',
             content: [
               {
-                id: 0,
-                buffer: '83a41cd80',
-                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
-                date: new Date('2024-11-09T00:02:07.000Z'),
-                date_printed: new Date('2024-11-10T17:28:48.000Z'),
-                tags_array: []
+                id,
+                buffer,
+                pointers: [pointer],
+                date,
+                date_printed: date,
+                tags_array: tags,
+                ...(notify_level !== undefined && {
+                  notify_level: new Uint8Array([notify_level])[0]
+                }),
+                highlight
               }
             ]
           }
         ]
+      });
+    };
+
+    it('sets id to the id provided by the relay', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = createBufferLineAddedAction({
+        id: 0,
+        buffer: '83a41cd80',
+        pointer: '85d064440',
+        date: new Date('2024-11-09T00:02:07.000Z'),
+        tags: []
       });
       expect(action).toBeDefined();
 
@@ -584,23 +614,11 @@ describe('transformToReduxAction', () => {
           getDefaultEnhancers({ autoBatch: false })
       });
 
-      const action = transformToReduxAction({
-        id: '_buffer_line_added',
-        header: { compression: 0, length: 0 },
-        objects: [
-          {
-            type: 'hda',
-            content: [
-              {
-                buffer: '83a41cd80',
-                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
-                date: new Date('2024-11-09T00:02:07.000Z'),
-                date_printed: new Date('2024-11-10T17:28:48.000Z'),
-                tags_array: []
-              }
-            ]
-          }
-        ]
+      const action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '85d064440',
+        date: new Date('2024-11-09T00:02:07.000Z'),
+        tags: []
       });
       expect(action).toBeDefined();
 
@@ -609,6 +627,118 @@ describe('transformToReduxAction', () => {
       expect(store.getState().lines).toHaveProperty('83a41cd80');
       const lines = store.getState().lines['83a41cd80'];
       expect(lines[0].id).toEqual(parseInt('85d064440', 16));
+    });
+
+    it('converts notify_level to a signed integer', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '85d064440',
+        date: new Date('2024-11-09T00:02:07.000Z'),
+        tags: [],
+        notify_level: -1
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0].notify_level).toEqual(-1);
+    });
+
+    it('updates hotlist using notify_level when provided', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      let action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dc05eb0',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        notify_level: 0,
+        highlight: 0
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dcbf0e0',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        notify_level: 1,
+        highlight: 0
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dcbf150',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        notify_level: 3,
+        highlight: 1
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      expect(store.getState().hotlists).toHaveProperty('83a41cd80');
+      const hotlist = store.getState().hotlists['83a41cd80'];
+      expect(hotlist.sum).toEqual(2);
+      expect(hotlist.highlight).toEqual(1);
+    });
+
+    it('falls back to updating hotlist using tags', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      let action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dc05eb0',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: ['notify_none'],
+        highlight: 0
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dcbf0e0',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        highlight: 0
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dcbf150',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        highlight: 1
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      expect(store.getState().hotlists).toHaveProperty('83a41cd80');
+      const hotlist = store.getState().hotlists['83a41cd80'];
+      expect(hotlist.sum).toEqual(2);
+      expect(hotlist.highlight).toEqual(1);
     });
   });
 

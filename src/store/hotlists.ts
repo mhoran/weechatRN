@@ -37,9 +37,13 @@ const hotlistsReducer = createReducer(initialState, (builder) => {
       ...getHotlistForBufferId(state, line.buffer)
     };
 
-    const shouldNotify = (tag: string) =>
-      tag !== 'irc_smart_filter' && tag !== 'notify_none';
-    if (line.tags_array.every(shouldNotify)) {
+    const shouldNotify =
+      line.notify_level !== undefined
+        ? line.notify_level > 0
+        : line.tags_array.every(
+            (tag) => tag !== 'irc_smart_filter' && tag !== 'notify_none'
+          );
+    if (shouldNotify) {
       if (line.highlight !== 0) {
         hotlist.highlight++;
       }

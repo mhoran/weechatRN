@@ -93,7 +93,10 @@ export const transformToReduxAction = (
               ...line,
               id: id ?? parseInt(pointers[pointers.length - 1], 16),
               date: date.toISOString(),
-              date_printed: date_printed.toISOString()
+              date_printed: date_printed.toISOString(),
+              ...(line.notify_level !== undefined && {
+                notify_level: new Int8Array([line.notify_level])[0]
+              })
             }
           })
         );
