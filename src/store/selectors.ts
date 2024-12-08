@@ -2,7 +2,6 @@ import type { HotListState } from './hotlists';
 
 export const createEmptyHotlist = (bufferId: string) => ({
   buffer: bufferId,
-  count: [0, 0, 0, 0],
   message: 0,
   privmsg: 0,
   highlight: 0,

@@ -48,7 +48,8 @@ interface WeechatNicklist {
   _diff: number;
 }
 
-interface Hotlist extends WeechatHotlist {
+interface Hotlist {
+  buffer: string;
   message: number;
   privmsg: number;
   highlight: number;
