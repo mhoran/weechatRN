@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useHeaderHeight } from '@react-navigation/elements';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -7,20 +9,22 @@ import {
   TextInput,
   View
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import type { RootStackParamList } from '../Root';
 import { KeyboardAvoidingView } from '../shared/KeyboardAvoidingView';
 import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
 
-type Props = {
-  setShowUploadSettings: (show: boolean) => void;
-};
+type NavigationProps = NativeStackScreenProps<
+  RootStackParamList,
+  'Media Upload Settings'
+>;
 
-const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
+const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
+  const headerHeight = useHeaderHeight();
 
   const uploadOptions = useAppSelector(
     (state) => state.connection.mediaUploadOptions
@@ -34,6 +38,12 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
     ...uploadOptions,
     headers: uploadOptionsHeaders
   });
+
+  const uploadOptionsStateRef = useRef(uploadOptionsState);
+
+  useEffect(() => {
+    uploadOptionsStateRef.current = uploadOptionsState;
+  }, [uploadOptionsState]);
 
   const setUploadOptionsUrl = (url: string) => {
     setUploadOptionsState((state) => ({ ...state, url }));
@@ -77,8 +87,8 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
     }));
   };
 
-  const setUploadOptions = () => {
-    const { headers, ...rest } = uploadOptionsState;
+  const setUploadOptions = useCallback(() => {
+    const { headers, ...rest } = uploadOptionsStateRef.current;
     const filteredHeaders = Object.fromEntries(
       headers.filter(([name, value]) => name && value)
     );
@@ -95,15 +105,20 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
         })
       })
     );
-    setShowUploadSettings(false);
-  };
+  }, [dispatch, uploadOptionsStateRef]);
+
+  useEffect(() => {
+    return navigation.addListener('beforeRemove', setUploadOptions);
+  }, [navigation, setUploadOptions]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView behavior="padding">
+    <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
+      <KeyboardAvoidingView
+        keyboardVerticalOffset={headerHeight}
+        behavior="padding"
+      >
         <ScrollView alwaysBounceVertical={false}>
           <StatusBar barStyle="dark-content" />
-          <Text style={styles.header}>Media Upload Settings</Text>
           <Text style={styles.text}>
             Use the form below to configure media upload settings. This allows
             for uploading media to hosting provider and will automatically paste
@@ -212,23 +227,10 @@ const UploadSettings: React.FC<Props> = ({ setShowUploadSettings }) => {
               );
             }
           )}
-          <View style={styles.centeredButton}>
-            <TouchableOpacity style={styles.button} onPress={setUploadOptions}>
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.centeredButton, { paddingTop: 10 }]}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setShowUploadSettings(false)}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-export default UploadSettings;
+export default memo(UploadSettings);

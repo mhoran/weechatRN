@@ -12,13 +12,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   style?: ViewStyle;
-  behavior: string;
+  behavior?: string;
+  keyboardVerticalOffset?: number;
 }
 
 export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
   children,
   style,
-  behavior
+  behavior,
+  keyboardVerticalOffset = 0
 }) => {
   const keyboard = useAnimatedKeyboard({
     isStatusBarTranslucentAndroid: true
@@ -26,7 +28,7 @@ export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
   const currentFrame = useSharedValue<LayoutRectangle | null>(null);
   const { height: screenHeight } = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
-  const topPadding = Platform.OS === 'android' ? safeAreaInsets.top : 0;
+  const topInset = Platform.OS === 'android' ? safeAreaInsets.top : 0;
 
   const setCurrentFrame = useCallback(
     (layout: LayoutRectangle) => {
@@ -49,7 +51,10 @@ export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
     const offset = Math.max(
       currentFrame.value.y +
         currentFrame.value.height -
-        (screenHeight + topPadding - keyboard.height.value),
+        (screenHeight +
+          topInset -
+          keyboard.height.value -
+          keyboardVerticalOffset),
       0
     );
 

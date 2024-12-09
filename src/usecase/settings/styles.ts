@@ -4,7 +4,8 @@ export const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f8f8f8',
     flex: 1,
-    padding: 20
+    padding: 10,
+    paddingTop: 0
   },
   header: {
     textAlign: 'center',

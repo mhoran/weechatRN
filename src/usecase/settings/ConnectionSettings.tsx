@@ -1,6 +1,6 @@
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
 import {
-  ActivityIndicator,
   StatusBar,
   Switch,
   Text,
@@ -14,7 +14,8 @@ import { connect } from 'react-redux';
 import { ConnectionError } from '../../lib/weechat/connection';
 import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
-import { styles } from '../settings/styles';
+import type { RootStackParamList } from '../Root';
+import { styles } from './styles';
 import UndoTextInput from '../shared/UndoTextInput';
 
 const connector = connect((state: StoreState) => ({
@@ -26,12 +27,15 @@ const connector = connect((state: StoreState) => ({
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {
-  onConnect: (hostname: string, password: string, ssl: boolean) => void;
-  connecting: boolean;
-  connectionError: ConnectionError | null;
-  setShowUploadSettings: (show: boolean) => void;
-};
+type NavigationProps = NativeStackScreenProps<
+  RootStackParamList,
+  'Connection Settings'
+>;
+
+type Props = PropsFromRedux &
+  NavigationProps & {
+    connectionError: ConnectionError | null;
+  };
 
 interface State {
   hostname: string;
@@ -40,7 +44,7 @@ interface State {
   filterBuffers: boolean;
 }
 
-class LoginForm extends React.Component<Props, State> {
+class ConnectionSettings extends React.PureComponent<Props, State> {
   state: State = {
     hostname: this.props.hostname,
     password: this.props.password,
@@ -48,7 +52,15 @@ class LoginForm extends React.Component<Props, State> {
     filterBuffers: this.props.filterBuffers
   };
 
-  onPress = () => {
+  componentDidMount(): void {
+    this.props.navigation.addListener('beforeRemove', this.onBeforeRemove);
+  }
+
+  componentWillUnmount(): void {
+    this.props.navigation.removeListener('beforeRemove', this.onBeforeRemove);
+  }
+
+  onBeforeRemove = () => {
     this.props.dispatch(
       setConnectionInfoAction({
         hostname: this.state.hostname,
@@ -57,8 +69,6 @@ class LoginForm extends React.Component<Props, State> {
         filterBuffers: this.state.filterBuffers
       })
     );
-    const { hostname, password, ssl } = this.state;
-    this.props.onConnect(hostname, password, ssl);
   };
 
   setHostname = (hostname: string) => {
@@ -87,15 +97,19 @@ class LoginForm extends React.Component<Props, State> {
   };
 
   render() {
-    const { connecting, connectionError, setShowUploadSettings } = this.props;
+    const { connectionError, navigation } = this.props;
     const { hostname, password, ssl, filterBuffers } = this.state;
 
     return (
       <View style={styles.container}>
-        <SafeAreaView>
+        <SafeAreaView edges={['right', 'bottom', 'left']}>
           <StatusBar barStyle="dark-content" />
-          <Text style={styles.header}>
-            Connect to Weechat relay via websocket
+          <Text style={styles.text}>
+            WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
+            supports the WebSocket connection method only. Configure your relay
+            hostname and password below, then go back to the main screen and
+            click the connect icon. Hostname will be prepended with the
+            appropriate scheme (http(s)://) and suffixed with /weechat.
           </Text>
           <UndoTextInput
             style={styles.input}
@@ -147,24 +161,12 @@ class LoginForm extends React.Component<Props, State> {
           </View>
 
           <View>
-            <TouchableOpacity onPress={() => setShowUploadSettings(true)}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Media Upload Settings')}
+            >
               <Text style={[styles.text, { textDecorationLine: 'underline' }]}>
                 Media Upload Settings
               </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.centeredButton}>
-            <TouchableOpacity
-              disabled={connecting}
-              style={styles.button}
-              onPress={this.onPress}
-            >
-              {connecting ? (
-                <ActivityIndicator color="#4157af" animating={connecting} />
-              ) : (
-                <Text style={styles.buttonText}>Connect</Text>
-              )}
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -173,4 +175,4 @@ class LoginForm extends React.Component<Props, State> {
   }
 }
 
-export default connector(LoginForm);
+export default connector(ConnectionSettings);

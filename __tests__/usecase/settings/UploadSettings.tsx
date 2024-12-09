@@ -1,16 +1,45 @@
-import { fireEvent, render, screen, userEvent } from '../../../src/test-utils';
-import UploadSettings from '../../../src/usecase/settings/UploadSettings';
+import { HeaderHeightContext } from '@react-navigation/elements';
+import type { RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from '../../../src/store';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  userEvent
+} from '../../../src/test-utils';
+import type { RootStackParamList } from '../../../src/usecase/Root';
+import UploadSettings from '../../../src/usecase/settings/UploadSettings';
 
 jest.mock('../../../src/usecase/shared/UndoTextInput', () => 'TextInput');
 
 describe('UploadSettings', () => {
   it('stores the configured settings', async () => {
     const store = configureStore({ reducer });
-    render(<UploadSettings setShowUploadSettings={jest.fn()} />, {
-      store: store
-    });
+    const listeners: (() => void)[] = [];
+    render(
+      <HeaderHeightContext.Provider value={0}>
+        <UploadSettings
+          route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
+          navigation={
+            {
+              addListener: (eventName: string, callback: () => void) => {
+                listeners.push(callback);
+                return () => {};
+              }
+            } as NativeStackNavigationProp<
+              RootStackParamList,
+              'Media Upload Settings'
+            >
+          }
+        />
+      </HeaderHeightContext.Provider>,
+      {
+        store: store
+      }
+    );
 
     const urlInput = screen.getByPlaceholderText('Upload Service URL');
     await userEvent.type(urlInput, 'https://example.com');
@@ -25,9 +54,7 @@ describe('UploadSettings', () => {
     );
     await userEvent.type(passwordInput, 'changeme');
 
-    const button = screen.getByText('Save');
-
-    fireEvent(button, 'press');
+    act(() => listeners.forEach((listener) => listener()));
 
     const uploadOptions = store.getState().connection.mediaUploadOptions;
 
@@ -42,9 +69,28 @@ describe('UploadSettings', () => {
 
   it('allows configuring additional headers', async () => {
     const store = configureStore({ reducer });
-    render(<UploadSettings setShowUploadSettings={jest.fn()} />, {
-      store: store
-    });
+    const listeners: (() => void)[] = [];
+    render(
+      <HeaderHeightContext.Provider value={0}>
+        <UploadSettings
+          route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
+          navigation={
+            {
+              addListener: (eventName: string, callback: () => void) => {
+                listeners.push(callback);
+                return () => {};
+              }
+            } as NativeStackNavigationProp<
+              RootStackParamList,
+              'Media Upload Settings'
+            >
+          }
+        />
+      </HeaderHeightContext.Provider>,
+      {
+        store: store
+      }
+    );
 
     const urlInput = screen.getByPlaceholderText('Upload Service URL');
     await userEvent.type(urlInput, 'https://example.com');
@@ -62,9 +108,7 @@ describe('UploadSettings', () => {
     );
     await userEvent.type(headerValueInput, 'Bearer token');
 
-    const button = screen.getByText('Save');
-
-    fireEvent(button, 'press');
+    act(() => listeners.forEach((listener) => listener()));
 
     const uploadOptions = store.getState().connection.mediaUploadOptions;
 
@@ -79,18 +123,35 @@ describe('UploadSettings', () => {
 
   it('does not store incomplete headers', async () => {
     const store = configureStore({ reducer });
-    render(<UploadSettings setShowUploadSettings={jest.fn()} />, {
-      store: store
-    });
+    const listeners: (() => void)[] = [];
+    render(
+      <HeaderHeightContext.Provider value={0}>
+        <UploadSettings
+          route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
+          navigation={
+            {
+              addListener: (eventName: string, callback: () => void) => {
+                listeners.push(callback);
+                return () => {};
+              }
+            } as NativeStackNavigationProp<
+              RootStackParamList,
+              'Media Upload Settings'
+            >
+          }
+        />
+      </HeaderHeightContext.Provider>,
+      {
+        store: store
+      }
+    );
 
     const headerNameInput = screen.getByPlaceholderText(
       'Header Name (optional)'
     );
     await userEvent.type(headerNameInput, 'Authorization');
 
-    const button = screen.getByText('Save');
-
-    fireEvent(button, 'press');
+    act(() => listeners.forEach((listener) => listener()));
 
     let uploadOptions = store.getState().connection.mediaUploadOptions;
 
@@ -122,9 +183,26 @@ describe('UploadSettings', () => {
       }
     };
     const store = configureStore({ reducer, preloadedState });
-    render(<UploadSettings setShowUploadSettings={jest.fn()} />, {
-      store: store
-    });
+    render(
+      <HeaderHeightContext.Provider value={0}>
+        <UploadSettings
+          route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
+          navigation={
+            {
+              addListener: (_eventName: string, _callback: () => void) => {
+                return () => {};
+              }
+            } as NativeStackNavigationProp<
+              RootStackParamList,
+              'Media Upload Settings'
+            >
+          }
+        />
+      </HeaderHeightContext.Provider>,
+      {
+        store: store
+      }
+    );
 
     const urlInput = screen.getByPlaceholderText('Upload Service URL');
     expect(urlInput.props.value).toEqual('https://example.com');

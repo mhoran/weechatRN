@@ -1,10 +1,12 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
 import type { EmitterSubscription } from 'react-native';
 import {
   Dimensions,
   Keyboard,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -24,6 +26,7 @@ import * as actions from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
+import type { RootStackParamList } from './Root';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -39,16 +42,21 @@ const connector = connect((state: StoreState) => {
     currentBufferId,
     currentBuffer,
     hasHighlights: numHighlights > 0,
-    notification: state.app.notification
+    notification: state.app.notification,
+    connected: state.app.connected
   };
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {
-  disconnect: () => void;
-  client: RelayClient;
-};
+type NavigationProps = NativeStackScreenProps<RootStackParamList, 'App'>;
+
+type Props = PropsFromRedux &
+  NavigationProps & {
+    connect: () => void;
+    disconnect: () => void;
+    client: RelayClient;
+  };
 
 interface State {
   showTopic: boolean;
@@ -57,7 +65,7 @@ interface State {
   showNicklistModal: boolean;
 }
 
-class App extends React.Component<Props, State> {
+class App extends React.PureComponent<Props, State> {
   dimensionsListener: EmitterSubscription | undefined;
 
   drawerWidth = () => {
@@ -79,7 +87,7 @@ class App extends React.Component<Props, State> {
   state: State = {
     showTopic: false,
     drawerWidth: this.drawerWidth(),
-    drawerOpen: !this.props.currentBufferId,
+    drawerOpen: this.props.connected && !this.props.currentBufferId,
     showNicklistModal: false
   };
 
@@ -120,17 +128,13 @@ class App extends React.Component<Props, State> {
     }
   };
 
+  openSettings = () => this.props.navigation.navigate('Connection Settings');
+
   componentDidMount() {
     this.dimensionsListener = Dimensions.addEventListener(
       'change',
       this.updateWidth
     );
-
-    const { currentBufferId, client } = this.props;
-    if (currentBufferId) {
-      client.fetchBufferInfo(currentBufferId);
-      client.clearHotlistForBuffer(currentBufferId);
-    }
 
     void registerForPushNotificationsAsync();
   }
@@ -140,7 +144,7 @@ class App extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { currentBufferId, notification } = this.props;
+    const { currentBufferId, notification, connected, client } = this.props;
 
     if (
       notification &&
@@ -151,14 +155,31 @@ class App extends React.Component<Props, State> {
       return;
     }
 
+    if (connected && connected !== prevProps.connected) {
+      if (currentBufferId) {
+        client.fetchBufferInfo(currentBufferId);
+        client.clearHotlistForBuffer(currentBufferId);
+      } else {
+        this.openDrawer();
+      }
+      return;
+    }
+
     if (currentBufferId !== prevProps.currentBufferId && !currentBufferId) {
       this.openDrawer();
     }
   }
 
   render() {
-    const { currentBufferId, currentBuffer, hasHighlights, client } =
-      this.props;
+    const {
+      currentBufferId,
+      currentBuffer,
+      hasHighlights,
+      client,
+      connected,
+      connect,
+      disconnect
+    } = this.props;
 
     const { showTopic, drawerWidth, showNicklistModal } = this.state;
 
@@ -193,6 +214,12 @@ class App extends React.Component<Props, State> {
                 style={[styles.container]}
                 edges={['right', 'bottom', 'left']}
               >
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor="transparent"
+                  translucent={true}
+                />
+
                 <NicklistModal
                   bufferId={currentBufferId}
                   visible={showNicklistModal}
@@ -241,14 +268,37 @@ class App extends React.Component<Props, State> {
                     )}
                     <TouchableOpacity
                       style={styles.topbarButton}
-                      onPress={this.props.disconnect}
+                      onPress={this.openSettings}
                     >
                       <MaterialCommunityIcons
-                        name="lan-disconnect"
+                        name="account-wrench"
                         size={22}
                         color="white"
                       />
                     </TouchableOpacity>
+                    {connected ? (
+                      <TouchableOpacity
+                        style={styles.topbarButton}
+                        onPress={disconnect}
+                      >
+                        <MaterialCommunityIcons
+                          name="lan-disconnect"
+                          size={22}
+                          color="white"
+                        />
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={styles.topbarButton}
+                        onPress={connect}
+                      >
+                        <MaterialCommunityIcons
+                          name="lan-connect"
+                          size={22}
+                          color="white"
+                        />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
                 <BufferGate

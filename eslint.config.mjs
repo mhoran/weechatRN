@@ -50,7 +50,12 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { ignoreRestSiblings: true }
+        {
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true
+        }
       ],
       '@typescript-eslint/strict-boolean-expressions': [
         'error',

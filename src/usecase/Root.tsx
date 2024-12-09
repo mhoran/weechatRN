@@ -1,9 +1,11 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { UnsubscribeListener } from '@reduxjs/toolkit';
 import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { AppState, StatusBar } from 'react-native';
+import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
@@ -15,10 +17,19 @@ import { store } from '../store';
 import * as actions from '../store/actions';
 import { PendingBufferNotificationListener } from '../store/listeners';
 import App from './App';
-import ConnectionGate from './ConnectionGate';
 import PersistGate from './PersistGate';
+import ConnectionSettings from './settings/ConnectionSettings';
+import UploadSettings from './settings/UploadSettings';
 
 void SplashScreen.preventAutoHideAsync();
+
+export type RootStackParamList = {
+  'Connection Settings': undefined;
+  'Media Upload Settings': undefined;
+  App: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 interface State {
   connecting: boolean;
@@ -122,7 +133,10 @@ export default class WeechatNative extends React.Component<null, State> {
     this.onConnectionError
   );
 
-  onConnect = (hostname: string, password: string, ssl: boolean): void => {
+  onConnect = (): void => {
+    const { hostname, password, ssl } = store.getState().connection;
+    if (!hostname || !password) return;
+
     this.setState({ connecting: true, connectionError: null });
     this.client.connect(hostname, password, ssl);
   };
@@ -130,8 +144,7 @@ export default class WeechatNative extends React.Component<null, State> {
   onBeforeLift = (): void => {
     SplashScreen.hide();
 
-    const { hostname, password, ssl } = store.getState().connection;
-    if (hostname && password) this.onConnect(hostname, password, ssl);
+    this.onConnect();
   };
 
   disconnect = (): void => {
@@ -147,25 +160,44 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   render() {
-    const { connecting, connectionError } = this.state;
+    const { connectionError } = this.state;
 
     return (
       <Provider store={store}>
         <SafeAreaProvider>
           <PersistGate onBeforeLift={this.onBeforeLift}>
             <GestureHandlerRootView>
-              <ConnectionGate
-                connecting={connecting}
-                connectionError={connectionError}
-                onConnect={this.onConnect}
-              >
-                <StatusBar
-                  barStyle="light-content"
-                  backgroundColor="transparent"
-                  translucent={true}
-                />
-                <App disconnect={this.disconnect} client={this.client} />
-              </ConnectionGate>
+              <NavigationContainer>
+                <Stack.Navigator>
+                  <>
+                    <Stack.Screen
+                      name="App"
+                      options={{ headerShown: false, gestureEnabled: false }}
+                    >
+                      {(props) => (
+                        <App
+                          {...props}
+                          connect={this.onConnect}
+                          disconnect={this.disconnect}
+                          client={this.client}
+                        />
+                      )}
+                    </Stack.Screen>
+                    <Stack.Screen name="Connection Settings">
+                      {(props) => (
+                        <ConnectionSettings
+                          {...props}
+                          connectionError={connectionError}
+                        />
+                      )}
+                    </Stack.Screen>
+                    <Stack.Screen
+                      name="Media Upload Settings"
+                      component={UploadSettings}
+                    />
+                  </>
+                </Stack.Navigator>
+              </NavigationContainer>
             </GestureHandlerRootView>
           </PersistGate>
         </SafeAreaProvider>

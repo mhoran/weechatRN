@@ -1,17 +1,18 @@
-import 'react-native';
-import App from '../../src/usecase/App';
-
+import type { RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { configureStore } from '@reduxjs/toolkit';
 import RelayClient from '../../src/lib/weechat/client';
 import { reducer } from '../../src/store';
 import * as actions from '../../src/store/actions';
 import type { AppState } from '../../src/store/app';
 import { act, render } from '../../src/test-utils';
+import App from '../../src/usecase/App';
+import type { RootStackParamList } from '../../src/usecase/Root';
 
 jest.mock('react-native-drawer-layout');
 
 describe('App', () => {
-  describe('on mount', () => {
+  describe('when connected', () => {
     it('fetches buffer info and clears hotlist for current buffer', () => {
       const bufferId = '86c417600';
       const store = configureStore({
@@ -44,7 +45,22 @@ describe('App', () => {
       const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
       const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(<App disconnect={() => {}} client={client} />, { store });
+      render(
+        <App
+          route={{} as RouteProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
+          connect={jest.fn()}
+          disconnect={jest.fn()}
+          client={client}
+        />,
+        { store }
+      );
+
+      act(() => {
+        store.dispatch(actions.fetchVersionAction('4.4.4'));
+      });
 
       expect(fetchBufferInfo).toHaveBeenCalledWith(bufferId);
       expect(clearHotlistForBuffer).toHaveBeenCalledWith(bufferId);
@@ -87,7 +103,20 @@ describe('App', () => {
       const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
       const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(<App disconnect={() => {}} client={client} />, { store });
+      render(
+        <App
+          route={{} as RouteProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
+          connect={jest.fn()}
+          disconnect={jest.fn()}
+          client={client}
+        />,
+        {
+          store
+        }
+      );
 
       act(() => {
         store.dispatch(
