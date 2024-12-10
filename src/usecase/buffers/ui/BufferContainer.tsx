@@ -316,8 +316,7 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#222',
-    zIndex: -1
+    backgroundColor: '#222'
   },
   main: {
     paddingVertical: 20

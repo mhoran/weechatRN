@@ -206,6 +206,7 @@ class App extends React.PureComponent<Props, State> {
               onClose={this.closeDrawer}
               swipeEdgeWidth={60}
               drawerPosition={'left'}
+              drawerType="slide"
             >
               <SafeAreaView
                 style={[styles.container]}
@@ -320,7 +321,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 10
+    paddingBottom: 10,
+    zIndex: 1
   },
   channelsButtonWrapper: {
     paddingLeft: 10,
