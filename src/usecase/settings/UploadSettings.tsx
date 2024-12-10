@@ -1,6 +1,6 @@
 import { useHeaderHeight } from '@react-navigation/elements';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useReducer, useRef } from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -22,6 +22,11 @@ type NavigationProps = NativeStackScreenProps<
   'Media Upload Settings'
 >;
 
+const mergeState = <T,>(oldState: T, newState: Partial<T>): T => ({
+  ...oldState,
+  ...newState
+});
+
 const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const headerHeight = useHeaderHeight();
@@ -30,65 +35,38 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
     (state) => state.connection.mediaUploadOptions
   );
 
-  const uploadOptionsHeaders: [string, string][] = uploadOptions.headers
+  const initialStateHeaders: [string, string][] = uploadOptions.headers
     ? Object.entries(uploadOptions.headers)
     : [['', '']];
 
-  const [uploadOptionsState, setUploadOptionsState] = useState({
+  const initialState = {
     ...uploadOptions,
-    headers: uploadOptionsHeaders
-  });
+    headers: initialStateHeaders
+  };
 
-  const uploadOptionsStateRef = useRef(uploadOptionsState);
+  const [state, setState] = useReducer(
+    mergeState<typeof initialState>,
+    initialState
+  );
+
+  const stateRef = useRef(state);
 
   useEffect(() => {
-    uploadOptionsStateRef.current = uploadOptionsState;
-  }, [uploadOptionsState]);
-
-  const setUploadOptionsUrl = (url: string) => {
-    setUploadOptionsState((state) => ({ ...state, url }));
-  };
-
-  const setUploadOptionsBasicAuth = (basicAuth: boolean) => {
-    setUploadOptionsState((state) => ({ ...state, basicAuth }));
-  };
-
-  const setUploadOptionsUsername = (username: string) => {
-    setUploadOptionsState((state) => ({ ...state, username }));
-  };
-
-  const setUploadOptionsPassword = (password: string) => {
-    setUploadOptionsState((state) => ({ ...state, password }));
-  };
-
-  const setUploadOptionsFieldName = (fieldName: string) => {
-    setUploadOptionsState((state) => ({ ...state, fieldName }));
-  };
-
-  const setUploadOptionsRegexp = (regexp: string) => {
-    setUploadOptionsState((state) => ({ ...state, regexp }));
-  };
+    stateRef.current = state;
+  }, [state]);
 
   const setUploadOptionsHeaderName = (index: number, name: string) => {
-    setUploadOptionsState((state) => ({
-      ...state,
-      headers: state.headers.map((header, currentIndex) =>
-        index === currentIndex ? [name, header[1]] : header
-      )
-    }));
+    const header: [string, string] = [name, state.headers[index][1]];
+    setState({ headers: state.headers.toSpliced(index, 1, header) });
   };
 
   const setUploadOptionsHeaderValue = (index: number, value: string) => {
-    setUploadOptionsState((state) => ({
-      ...state,
-      headers: state.headers.map((header, currentIndex) =>
-        index === currentIndex ? [header[0], value] : header
-      )
-    }));
+    const header: [string, string] = [state.headers[index][0], value];
+    setState({ headers: state.headers.toSpliced(index, 1, header) });
   };
 
   const setUploadOptions = useCallback(() => {
-    const { headers, ...rest } = uploadOptionsStateRef.current;
+    const { headers, ...rest } = stateRef.current;
     const filteredHeaders = Object.fromEntries(
       headers.filter(([name, value]) => name && value)
     );
@@ -105,7 +83,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
         })
       })
     );
-  }, [dispatch, uploadOptionsStateRef]);
+  }, [dispatch, stateRef]);
 
   useEffect(() => {
     return navigation.addListener('beforeRemove', setUploadOptions);
@@ -133,8 +111,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             keyboardType="url"
             autoCapitalize="none"
             placeholder="Upload Service URL"
-            onChangeText={setUploadOptionsUrl}
-            value={uploadOptionsState.url}
+            onChangeText={(url) => setState({ url })}
+            value={state.url}
             autoCorrect={false}
           />
           <View
@@ -143,12 +121,12 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             <Text style={styles.text}>Use Basic Auth</Text>
             <Switch
               style={{ margin: 10 }}
-              onValueChange={setUploadOptionsBasicAuth}
-              value={uploadOptionsState.basicAuth}
+              onValueChange={(basicAuth) => setState({ basicAuth })}
+              value={state.basicAuth}
               accessibilityLabel="Use Basic Auth"
             />
           </View>
-          {uploadOptionsState.basicAuth && (
+          {state.basicAuth && (
             <>
               <UndoTextInput
                 style={styles.input}
@@ -156,8 +134,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholder="Upload Service Username"
-                onChangeText={setUploadOptionsUsername}
-                value={uploadOptionsState.username}
+                onChangeText={(username) => setState({ username })}
+                value={state.username}
                 autoCorrect={false}
               />
               <TextInput
@@ -166,8 +144,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 autoCapitalize="none"
                 placeholder="Upload Service Password"
                 secureTextEntry
-                onChangeText={setUploadOptionsPassword}
-                value={uploadOptionsState.password}
+                onChangeText={(password) => setState({ password })}
+                value={state.password}
               />
             </>
           )}
@@ -177,8 +155,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             autoCapitalize="none"
             placeholder="Form Field Name (default: file)"
             autoCorrect={false}
-            onChangeText={setUploadOptionsFieldName}
-            value={uploadOptionsState.fieldName}
+            onChangeText={(fieldName) => setState({ fieldName })}
+            value={state.fieldName}
           />
           <UndoTextInput
             style={styles.input}
@@ -187,46 +165,40 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             placeholder="RegExp (default: /^https://\S+/)"
             autoCorrect={false}
             keyboardType="ascii-capable"
-            onChangeText={setUploadOptionsRegexp}
-            value={uploadOptionsState.regexp}
+            onChangeText={(regexp) => setState({ regexp })}
+            value={state.regexp}
           />
-          {uploadOptionsState.headers.map(
-            ([headerName, headerValue], index) => {
-              return (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    columnGap: 10
-                  }}
-                >
-                  <UndoTextInput
-                    style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
-                    placeholderTextColor="#4157af"
-                    autoCapitalize="none"
-                    placeholder="Header Name (optional)"
-                    autoCorrect={false}
-                    value={headerName}
-                    onChangeText={(text) =>
-                      setUploadOptionsHeaderName(index, text)
-                    }
-                  />
-                  <UndoTextInput
-                    style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
-                    placeholderTextColor="#4157af"
-                    autoCapitalize="none"
-                    placeholder="Header Value (optional)"
-                    autoCorrect={false}
-                    value={headerValue}
-                    onChangeText={(text) =>
-                      setUploadOptionsHeaderValue(index, text)
-                    }
-                  />
-                </View>
-              );
-            }
-          )}
+          {state.headers.map(([headerName, headerValue], index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                columnGap: 10
+              }}
+            >
+              <UndoTextInput
+                style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
+                placeholderTextColor="#4157af"
+                autoCapitalize="none"
+                placeholder="Header Name (optional)"
+                autoCorrect={false}
+                value={headerName}
+                onChangeText={(text) => setUploadOptionsHeaderName(index, text)}
+              />
+              <UndoTextInput
+                style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
+                placeholderTextColor="#4157af"
+                autoCapitalize="none"
+                placeholder="Header Value (optional)"
+                autoCorrect={false}
+                value={headerValue}
+                onChangeText={(text) =>
+                  setUploadOptionsHeaderValue(index, text)
+                }
+              />
+            </View>
+          ))}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
