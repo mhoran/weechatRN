@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   topbarTextWrapper: {
-    flex: 4,
+    flex: 2,
     alignItems: 'center'
   },
   topbarText: {

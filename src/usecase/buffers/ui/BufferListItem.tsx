@@ -62,6 +62,8 @@ export default class BufferListItem extends React.PureComponent<Props> {
           <View style={styles.bufferName}>
             <Text
               style={[styles.listItemText, this.getBufferTextStyleFromProps()]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
               {buffer.short_name || buffer.full_name}
             </Text>
