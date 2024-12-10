@@ -19,7 +19,6 @@ import {
 } from 'react-native-safe-area-context';
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
-import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import type RelayClient from '../lib/weechat/client';
 import type { StoreState } from '../store';
 import * as actions from '../store/actions';
@@ -135,8 +134,6 @@ class App extends React.PureComponent<Props, State> {
       'change',
       this.updateWidth
     );
-
-    void registerForPushNotificationsAsync();
   }
 
   componentWillUnmount() {

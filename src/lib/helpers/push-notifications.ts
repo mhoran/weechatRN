@@ -3,19 +3,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import type { EASConfig } from 'expo/config';
 
-export const registerForPushNotificationsAsync = async (): Promise<void> => {
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-
-  // only ask if permissions have not already been determined, because
-  // iOS won't necessarily prompt the user a second time.
-  if (existingStatus !== Notifications.PermissionStatus.GRANTED) {
-    // Android remote notification permissions are granted during the app
-    // install, so this will only ask on iOS
-    await Notifications.requestPermissionsAsync();
-  }
-};
-
-export const getPushNotificationStatusAsync = async (): Promise<
+export const registerForPushNotificationsAsync = async (): Promise<
   string | undefined
 > => {
   let token;

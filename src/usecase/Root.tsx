@@ -9,7 +9,7 @@ import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
-import { getPushNotificationStatusAsync } from '../lib/helpers/push-notifications';
+import { registerForPushNotificationsAsync } from '../lib/helpers/push-notifications';
 import RelayClient from '../lib/weechat/client';
 import type { ConnectionError } from '../lib/weechat/connection';
 import type { AppDispatch, StoreState } from '../store';
@@ -107,7 +107,7 @@ export default class WeechatNative extends React.Component<null, State> {
   }
 
   setNotificationToken = async (): Promise<void> => {
-    const token = await getPushNotificationStatusAsync();
+    const token = await registerForPushNotificationsAsync();
     if (token)
       this.client.sendMessageToBuffer('core.weechat', '/weechatrn ' + token);
   };
