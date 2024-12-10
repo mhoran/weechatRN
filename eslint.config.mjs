@@ -52,8 +52,6 @@ export default tseslint.config(
         'error',
         {
           argsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
           ignoreRestSiblings: true
         }
       ],
