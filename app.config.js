@@ -22,7 +22,7 @@ export default {
         }
       ]
     },
-    buildNumber: '4'
+    buildNumber: '5'
   },
   android: {
     package: IS_DEV ? 'com.matthoran.weechatrn.dev' : 'com.matthoran.weechatrn'
