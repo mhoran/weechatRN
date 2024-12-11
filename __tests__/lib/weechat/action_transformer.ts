@@ -233,6 +233,52 @@ describe('transformToReduxAction', () => {
     });
   });
 
+  describe('on _buffer_cleared', () => {
+    it('clears lines for the given buffer', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': {} as WeechatBuffer
+        },
+        lines: {
+          '83a41cd80': [
+            {
+              id: 0,
+              buffer: '83a41cd80',
+              pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
+              date: new Date('2024-11-09T00:02:07.000Z').toISOString(),
+              date_printed: new Date('2024-11-10T17:28:48.000Z').toISOString(),
+              message: 'Beep boop'
+            } as WeechatLine
+          ]
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_cleared',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [{ id: '1730555173010842', pointers: ['83a41cd80'] }]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines).toEqual([]);
+    });
+  });
+
   describe('on _buffer_closing', () => {
     it('removes references to buffers that have been closed', () => {
       const preloadedState = {

@@ -58,22 +58,10 @@ export const transformToReduxAction = (
       return actions.nicklistUpdatedAction({ added, removed, bufferId });
     }
     case '_buffer_cleared': {
-      const object = data.objects[0] as WeechatObject<{ full_name: string }[]>;
-      const fullName = object.content[0].full_name;
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
 
-      return (
-        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
-        getState: () => StoreState
-      ) => {
-        const state: StoreState = getState();
-        const buffer = Object.values(state.buffers).find(
-          (buffer: WeechatBuffer) => buffer.full_name === fullName
-        );
-
-        if (!buffer) return undefined;
-
-        dispatch(actions.bufferClearedAction(buffer.id));
-      };
+      return actions.bufferClearedAction(buffer.pointers[0]);
     }
     case '_buffer_line_added': {
       const object = data.objects[0] as WeechatObject<RelayLine[]>;
