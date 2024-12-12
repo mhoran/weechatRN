@@ -104,7 +104,7 @@ def priv_msg_cb(
         send_push(
             f"Private message from {prefix}",
             body,
-            {"bufferId": buffer_id, "lineId": line_id},
+            {"bufferId": str(buffer_id), "lineId": line_id},
         )
     elif int(highlight):
         buffer_name = weechat.buffer_get_string(
@@ -113,7 +113,7 @@ def priv_msg_cb(
         send_push(
             f"Highlight in {buffer_name}",
             body,
-            {"bufferId": buffer_id, "lineId": line_id},
+            {"bufferId": str(buffer_id), "lineId": line_id},
         )
 
     return weechat.WEECHAT_RC_OK
@@ -185,7 +185,7 @@ def main():
     if weechat.register(
         "WeechatRN",
         "mhoran",
-        "1.3.0",
+        "1.3.1",
         "MIT",
         "WeechatRN push notification plugin",
         "",
