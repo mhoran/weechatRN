@@ -114,8 +114,8 @@ export const transformToReduxAction = (
       const buffer = object.content[0];
       buffer._id =
         buffer.id !== undefined
-          ? parseInt(buffer.id)
-          : parseInt(buffer.pointers[0], 16);
+          ? buffer.id
+          : BigInt(`0x${buffer.pointers[0]}`).toString();
       buffer.id = buffer.pointers[0];
 
       return actions.bufferOpenedAction(buffer);
@@ -201,8 +201,8 @@ export const transformToReduxAction = (
             id: buf.pointers[0],
             _id:
               buf.id !== undefined
-                ? parseInt(buf.id)
-                : parseInt(buf.pointers[0], 16)
+                ? buf.id
+                : BigInt(`0x${buf.pointers[0]}`).toString()
           })
         );
         const removed = Object.keys(buffers).filter((buffer) => {

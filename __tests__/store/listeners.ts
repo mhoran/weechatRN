@@ -19,7 +19,7 @@ describe(PendingBufferNotificationListener, () => {
       preloadedState: {
         buffers: {
           ['83a41cd80']: {
-            _id: 1730555173010842,
+            _id: '1730555173010842',
             full_name: 'irc.libera.#weechat',
             hidden: 0,
             id: '83a41cd80',
@@ -50,7 +50,7 @@ describe(PendingBufferNotificationListener, () => {
     store.dispatch(
       actions.pendingBufferNotificationAction({
         identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9',
-        bufferId: 1730555173010842,
+        bufferId: '1730555173010842',
         lineId: 0
       })
     );
@@ -88,7 +88,7 @@ describe(PendingBufferNotificationListener, () => {
     store.dispatch(
       actions.pendingBufferNotificationAction({
         identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9',
-        bufferId: 1730555173010842,
+        bufferId: '1730555173010842',
         lineId: 0
       })
     );
@@ -96,7 +96,7 @@ describe(PendingBufferNotificationListener, () => {
     store.dispatch(
       actions.fetchBuffersAction({
         ['83a41cd80']: {
-          _id: 1730555173010842,
+          _id: '1730555173010842',
           full_name: 'irc.libera.#weechat',
           hidden: 0,
           id: '83a41cd80',
@@ -146,7 +146,7 @@ describe(PendingBufferNotificationListener, () => {
     store.dispatch(
       actions.pendingBufferNotificationAction({
         identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9',
-        bufferId: 1730555173010842,
+        bufferId: '1730555173010842',
         lineId: 0
       })
     );

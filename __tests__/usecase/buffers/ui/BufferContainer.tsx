@@ -21,7 +21,7 @@ describe('BufferContainer', () => {
       preloadedState: {
         buffers: {
           [bufferId]: {
-            _id: 1730555173010842,
+            _id: '1730555173010842',
             full_name: 'irc.libera.#weechat',
             hidden: 0,
             id: bufferId,
@@ -114,7 +114,7 @@ describe('BufferContainer', () => {
       preloadedState: {
         buffers: {
           [bufferId]: {
-            _id: 1730555173010842,
+            _id: '1730555173010842',
             full_name: 'irc.libera.#weechat',
             hidden: 0,
             id: bufferId,

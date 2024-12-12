@@ -18,7 +18,7 @@ interface WeechatInfoList {
 
 interface WeechatBuffer {
   id: string;
-  _id: number;
+  _id: string;
   pointers: string[];
   local_variables: Localvariables;
   notify: number;

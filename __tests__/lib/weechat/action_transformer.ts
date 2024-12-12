@@ -149,7 +149,7 @@ describe('transformToReduxAction', () => {
 
       expect(store.getState().buffers).toHaveProperty('83a41cd80');
       const buffer = store.getState().buffers['83a41cd80'];
-      expect(buffer._id).toEqual(1730555173010842);
+      expect(buffer._id).toEqual('1730555173010842');
     });
 
     it('defaults _id to the buffer pointer', () => {
@@ -175,7 +175,7 @@ describe('transformToReduxAction', () => {
 
       expect(store.getState().buffers).toHaveProperty('83a41cd80');
       const buffer = store.getState().buffers['83a41cd80'];
-      expect(buffer._id).toEqual(parseInt('83a41cd80', 16));
+      expect(buffer._id).toEqual(BigInt('0x83a41cd80').toString());
     });
   });
 
@@ -203,7 +203,7 @@ describe('transformToReduxAction', () => {
 
       expect(store.getState().buffers).toHaveProperty('83a41cd80');
       const buffer = store.getState().buffers['83a41cd80'];
-      expect(buffer._id).toEqual(1730555173010842);
+      expect(buffer._id).toEqual('1730555173010842');
     });
 
     it('defaults _id to the buffer pointer', () => {
@@ -229,7 +229,7 @@ describe('transformToReduxAction', () => {
 
       expect(store.getState().buffers).toHaveProperty('83a41cd80');
       const buffer = store.getState().buffers['83a41cd80'];
-      expect(buffer._id).toEqual(parseInt('83a41cd80', 16));
+      expect(buffer._id).toEqual(BigInt('0x83a41cd80').toString());
     });
   });
 

@@ -21,7 +21,7 @@ export const changeCurrentBufferAction = createAction<string>(
 
 export const pendingBufferNotificationAction = createAction<{
   identifier: string;
-  bufferId: number;
+  bufferId: string;
   lineId: number;
 }>('PENDING_BUFFER_NOTIFICATION');
 export const bufferNotificationAction = createAction<{

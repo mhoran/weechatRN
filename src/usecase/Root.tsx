@@ -60,7 +60,7 @@ export default class WeechatNative extends React.Component<null, State> {
       store.dispatch(
         actions.pendingBufferNotificationAction({
           identifier: request.identifier,
-          bufferId: Number(bufferId),
+          bufferId: BigInt(bufferId as string).toString(),
           lineId: Number(lineId)
         })
       );
