@@ -1,0 +1,174 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp
+index 4ad8463..70ccf81 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp
+@@ -78,7 +78,7 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
+           propsMap[&family].emplace_back(props);
+         });
+ 
+-    rootNode = cloneShadowTreeWithNewProps(*rootNode, propsMap);
++    rootNode = cloneShadowTreeWithNewPropsUnmounted(rootNode, propsMap);
+ 
+     // If the commit comes from React Native then pause commits from
+     // Reanimated since the ShadowTree to be committed by Reanimated may not
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp
+index 5795b73..02637a6 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp
+@@ -1,5 +1,6 @@
+ #ifdef RCT_NEW_ARCH_ENABLED
+ 
++#include <react/renderer/core/DynamicPropsUtilities.h>
+ #include <reanimated/Fabric/ShadowTreeCloner.h>
+ 
+ #include <ranges>
+@@ -7,6 +8,29 @@
+ 
+ namespace reanimated {
+ 
++ChildrenMap calculateChildrenMap(
++    const RootShadowNode &oldRootNode,
++    const PropsMap &propsMap) {
++  ChildrenMap childrenMap;
++
++  for (auto &[family, _] : propsMap) {
++    const auto ancestors = family->getAncestors(oldRootNode);
++
++    for (const auto &[parentNode, index] :
++         std::ranges::reverse_view(ancestors)) {
++      const auto parentFamily = &parentNode.get().getFamily();
++      auto &affectedChildren = childrenMap[parentFamily];
++
++      if (affectedChildren.contains(index)) {
++        continue;
++      }
++
++      affectedChildren.insert(index);
++    }
++  }
++  return childrenMap;
++}
++
+ ShadowNode::Unshared cloneShadowTreeWithNewPropsRecursive(
+     const ShadowNode &shadowNode,
+     const ChildrenMap &childrenMap,
+@@ -43,33 +67,92 @@ ShadowNode::Unshared cloneShadowTreeWithNewPropsRecursive(
+   return result;
+ }
+ 
+-RootShadowNode::Unshared cloneShadowTreeWithNewProps(
+-    const RootShadowNode &oldRootNode,
++ShadowNode::Unshared cloneShadowTreeWithNewPropsUnmountedRecursive(
++    ShadowNode::Shared const &oldShadowNode,
++    const ChildrenMap &childrenMap,
+     const PropsMap &propsMap) {
+-  ChildrenMap childrenMap;
++  if (oldShadowNode->getHasBeenPromoted()) {
++    return cloneShadowTreeWithNewPropsRecursive(
++        *oldShadowNode, childrenMap, propsMap);
++  }
+ 
+-  for (auto &[family, _] : propsMap) {
+-    const auto ancestors = family->getAncestors(oldRootNode);
++  auto shadowNode = std::const_pointer_cast<ShadowNode>(oldShadowNode);
++  auto layoutableShadowNode =
++      std::dynamic_pointer_cast<LayoutableShadowNode>(shadowNode);
++  if (layoutableShadowNode) {
++    layoutableShadowNode->dirtyLayout();
++  }
+ 
+-    for (const auto &[parentNode, index] :
+-         std::ranges::reverse_view(ancestors)) {
+-      const auto parentFamily = &parentNode.get().getFamily();
+-      auto &affectedChildren = childrenMap[parentFamily];
++  const auto family = &shadowNode->getFamily();
++  const auto affectedChildrenIt = childrenMap.find(family);
++  const auto propsIt = propsMap.find(family);
++  auto children = shadowNode->getChildren();
+ 
+-      if (affectedChildren.contains(index)) {
+-        continue;
++  if (affectedChildrenIt != childrenMap.end()) {
++    for (const auto index : affectedChildrenIt->second) {
++      auto clone = cloneShadowTreeWithNewPropsUnmountedRecursive(
++          children[index], childrenMap, propsMap);
++      if (clone != children[index]) {
++        shadowNode->replaceChild(*children[index], clone, index);
+       }
++    }
++  }
+ 
+-      affectedChildren.insert(index);
++  Props::Shared newProps = nullptr;
++
++  if (propsIt != propsMap.end()) {
++    PropsParserContext propsParserContext{
++        shadowNode->getSurfaceId(), *shadowNode->getContextContainer()};
++    newProps = shadowNode->getProps();
++    for (const auto &props : propsIt->second) {
++      newProps = shadowNode->getComponentDescriptor().cloneProps(
++          propsParserContext, newProps, RawProps(props));
+     }
+   }
+ 
++  if (newProps) {
++    auto &props = shadowNode->getProps();
++    auto &mutableProps = const_cast<Props::Shared &>(props);
++
++#ifdef ANDROID
++    auto &newPropsRef = const_cast<Props &>(*newProps);
++    newPropsRef.rawProps = mergeDynamicProps(
++        mutableProps->rawProps,
++        newProps->rawProps,
++        NullValueStrategy::Override);
++#endif
++    mutableProps = newProps;
++    auto layoutableShadowNode =
++        static_pointer_cast<YogaLayoutableShadowNode>(shadowNode);
++    layoutableShadowNode->updateYogaProps();
++  }
++
++  return shadowNode;
++}
++
++RootShadowNode::Unshared cloneShadowTreeWithNewProps(
++    const RootShadowNode &oldRootNode,
++    const PropsMap &propsMap) {
++  auto childrenMap = calculateChildrenMap(oldRootNode, propsMap);
++
+   // This cast is safe, because this function returns a clone
+   // of the oldRootNode, which is an instance of RootShadowNode
+   return std::static_pointer_cast<RootShadowNode>(
+       cloneShadowTreeWithNewPropsRecursive(oldRootNode, childrenMap, propsMap));
+ }
+ 
++RootShadowNode::Unshared cloneShadowTreeWithNewPropsUnmounted(
++    RootShadowNode::Unshared const &oldRootNode,
++    const PropsMap &propsMap) {
++  auto childrenMap = calculateChildrenMap(*oldRootNode, propsMap);
++
++  // This cast is safe, because this function returns a clone
++  // of the oldRootNode, which is an instance of RootShadowNode
++  return std::static_pointer_cast<RootShadowNode>(
++      cloneShadowTreeWithNewPropsUnmountedRecursive(
++          oldRootNode, childrenMap, propsMap));
++}
++
+ } // namespace reanimated
+ 
+ #endif // RCT_NEW_ARCH_ENABLED
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
+index e3f9f6d..8240776 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
+@@ -24,6 +24,10 @@ RootShadowNode::Unshared cloneShadowTreeWithNewProps(
+     const RootShadowNode &oldRootNode,
+     const PropsMap &propsMap);
+ 
++RootShadowNode::Unshared cloneShadowTreeWithNewPropsUnmounted(
++    RootShadowNode::Unshared const &oldRootShadowNode,
++    const PropsMap &propsMap);
++
+ } // namespace reanimated
+ 
+ #endif // RCT_NEW_ARCH_ENABLED
