@@ -229,6 +229,7 @@ class App extends React.PureComponent<Props, State> {
                     <TouchableOpacity
                       style={styles.topbarButton}
                       onPress={this.openDrawer}
+                      accessibilityLabel="Open buffer list"
                     >
                       <Text
                         style={[
