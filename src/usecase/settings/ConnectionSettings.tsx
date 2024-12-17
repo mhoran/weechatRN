@@ -103,7 +103,7 @@ class ConnectionSettings extends React.PureComponent<Props, State> {
     return (
       <View style={styles.container}>
         <SafeAreaView edges={['right', 'bottom', 'left']}>
-          <StatusBar barStyle="dark-content" />
+          <StatusBar barStyle="dark-content" translucent={true} />
           <Text style={styles.text}>
             WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
             supports the WebSocket connection method only. Configure your relay

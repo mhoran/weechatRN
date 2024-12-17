@@ -1,62 +1,28 @@
-import { useCallback } from 'react';
-import type { LayoutChangeEvent, LayoutRectangle } from 'react-native';
-import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
+import { type ViewStyle } from 'react-native';
 import Animated, {
   KeyboardState,
-  runOnUI,
   useAnimatedKeyboard,
-  useAnimatedStyle,
-  useSharedValue
+  useAnimatedStyle
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   style?: ViewStyle;
   behavior?: string;
-  keyboardVerticalOffset?: number;
 }
 
 export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
   children,
   style,
-  behavior,
-  keyboardVerticalOffset = 0
+  behavior
 }) => {
   const keyboard = useAnimatedKeyboard({
     isStatusBarTranslucentAndroid: true
   });
-  const currentFrame = useSharedValue<LayoutRectangle | null>(null);
-  const { height: screenHeight } = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
-  const topInset = Platform.OS === 'android' ? safeAreaInsets.top : 0;
-
-  const setCurrentFrame = useCallback(
-    (layout: LayoutRectangle) => {
-      'worklet';
-      currentFrame.value = layout;
-    },
-    [currentFrame]
-  );
-
-  const onLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      runOnUI(setCurrentFrame)(event.nativeEvent.layout);
-    },
-    [setCurrentFrame]
-  );
 
   const animatedStyles = useAnimatedStyle(() => {
-    if (!currentFrame.value) return {};
-
-    const offset = Math.max(
-      currentFrame.value.y +
-        currentFrame.value.height -
-        (screenHeight +
-          topInset -
-          keyboard.height.value -
-          keyboardVerticalOffset),
-      0
-    );
+    const offset = Math.max(keyboard.height.value - safeAreaInsets.bottom, 0);
 
     if (behavior === 'padding') {
       return { paddingBottom: offset };
@@ -71,8 +37,6 @@ export const KeyboardAvoidingView: React.FC<React.PropsWithChildren<Props>> = ({
   });
 
   return (
-    <Animated.View onLayout={onLayout} style={[style, animatedStyles]}>
-      {children}
-    </Animated.View>
+    <Animated.View style={[style, animatedStyles]}>{children}</Animated.View>
   );
 };

@@ -1,4 +1,3 @@
-import { useHeaderHeight } from '@react-navigation/elements';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useCallback, useEffect, useReducer, useRef } from 'react';
 import {
@@ -29,7 +28,6 @@ const mergeState = <T,>(oldState: T, newState: Partial<T>): T => ({
 
 const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
-  const headerHeight = useHeaderHeight();
 
   const uploadOptions = useAppSelector(
     (state) => state.connection.mediaUploadOptions
@@ -91,12 +89,9 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={headerHeight}
-        behavior="padding"
-      >
+      <KeyboardAvoidingView behavior="padding">
         <ScrollView alwaysBounceVertical={false}>
-          <StatusBar barStyle="dark-content" />
+          <StatusBar barStyle="dark-content" translucent={true} />
           <Text style={styles.text}>
             Use the form below to configure media upload settings. This allows
             for uploading media to hosting provider and will automatically paste
