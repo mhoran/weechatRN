@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/NativeReanimatedModule.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/NativeReanimatedModule.cpp
+index 832fb06..9c44917 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/NativeReanimatedModule.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/NativeReanimatedModule.cpp
+@@ -618,6 +618,11 @@ bool NativeReanimatedModule::handleRawEvent(
+   if (eventType.rfind("top", 0) == 0) {
+     eventType = "on" + eventType.substr(3);
+   }
++
++  if (!isAnyHandlerWaitingForEvent(eventType, tag)) {
++    return false;
++  }
++
+   jsi::Runtime &rt = uiWorkletRuntime_->getJSIRuntime();
+ #if REACT_NATIVE_MINOR_VERSION >= 73
+   const auto &eventPayload = rawEvent.eventPayload;
