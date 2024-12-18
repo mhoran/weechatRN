@@ -365,6 +365,195 @@ describe('transformToReduxAction', () => {
     });
   });
 
+  describe('on _buffer_renamed', () => {
+    it('updates the buffer name', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': {} as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_renamed',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: '1730555173010842',
+                pointers: ['83a41cd80'],
+                short_name: '#wee'
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.short_name).toEqual('#wee');
+    });
+  });
+
+  describe('on _buffer_localvar_removed', () => {
+    it('removes omitted local variables', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': {
+            local_variables: {
+              server: 'local',
+              test: 'value',
+              plugin: 'irc',
+              type: 'channel',
+              channel: '#weechat',
+              nick: 'test',
+              name: 'libera.#weechat'
+            } as Localvariables
+          } as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_localvar_removed',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: '1730555173010842',
+                pointers: ['83a41cd80'],
+                local_variables: {
+                  server: 'local',
+                  plugin: 'irc',
+                  type: 'channel',
+                  channel: '#weechat',
+                  nick: 'test',
+                  name: 'libera.#weechat'
+                }
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.local_variables).not.toHaveProperty('test');
+    });
+  });
+
+  describe('on hotlist', () => {
+    it('updates hotlists for all buffers except the current buffer', () => {
+      const preloadedState = {
+        hotlists: {},
+        buffers: {
+          '8578d9c00': {} as WeechatBuffer,
+          '83a41cd80': {} as WeechatBuffer
+        },
+        app: {
+          currentBufferId: '8578d9c00'
+        } as AppState
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'hotlist',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              { buffer: '8578d9c00', count: [0, 1, 0, 0] },
+              { buffer: '83a41cd80', count: [0, 1, 0, 1] }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().hotlists).not.toHaveProperty('8578d9c00');
+      expect(store.getState().hotlists).toHaveProperty('83a41cd80');
+      const hotlist = store.getState().hotlists['83a41cd80'];
+      expect(hotlist.message).toEqual(1);
+      expect(hotlist.message).toEqual(1);
+      expect(hotlist.sum).toEqual(2);
+    });
+  });
+
+  describe('on nicklist', () => {
+    it('updates nicklists for all buffers', () => {
+      const preloadedState = {
+        nicklists: {},
+        buffers: {
+          '8578d9c00': {} as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'nicklist',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                pointers: ['8578d9c00', '83ed4dd40'],
+                group: 0,
+                visible: 1,
+                level: 0,
+                name: 'FlashCode',
+                color: '142',
+                prefix: '@',
+                prefix_color: 'lightgreen'
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().nicklists).toHaveProperty('8578d9c00');
+      const nicklist = store.getState().nicklists['8578d9c00'];
+      expect(nicklist).toHaveLength(1);
+      expect(nicklist[0].name).toEqual('FlashCode');
+    });
+  });
+
   describe('on last_read_lines', () => {
     it('sets the buffer last read line to the line id', () => {
       const preloadedState = {

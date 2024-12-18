@@ -127,14 +127,8 @@ export const transformToReduxAction = (
 
       return actions.bufferRenamedAction(buffer);
     }
-    case '_buffer_localvar_removed': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
-      const buffer = object.content[0];
-      buffer.id = buffer.pointers[0];
-
-      return actions.bufferLocalvarRemoveAction(buffer);
-    }
-    case '_buffer_title_changed':
+    case '_buffer_localvar_removed':
+    case '_buffer_localvar_changed':
     case '_buffer_localvar_added': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
       const buffer = object.content[0];

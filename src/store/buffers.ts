@@ -1,6 +1,5 @@
 import {
   bufferClosedAction,
-  bufferLocalvarRemoveAction,
   bufferLocalvarUpdateAction,
   bufferOpenedAction,
   bufferRenamedAction,
@@ -34,26 +33,10 @@ const bufferReducer = createReducer(initialState, (builder) => {
       [action.payload.id]: {
         ...state[action.payload.id],
         local_variables: {
-          ...state[action.payload.id].local_variables,
           ...action.payload.local_variables
         }
       }
     };
-  });
-  builder.addCase(bufferLocalvarRemoveAction, (state, action) => {
-    if (state[action.payload.id] !== undefined) {
-      return {
-        ...state,
-        [action.payload.id]: {
-          ...state[action.payload.id],
-          local_variables: {
-            ...action.payload.local_variables
-          }
-        }
-      };
-    } else {
-      return state;
-    }
   });
   builder.addCase(bufferRenamedAction, (state, action) => {
     return {
