@@ -56,6 +56,3 @@ buck-out/
 .expo
 .expo-shared
 dist/
-
-# Vim
-*.sw*
