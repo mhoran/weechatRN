@@ -58,6 +58,3 @@ buck-out/
 dist/
 /android
 /ios
-
-# Vim
-*.sw*

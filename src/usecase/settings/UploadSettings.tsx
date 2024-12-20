@@ -9,10 +9,10 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
-import { KeyboardAvoidingView } from '../shared/KeyboardAvoidingView';
 import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
 
@@ -89,7 +89,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
-      <KeyboardAvoidingView behavior="padding">
+      <KeyboardAvoidingView>
         <ScrollView alwaysBounceVertical={false}>
           <StatusBar barStyle="dark-content" translucent={true} />
           <Text style={styles.text}>
