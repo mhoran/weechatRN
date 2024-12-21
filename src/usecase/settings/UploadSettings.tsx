@@ -9,11 +9,10 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
-import { KeyboardAvoidingView } from '../shared/KeyboardAvoidingView';
-import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
 
 type NavigationProps = NativeStackScreenProps<
@@ -89,7 +88,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
-      <KeyboardAvoidingView behavior="padding">
+      <KeyboardAvoidingView>
         <ScrollView alwaysBounceVertical={false}>
           <StatusBar barStyle="dark-content" translucent={true} />
           <Text style={styles.text}>
@@ -100,7 +99,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             from the camera roll. Press the button twice to upload media from
             elsewhere on your device. Press and hold the button to take a photo.
           </Text>
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             keyboardType="url"
@@ -123,7 +122,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
           </View>
           {state.basicAuth && (
             <>
-              <UndoTextInput
+              <TextInput
                 style={styles.input}
                 placeholderTextColor="#4157af"
                 keyboardType="email-address"
@@ -144,7 +143,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
               />
             </>
           )}
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             autoCapitalize="none"
@@ -153,7 +152,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             onChangeText={(fieldName) => setState({ fieldName })}
             value={state.fieldName}
           />
-          <UndoTextInput
+          <TextInput
             style={styles.input}
             placeholderTextColor="#4157af"
             autoCapitalize="none"
@@ -172,7 +171,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 columnGap: 10
               }}
             >
-              <UndoTextInput
+              <TextInput
                 style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
                 placeholderTextColor="#4157af"
                 autoCapitalize="none"
@@ -181,7 +180,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 value={headerName}
                 onChangeText={(text) => setUploadOptionsHeaderName(index, text)}
               />
-              <UndoTextInput
+              <TextInput
                 style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
                 placeholderTextColor="#4157af"
                 autoCapitalize="none"

@@ -23,13 +23,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
+import { KeyboardAvoidingView } from '../../../../modules/keyboard-avoiding-view';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
 import type RelayClient from '../../../lib/weechat/client';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import type { StoreState } from '../../../store';
 import * as actions from '../../../store/actions';
-import { KeyboardAvoidingView } from '../../shared/KeyboardAvoidingView';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
 
@@ -233,7 +233,7 @@ class BufferContainer extends React.Component<Props, State> {
     const { textValue, showTabButton, needsAnimation } = this.state;
 
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="transform">
+      <KeyboardAvoidingView style={styles.container}>
         {showTopic && (
           <View>
             <Text>
