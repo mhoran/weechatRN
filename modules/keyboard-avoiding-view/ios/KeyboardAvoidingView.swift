@@ -17,6 +17,28 @@ class KeyboardAvoidingView: ExpoView {
       container.trailingAnchor.constraint(equalTo: trailingAnchor),
       container.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
     ])
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(keyboardWillShow),
+      name: UIResponder.keyboardWillShowNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(keyboardWillHide),
+      name: UIResponder.keyboardWillHideNotification,
+      object: nil
+    )
+  }
+
+  @objc func keyboardWillShow(_ notification: Notification) {
+    keyboardLayoutGuide.followsUndockedKeyboard = true
+  }
+
+  @objc func keyboardWillHide(_ notification: Notification) {
+    keyboardLayoutGuide.followsUndockedKeyboard = false
   }
 
 #if RCT_NEW_ARCH_ENABLED
