@@ -1,14 +1,14 @@
-const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_PROD = process.env.APP_VARIANT === 'production';
 
 export default {
-  name: IS_DEV ? 'WeechatRN (Dev)' : 'WeechatRN',
+  name: IS_PROD ? 'WeechatRN' : 'WeechatRN (Dev)',
   description: 'Weechat relay client using websockets',
   slug: 'WeechatRN',
   newArchEnabled: false,
   ios: {
-    bundleIdentifier: IS_DEV
-      ? 'com.matthoran.weechatrn.dev'
-      : 'com.matthoran.weechatrn',
+    bundleIdentifier: IS_PROD
+      ? 'com.matthoran.weechatrn'
+      : 'com.matthoran.weechatrn.dev',
     supportsTablet: true,
     config: {
       usesNonExemptEncryption: false
@@ -25,7 +25,7 @@ export default {
     buildNumber: '6'
   },
   android: {
-    package: IS_DEV ? 'com.matthoran.weechatrn.dev' : 'com.matthoran.weechatrn'
+    package: IS_PROD ? 'com.matthoran.weechatrn' : 'com.matthoran.weechatrn.dev'
   },
   platforms: ['ios', 'android'],
   version: '1.3.0',
@@ -51,7 +51,9 @@ export default {
       projectId: '5e51d3f0-dc9c-11e8-9dfe-b9e5abc941a4'
     }
   },
-  runtimeVersion: {
-    policy: 'nativeVersion'
-  }
+  ...(IS_PROD && {
+    runtimeVersion: {
+      policy: 'nativeVersion'
+    }
+  })
 };
