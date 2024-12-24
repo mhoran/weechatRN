@@ -22,4 +22,6 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
+
+  install_modules_dependencies(s)
 end
