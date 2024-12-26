@@ -3,14 +3,28 @@ import ExpoModulesCore
 // This view will be used as a native component. Make sure to inherit from `ExpoView`
 // to apply the proper styling (e.g. border radius and shadows).
 class KeyboardAvoidingView: ExpoView {
+  private let measurer = UIView()
   private let container = UIView()
   private var scrollView: ScrollViewWrapper?
+  private var animationInProgress = false
+  private var measurerHasObserver = false
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
+    addSubview(measurer)
+    measurer.translatesAutoresizingMaskIntoConstraints = false
+    measurer.isHidden = true
+
     addSubview(container)
     container.translatesAutoresizingMaskIntoConstraints = false
+
+    NSLayoutConstraint.activate([
+      measurer.topAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+      measurer.leadingAnchor.constraint(equalTo: leadingAnchor),
+      measurer.trailingAnchor.constraint(equalTo: trailingAnchor),
+      measurer.bottomAnchor.constraint(equalTo: bottomAnchor),
+    ])
 
     NSLayoutConstraint.activate([
       container.heightAnchor.constraint(equalTo: heightAnchor),
@@ -28,15 +42,35 @@ class KeyboardAvoidingView: ExpoView {
 
     NotificationCenter.default.addObserver(
       self,
+      selector: #selector(keyboardDidShow),
+      name: UIResponder.keyboardDidShowNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
       selector: #selector(keyboardWillHide),
       name: UIResponder.keyboardWillHideNotification,
       object: nil
     )
   }
 
+  deinit {
+    if measurerHasObserver {
+      measurer.removeObserver(self, forKeyPath: "center")
+    }
+  }
+
   @objc private func keyboardWillShow(_ notification: Notification) {
     keyboardLayoutGuide.followsUndockedKeyboard = true
     updateInsets(notification)
+  }
+
+  @objc private func keyboardDidShow(_ notification: Notification) {
+    // FIXME: don't use KVO
+    if !measurerHasObserver {
+      measurer.addObserver(self, forKeyPath: "center", options: .new, context: nil)
+    }
   }
 
   private func updateInsets(_ notification: Notification, closing: Bool = false) {
@@ -55,14 +89,38 @@ class KeyboardAvoidingView: ExpoView {
     let keyboardHeight =
       closing ? 0 : fmax(CGRectGetMaxY(absoluteOrigin) - frameEnd.cgRectValue.origin.y, 0)
 
-    UIView.animate(withDuration: animationDuration, delay: 0.0, options: animationOptions) {
-      self.scrollView?.setInsetsFromKeyboardHeight(keyboardHeight)
-    }
+    animationInProgress = true
+    UIView.animate(
+      withDuration: animationDuration, delay: 0.0, options: animationOptions,
+      animations: {
+        self.scrollView?.setInsetsFromKeyboardHeight(keyboardHeight)
+      },
+      completion: { finished in
+        self.animationInProgress = false
+      })
   }
 
   @objc private func keyboardWillHide(_ notification: Notification) {
+    if measurerHasObserver {
+      measurer.removeObserver(self, forKeyPath: "center")
+      measurerHasObserver = false
+    }
     keyboardLayoutGuide.followsUndockedKeyboard = false
     updateInsets(notification, closing: true)
+  }
+
+  @objc override public func observeValue(
+    forKeyPath keyPath: String?,
+    of object: Any?,
+    change: [NSKeyValueChangeKey: Any]?,
+    context _: UnsafeMutableRawPointer?
+  ) {
+    if keyPath == "center", object as? NSObject == measurer {
+      if animationInProgress {
+        return
+      }
+      self.scrollView?.setInsetsFromKeyboardHeight(measurer.frame.height)
+    }
   }
 
 #if RCT_NEW_ARCH_ENABLED
