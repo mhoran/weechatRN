@@ -184,6 +184,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
       <FlatList
         ref={this.linesList}
         accessibilityLabel="Message list"
+        style={{ backgroundColor: '#222' }}
         data={lines}
         key={linesListKey}
         inverted

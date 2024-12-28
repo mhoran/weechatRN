@@ -302,7 +302,7 @@ class BufferContainer extends React.Component<Props, State> {
 
 export default connector(BufferContainer);
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   topbar: {
     height: 20,
     paddingHorizontal: 5,
@@ -316,7 +316,7 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#222'
+    backgroundColor: '#333'
   },
   main: {
     paddingVertical: 20

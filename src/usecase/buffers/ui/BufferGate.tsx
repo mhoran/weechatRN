@@ -1,6 +1,6 @@
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import type RelayClient from '../../../lib/weechat/client';
-import BufferContainer, { styles } from './BufferContainer';
+import BufferContainer from './BufferContainer';
 
 type Props = {
   bufferId: string | null;
@@ -17,3 +17,10 @@ const BufferGate: React.FC<Props> = (props: Props) => {
 };
 
 export default BufferGate;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#222'
+  }
+});
