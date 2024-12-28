@@ -53,6 +53,10 @@ class KeyboardAvoidingView: ExpoView {
       name: UIResponder.keyboardWillHideNotification,
       object: nil
     )
+
+    if #available(iOS 17.0, *) {
+      keyboardLayoutGuide.usesBottomSafeArea = false
+    }
   }
 
   deinit {
