@@ -1,6 +1,14 @@
 import { useEffect, useRef } from 'react';
 import type { ListRenderItem } from 'react-native';
-import { Button, FlatList, Modal, StyleSheet, Text, View } from 'react-native';
+import {
+  Button,
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
 import { useAppSelector } from '../../../store/hooks';
 
 type Props = {
@@ -44,6 +52,10 @@ const NicklistModal: React.FC<Props> = ({ bufferId, visible, close }) => {
       animationType="slide"
     >
       <View style={styles.modalWrapper}>
+        <Pressable
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+          onPress={close}
+        />
         <View style={styles.modalView}>
           <FlatList
             data={nicklist}
