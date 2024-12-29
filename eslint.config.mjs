@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['src/lib/weechat/parser.js', '.expo/**/*']
+    ignores: ['src/lib/weechat/parser.js', '.expo/**/*', 'android/**/*']
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
