@@ -1,5 +1,5 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import type { EmitterSubscription } from 'react-native';
 import {
@@ -48,7 +48,7 @@ const connector = connect((state: StoreState) => {
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type NavigationProps = NativeStackScreenProps<RootStackParamList, 'App'>;
+type NavigationProps = StackScreenProps<RootStackParamList, 'App'>;
 
 type Props = PropsFromRedux &
   NavigationProps & {

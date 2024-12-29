@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import type { UnsubscribeListener } from '@reduxjs/toolkit';
 import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
@@ -29,7 +29,7 @@ export type RootStackParamList = {
   App: undefined;
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 
 interface State {
   connecting: boolean;
@@ -168,7 +168,7 @@ export default class WeechatNative extends React.Component<null, State> {
           <PersistGate onBeforeLift={this.onBeforeLift}>
             <GestureHandlerRootView>
               <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator detachInactiveScreens={false}>
                   <>
                     <Stack.Screen
                       name="App"

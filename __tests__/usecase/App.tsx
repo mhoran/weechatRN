@@ -1,5 +1,5 @@
 import type { RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { configureStore } from '@reduxjs/toolkit';
 import RelayClient from '../../src/lib/weechat/client';
 import { reducer } from '../../src/store';
@@ -48,9 +48,7 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={
-            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
-          }
+          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -106,9 +104,7 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={
-            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
-          }
+          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}

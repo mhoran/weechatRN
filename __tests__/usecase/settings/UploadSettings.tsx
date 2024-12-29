@@ -1,6 +1,6 @@
 import { HeaderHeightContext } from '@react-navigation/elements';
 import type { RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from '../../../src/store';
 import {
@@ -29,7 +29,7 @@ describe('UploadSettings', () => {
                 listeners.push(callback);
                 return () => {};
               }
-            } as NativeStackNavigationProp<
+            } as StackNavigationProp<
               RootStackParamList,
               'Media Upload Settings'
             >
@@ -80,7 +80,7 @@ describe('UploadSettings', () => {
                 listeners.push(callback);
                 return () => {};
               }
-            } as NativeStackNavigationProp<
+            } as StackNavigationProp<
               RootStackParamList,
               'Media Upload Settings'
             >
@@ -134,7 +134,7 @@ describe('UploadSettings', () => {
                 listeners.push(callback);
                 return () => {};
               }
-            } as NativeStackNavigationProp<
+            } as StackNavigationProp<
               RootStackParamList,
               'Media Upload Settings'
             >
@@ -192,7 +192,7 @@ describe('UploadSettings', () => {
               addListener: (_eventName: string, _callback: () => void) => {
                 return () => {};
               }
-            } as NativeStackNavigationProp<
+            } as StackNavigationProp<
               RootStackParamList,
               'Media Upload Settings'
             >

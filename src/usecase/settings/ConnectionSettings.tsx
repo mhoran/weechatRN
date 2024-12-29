@@ -1,4 +1,4 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import {
   StatusBar,
@@ -27,7 +27,7 @@ const connector = connect((state: StoreState) => ({
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type NavigationProps = NativeStackScreenProps<
+type NavigationProps = StackScreenProps<
   RootStackParamList,
   'Connection Settings'
 >;

@@ -1,4 +1,4 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { StackScreenProps } from '@react-navigation/stack';
 import { memo, useCallback, useEffect, useReducer, useRef } from 'react';
 import {
   ScrollView,
@@ -16,7 +16,7 @@ import { KeyboardAvoidingView } from '../shared/KeyboardAvoidingView';
 import UndoTextInput from '../shared/UndoTextInput';
 import { styles } from './styles';
 
-type NavigationProps = NativeStackScreenProps<
+type NavigationProps = StackScreenProps<
   RootStackParamList,
   'Media Upload Settings'
 >;
