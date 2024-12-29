@@ -233,9 +233,9 @@ class BufferContainer extends React.Component<Props, State> {
     const { textValue, showTabButton, needsAnimation } = this.state;
 
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <>
         {showTopic && (
-          <View>
+          <View style={styles.topic}>
             <Text>
               {renderWeechatFormat(buffer.title).map((props, index) => (
                 <ParsedText {...props} key={index} parse={this.parseArgs} />
@@ -243,59 +243,64 @@ class BufferContainer extends React.Component<Props, State> {
             </Text>
           </View>
         )}
-        <Buffer
-          bufferId={bufferId}
-          lines={lines}
-          lastReadLine={buffer.last_read_line}
-          onLongPress={this.handleLineOnLongPress}
-          parseArgs={this.parseArgs}
-          client={client}
-          notificationLineId={notification?.lineId}
-          clearNotification={this.clearNotification}
-        />
-        <View style={styles.bottomBox}>
-          <AnimatedTextInput
-            layout={
-              needsAnimation
-                ? LinearTransition.withCallback(this.animationComplete)
-                : undefined
-            }
-            style={styles.inputBox}
-            value={textValue}
-            onChangeText={this.handleChangeText}
-            onFocus={this.handleOnFocus}
-            onBlur={this.handleOnBlur}
-            onSelectionChange={this.handleSelectionChange}
-            returnKeyType="send"
-            submitBehavior="submit"
-            onSubmitEditing={this.handleSubmit}
-            enablesReturnKeyAutomatically={true}
-            multiline={true}
-            autoCorrect={false}
+        <KeyboardAvoidingView style={styles.container}>
+          <Buffer
+            bufferId={bufferId}
+            lines={lines}
+            lastReadLine={buffer.last_read_line}
+            onLongPress={this.handleLineOnLongPress}
+            parseArgs={this.parseArgs}
+            client={client}
+            notificationLineId={notification?.lineId}
+            clearNotification={this.clearNotification}
           />
-          <Animated.View layout={needsAnimation ? LinearTransition : undefined}>
-            <UploadButton
-              onUpload={this.handleOnUpload}
-              style={styles.uploadButton}
-              uploadOptions={mediaUploadOptions}
+
+          <View style={styles.bottomBox}>
+            <AnimatedTextInput
+              layout={
+                needsAnimation
+                  ? LinearTransition.withCallback(this.animationComplete)
+                  : undefined
+              }
+              style={styles.inputBox}
+              value={textValue}
+              onChangeText={this.handleChangeText}
+              onFocus={this.handleOnFocus}
+              onBlur={this.handleOnBlur}
+              onSelectionChange={this.handleSelectionChange}
+              returnKeyType="send"
+              submitBehavior="submit"
+              onSubmitEditing={this.handleSubmit}
+              enablesReturnKeyAutomatically={true}
+              multiline={true}
+              autoCorrect={false}
             />
-          </Animated.View>
-          {showTabButton && (
-            <TouchableOpacity
-              style={styles.tabButton}
-              onPress={this.tabCompleteNick}
+            <Animated.View
+              layout={needsAnimation ? LinearTransition : undefined}
             >
-              <AnimatedIcon
-                entering={FadeInRight}
-                exiting={FadeOutRight}
-                name="keyboard-tab"
-                size={27}
-                color="white"
+              <UploadButton
+                onUpload={this.handleOnUpload}
+                style={styles.uploadButton}
+                uploadOptions={mediaUploadOptions}
               />
-            </TouchableOpacity>
-          )}
-        </View>
-      </KeyboardAvoidingView>
+            </Animated.View>
+            {showTabButton && (
+              <TouchableOpacity
+                style={styles.tabButton}
+                onPress={this.tabCompleteNick}
+              >
+                <AnimatedIcon
+                  entering={FadeInRight}
+                  exiting={FadeOutRight}
+                  name="keyboard-tab"
+                  size={27}
+                  color="white"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </>
     );
   }
 }
@@ -303,10 +308,9 @@ class BufferContainer extends React.Component<Props, State> {
 export default connector(BufferContainer);
 
 const styles = StyleSheet.create({
-  topbar: {
-    height: 20,
-    paddingHorizontal: 5,
-    backgroundColor: '#001'
+  topic: {
+    zIndex: 1,
+    backgroundColor: '#222'
   },
   link: {
     textDecorationLine: 'underline'
