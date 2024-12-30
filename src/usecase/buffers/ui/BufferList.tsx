@@ -14,7 +14,7 @@ interface Props {
   onSelectBuffer: (b: WeechatBuffer) => void;
 }
 
-const keyExtractor = (buffer: WeechatBuffer): string => buffer.id;
+const keyExtractor = (buffer: WeechatBuffer): string => buffer._id;
 
 const selectBuffers = createSelector(
   [(state: StoreState) => state.buffers],

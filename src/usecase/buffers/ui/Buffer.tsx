@@ -22,8 +22,7 @@ interface Props {
   clearNotification: () => void;
 }
 
-const keyExtractor = (line: WeechatLine) =>
-  line.pointers[line.pointers.length - 1];
+const keyExtractor = (line: WeechatLine) => String(line.id);
 
 interface HeaderProps {
   bufferId: string;
