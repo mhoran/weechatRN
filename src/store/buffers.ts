@@ -4,8 +4,7 @@ import {
   bufferOpenedAction,
   bufferRenamedAction,
   fetchBuffersAction,
-  lastReadLinesAction,
-  upgradeAction
+  lastReadLinesAction
 } from './actions';
 import { createReducer } from '@reduxjs/toolkit';
 
@@ -54,9 +53,6 @@ const bufferReducer = createReducer(initialState, (builder) => {
       newState[buffer] = { ...state[buffer], last_read_line: id };
     });
     return newState;
-  });
-  builder.addCase(upgradeAction, () => {
-    return initialState;
   });
 });
 

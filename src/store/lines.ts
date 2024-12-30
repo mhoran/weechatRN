@@ -5,8 +5,7 @@ import {
   bufferLineAddedAction,
   bufferLineDataChangedAction,
   fetchBuffersRemovedAction,
-  fetchLinesAction,
-  upgradeAction
+  fetchLinesAction
 } from './actions';
 
 export type LineState = { [key: string]: WeechatLine[] };
@@ -57,9 +56,6 @@ const linesReducer = createReducer(initialState, (builder) => {
         ([bufferId]) => !action.payload.includes(bufferId)
       )
     );
-  });
-  builder.addCase(upgradeAction, () => {
-    return initialState;
   });
 });
 

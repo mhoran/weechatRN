@@ -2,8 +2,7 @@ import {
   bufferClosedAction,
   fetchBuffersRemovedAction,
   fetchNicklistAction,
-  nicklistUpdatedAction,
-  upgradeAction
+  nicklistUpdatedAction
 } from './actions';
 import { createReducer } from '@reduxjs/toolkit';
 
@@ -41,9 +40,6 @@ const nicklistsReducer = createReducer(initialState, (builder) => {
         ([bufferId]) => !action.payload.includes(bufferId)
       )
     );
-  });
-  builder.addCase(upgradeAction, () => {
-    return initialState;
   });
 });
 

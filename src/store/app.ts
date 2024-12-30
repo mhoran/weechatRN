@@ -5,7 +5,6 @@ import {
   changeCurrentBufferAction,
   bufferClosedAction,
   fetchBuffersRemovedAction,
-  upgradeAction,
   bufferNotificationAction,
   clearBufferNotificationAction,
   fetchLinesAction
@@ -85,8 +84,5 @@ export const app = createReducer(initialState, (builder) => {
           ? null
           : state.currentBufferId
     };
-  });
-  builder.addCase(upgradeAction, (state) => {
-    return { ...state, currentBufferId: null };
   });
 });
