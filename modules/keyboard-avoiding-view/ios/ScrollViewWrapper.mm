@@ -45,4 +45,12 @@
   return (UIView *)_scrollView;
 }
 
+- (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer {
+  if (!_scrollView) {
+    return;
+  }
+
+  [_scrollView.scrollView addGestureRecognizer:gestureRecognizer];
+}
+
 @end

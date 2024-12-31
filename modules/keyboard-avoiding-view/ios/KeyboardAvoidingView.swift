@@ -2,12 +2,18 @@ import ExpoModulesCore
 
 // This view will be used as a native component. Make sure to inherit from `ExpoView`
 // to apply the proper styling (e.g. border radius and shadows).
-class KeyboardAvoidingView: ExpoView {
+class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   private let measurer = UIView()
   private let container = UIView()
   private var scrollView: ScrollViewWrapper?
-  private var animationInProgress = false
   private var measurerHasObserver = false
+  private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+    let panGestureRecognizer = UIPanGestureRecognizer(
+      target: self, action: #selector(scrollViewPanned))
+    panGestureRecognizer.delegate = self
+    return panGestureRecognizer
+  }()
+  private var isScrollViewPanning = false
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -97,15 +103,9 @@ class KeyboardAvoidingView: ExpoView {
     let keyboardHeight =
       closing || viewIntersection.isEmpty ? 0 : bounds.maxY - viewIntersection.minY
 
-    animationInProgress = true
-    UIView.animate(
-      withDuration: animationDuration, delay: 0.0, options: animationOptions,
-      animations: {
-        self.scrollView?.setInsetsFromKeyboardHeight(keyboardHeight)
-      },
-      completion: { finished in
-        self.animationInProgress = false
-      })
+    UIView.animate(withDuration: animationDuration, delay: 0.0, options: animationOptions) {
+      self.scrollView?.setInsetsFromKeyboardHeight(keyboardHeight)
+    }
   }
 
   @objc private func keyboardWillHide(_ notification: Notification) {
@@ -124,10 +124,25 @@ class KeyboardAvoidingView: ExpoView {
     context _: UnsafeMutableRawPointer?
   ) {
     if keyPath == "center", object as? NSObject == measurer {
-      if animationInProgress {
+      if !isScrollViewPanning {
         return
       }
       self.scrollView?.setInsetsFromKeyboardHeight(measurer.frame.height)
+    }
+  }
+
+  func gestureRecognizer(
+    _ gestureRecognizer: UIGestureRecognizer,
+    shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+  ) -> Bool {
+    return gestureRecognizer.view == otherGestureRecognizer.view
+  }
+
+  @objc func scrollViewPanned(gesture: UIPanGestureRecognizer) {
+    if gesture.state == .began {
+      isScrollViewPanning = true
+    } else if gesture.state == .ended {
+      isScrollViewPanning = false
     }
   }
 
@@ -136,6 +151,7 @@ class KeyboardAvoidingView: ExpoView {
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
       scrollView = ScrollViewWrapper(view: childComponentView)
+      scrollView?.addGestureRecognizer(panGestureRecognizer)
     }
     container.insertSubview(childComponentView, at: index)
   }
@@ -153,6 +169,7 @@ class KeyboardAvoidingView: ExpoView {
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
       scrollView = ScrollViewWrapper(view: subview)
+      scrollView?.addGestureRecognizer(panGestureRecognizer)
     }
     container.insertSubview(subview, at: index)
   }
