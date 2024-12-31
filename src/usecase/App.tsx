@@ -20,12 +20,14 @@ import {
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
 import type RelayClient from '../lib/weechat/client';
+import type { ConnectionError } from '../lib/weechat/connection';
 import type { StoreState } from '../store';
 import * as actions from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
 import NicklistModal from './buffers/ui/NicklistModal';
 import type { RootStackParamList } from './Root';
+import { Snackbar } from './shared/Snackbar';
 
 const connector = connect((state: StoreState) => {
   const currentBufferId = state.app.currentBufferId;
@@ -55,6 +57,7 @@ type Props = PropsFromRedux &
     connect: () => void;
     disconnect: () => void;
     client: RelayClient;
+    connectionError: ConnectionError | null;
   };
 
 interface State {
@@ -62,6 +65,7 @@ interface State {
   drawerWidth: number;
   drawerOpen: boolean;
   showNicklistModal: boolean;
+  connectionErrorDismissed: boolean;
 }
 
 class App extends React.PureComponent<Props, State> {
@@ -87,7 +91,8 @@ class App extends React.PureComponent<Props, State> {
     showTopic: false,
     drawerWidth: this.drawerWidth(),
     drawerOpen: this.props.connected && !this.props.currentBufferId,
-    showNicklistModal: false
+    showNicklistModal: false,
+    connectionErrorDismissed: false
   };
 
   changeCurrentBuffer = (buffer: WeechatBuffer | string) => {
@@ -127,6 +132,10 @@ class App extends React.PureComponent<Props, State> {
     }
   };
 
+  dismissConnectionError = () => {
+    this.setState({ connectionErrorDismissed: true });
+  };
+
   openSettings = () => this.props.navigation.navigate('Connection Settings');
 
   componentDidMount() {
@@ -141,7 +150,17 @@ class App extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { currentBufferId, notification, connected, client } = this.props;
+    const {
+      currentBufferId,
+      notification,
+      connected,
+      client,
+      connectionError
+    } = this.props;
+
+    if (connectionError && connectionError !== prevProps.connectionError) {
+      this.setState({ connectionErrorDismissed: false });
+    }
 
     if (
       notification &&
@@ -175,10 +194,16 @@ class App extends React.PureComponent<Props, State> {
       client,
       connected,
       connect,
-      disconnect
+      disconnect,
+      connectionError
     } = this.props;
 
-    const { showTopic, drawerWidth, showNicklistModal } = this.state;
+    const {
+      showTopic,
+      drawerWidth,
+      showNicklistModal,
+      connectionErrorDismissed
+    } = this.state;
 
     const sidebar = () => (
       <BufferList
@@ -297,11 +322,23 @@ class App extends React.PureComponent<Props, State> {
                     )}
                   </View>
                 </View>
-                <BufferGate
-                  bufferId={currentBufferId}
-                  showTopic={showTopic}
-                  client={client}
-                />
+
+                <View style={{ flex: 1 }}>
+                  {connectionError && !connectionErrorDismissed && (
+                    <View style={styles.snackbar}>
+                      <Snackbar
+                        message={connectionError.message()}
+                        onDismiss={this.dismissConnectionError}
+                      />
+                    </View>
+                  )}
+
+                  <BufferGate
+                    bufferId={currentBufferId}
+                    showTopic={showTopic}
+                    client={client}
+                  />
+                </View>
               </SafeAreaView>
             </Drawer>
           </View>
@@ -355,5 +392,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#333'
+  },
+  snackbar: {
+    alignItems: 'center',
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1,
+    padding: 10
   }
 });

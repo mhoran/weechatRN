@@ -5,9 +5,20 @@ import { WeeChatProtocol } from './parser';
 
 const protocol = new WeeChatProtocol();
 
-export enum ConnectionError {
-  Socket = 1,
-  Authentication
+export interface ConnectionError {
+  message: () => string;
+}
+
+class SocketError implements ConnectionError {
+  message = () => {
+    return 'Failed to connect to weechat relay. Check hostname and SSL configuration.';
+  };
+}
+
+class AuthenticationError implements ConnectionError {
+  message = () => {
+    return 'Failed to authenticate with weechat relay. Check password.';
+  };
 }
 
 enum State {
@@ -66,13 +77,13 @@ export default class WeechatConnection {
   private handleError(event: Event): void {
     console.log(event);
     this.reconnect = this.state === State.CONNECTED;
-    this.onError(this.reconnect, ConnectionError.Socket);
+    this.onError(this.reconnect, new SocketError());
   }
 
   private handleClose(): void {
     if (this.state === State.AUTHENTICATING) {
       this.state = State.DISCONNECTED;
-      this.onError(false, ConnectionError.Authentication);
+      this.onError(false, new AuthenticationError());
       return;
     }
 

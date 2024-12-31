@@ -169,33 +169,28 @@ export default class WeechatNative extends React.Component<null, State> {
             <GestureHandlerRootView>
               <NavigationContainer>
                 <Stack.Navigator detachInactiveScreens={false}>
-                  <>
-                    <Stack.Screen
-                      name="App"
-                      options={{ headerShown: false, gestureEnabled: false }}
-                    >
-                      {(props) => (
-                        <App
-                          {...props}
-                          connect={this.onConnect}
-                          disconnect={this.disconnect}
-                          client={this.client}
-                        />
-                      )}
-                    </Stack.Screen>
-                    <Stack.Screen name="Connection Settings">
-                      {(props) => (
-                        <ConnectionSettings
-                          {...props}
-                          connectionError={connectionError}
-                        />
-                      )}
-                    </Stack.Screen>
-                    <Stack.Screen
-                      name="Media Upload Settings"
-                      component={UploadSettings}
-                    />
-                  </>
+                  <Stack.Screen
+                    name="App"
+                    options={{ headerShown: false, gestureEnabled: false }}
+                  >
+                    {(props) => (
+                      <App
+                        {...props}
+                        connect={this.onConnect}
+                        disconnect={this.disconnect}
+                        client={this.client}
+                        connectionError={connectionError}
+                      />
+                    )}
+                  </Stack.Screen>
+                  <Stack.Screen
+                    name="Connection Settings"
+                    component={ConnectionSettings}
+                  />
+                  <Stack.Screen
+                    name="Media Upload Settings"
+                    component={UploadSettings}
+                  />
                 </Stack.Navigator>
               </NavigationContainer>
             </GestureHandlerRootView>

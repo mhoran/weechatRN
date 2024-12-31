@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
-import { ConnectionError } from '../../lib/weechat/connection';
 import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
 import type { RootStackParamList } from '../Root';
@@ -32,10 +31,7 @@ type NavigationProps = StackScreenProps<
   'Connection Settings'
 >;
 
-type Props = PropsFromRedux &
-  NavigationProps & {
-    connectionError: ConnectionError | null;
-  };
+type Props = PropsFromRedux & NavigationProps;
 
 interface State {
   hostname: string;
@@ -87,17 +83,8 @@ class ConnectionSettings extends React.PureComponent<Props, State> {
     this.setState({ filterBuffers });
   };
 
-  connectionErrorToMessage = (connectionError: ConnectionError) => {
-    switch (connectionError) {
-      case ConnectionError.Authentication:
-        return 'Failed to authenticate with weechat relay. Check password.';
-      case ConnectionError.Socket:
-        return 'Failed to connect to weechat relay. Check hostname and SSL configuration.';
-    }
-  };
-
   render() {
-    const { connectionError, navigation } = this.props;
+    const { navigation } = this.props;
     const { hostname, password, ssl, filterBuffers } = this.state;
 
     return (
@@ -150,16 +137,6 @@ class ConnectionSettings extends React.PureComponent<Props, State> {
               onValueChange={this.setFilterBuffers}
             />
           </View>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            {connectionError !== null && (
-              <Text style={[styles.text, { color: 'red' }]}>
-                {this.connectionErrorToMessage(connectionError)}
-              </Text>
-            )}
-          </View>
-
           <View>
             <TouchableOpacity
               onPress={() => navigation.navigate('Media Upload Settings')}

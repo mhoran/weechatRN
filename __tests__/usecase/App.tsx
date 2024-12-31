@@ -1,6 +1,7 @@
 import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { configureStore } from '@reduxjs/toolkit';
+import { View } from 'react-native';
 import RelayClient from '../../src/lib/weechat/client';
 import { reducer } from '../../src/store';
 import * as actions from '../../src/store/actions';
@@ -8,8 +9,15 @@ import type { AppState } from '../../src/store/app';
 import { act, fireEvent, render, screen } from '../../src/test-utils';
 import App from '../../src/usecase/App';
 import type { RootStackParamList } from '../../src/usecase/Root';
+import { Snackbar } from '../../src/usecase/shared/Snackbar';
+
+jest.mock('../../src/usecase/shared/Snackbar');
 
 describe('App', () => {
+  beforeEach(() => {
+    jest.mocked(Snackbar).mockReset();
+  });
+
   describe('when connected', () => {
     it('fetches buffer info and clears hotlist for current buffer', () => {
       const bufferId = '86c417600';
@@ -50,6 +58,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connectionError={null}
         />,
         { store }
       );
@@ -106,6 +115,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connectionError={null}
         />,
         {
           store
@@ -171,6 +181,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connectionError={null}
         />,
         {
           store
@@ -189,6 +200,114 @@ describe('App', () => {
       expect(fetchBufferInfo.mock.invocationCallOrder[0]).toBeLessThan(
         clearHotlistForBuffer.mock.invocationCallOrder[0]
       );
+    });
+  });
+
+  describe('on connection error', () => {
+    beforeEach(() => {
+      jest
+        .mocked(Snackbar)
+        .mockImplementation(() => <View accessible role="alert" />);
+    });
+
+    it('displays the error', () => {
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <App
+          route={{} as RouteProp<RootStackParamList, 'App'>}
+          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          connect={jest.fn()}
+          disconnect={jest.fn()}
+          client={client}
+          connectionError={{ message: () => 'There was an error connecting.' }}
+        />
+      );
+
+      expect(Snackbar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'There was an error connecting.'
+        }),
+        expect.anything()
+      );
+
+      const snackbar = screen.getByRole('alert');
+      expect(snackbar).toBeOnTheScreen();
+    });
+
+    it('does not display the error after being dismissed', () => {
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <App
+          route={{} as RouteProp<RootStackParamList, 'App'>}
+          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          connect={jest.fn()}
+          disconnect={jest.fn()}
+          client={client}
+          connectionError={{ message: () => 'There was an error connecting.' }}
+        />
+      );
+
+      expect(Snackbar).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          message: 'There was an error connecting.',
+          onDismiss: expect.any(Function)
+        }),
+        expect.anything()
+      );
+      const snackbar = screen.getByRole('alert');
+
+      jest.mocked(Snackbar).mock.calls[0][0].onDismiss();
+
+      expect(snackbar).not.toBeOnTheScreen();
+    });
+
+    it('displays a subsequent error after a previous error was dismissed', () => {
+      const store = configureStore({
+        reducer
+      });
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <App
+          route={{} as RouteProp<RootStackParamList, 'App'>}
+          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          connect={jest.fn()}
+          disconnect={jest.fn()}
+          client={client}
+          connectionError={{ message: () => 'There was an error connecting.' }}
+        />,
+        {
+          store
+        }
+      );
+
+      jest.mocked(Snackbar).mock.calls[0][0].onDismiss();
+
+      screen.rerender(
+        <App
+          route={{} as RouteProp<RootStackParamList, 'App'>}
+          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          connect={jest.fn()}
+          disconnect={jest.fn()}
+          client={client}
+          connectionError={{
+            message: () => 'There was a different error connecting.'
+          }}
+        />
+      );
+
+      expect(Snackbar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'There was a different error connecting.'
+        }),
+        expect.anything()
+      );
+
+      const snackbar = screen.getByRole('alert');
+      expect(snackbar).toBeOnTheScreen();
     });
   });
 });

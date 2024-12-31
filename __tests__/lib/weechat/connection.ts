@@ -1,6 +1,5 @@
-import WeechatConnection, {
-  ConnectionError
-} from '../../../src/lib/weechat/connection';
+import type { ConnectionError } from '../../../src/lib/weechat/connection';
+import WeechatConnection from '../../../src/lib/weechat/connection';
 import {
   disconnectAction,
   fetchVersionAction
@@ -52,7 +51,15 @@ describe(WeechatConnection, () => {
 
     mockWebSocket.mock.instances[0].onclose();
 
-    expect(onError).toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledWith(
+      false,
+      expect.objectContaining<ConnectionError>({
+        message: expect.any(Function)
+      })
+    );
+    expect(onError.mock.calls[0][1].message()).toMatch(
+      /Failed to authenticate with weechat relay/
+    );
     expect(onSuccess).not.toHaveBeenCalled();
   });
 
@@ -147,7 +154,15 @@ describe(WeechatConnection, () => {
       mockWebSocket.mock.instances[0].onerror();
       mockWebSocket.mock.instances[0].close();
 
-      expect(onError).toHaveBeenCalledWith(true, ConnectionError.Socket);
+      expect(onError).toHaveBeenCalledWith(
+        true,
+        expect.objectContaining<ConnectionError>({
+          message: expect.any(Function)
+        })
+      );
+      expect(onError.mock.calls[0][1].message()).toMatch(
+        /Failed to connect to weechat relay/
+      );
       expect(dispatch).toHaveBeenCalledTimes(2);
       expect(dispatch).toHaveBeenNthCalledWith(2, disconnectAction());
       expect(mockWebSocket.mock.instances).toHaveLength(2);
