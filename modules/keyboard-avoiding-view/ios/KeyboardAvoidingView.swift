@@ -14,6 +14,10 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
     return panGestureRecognizer
   }()
   private var isScrollViewPanning = false
+  private lazy var containerBottomAnchorConstraint: NSLayoutConstraint = {
+    return container.bottomAnchor.constraint(equalTo: bottomAnchor)
+  }()
+  private var keyboardHidden = true
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -38,7 +42,7 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
       container.heightAnchor.constraint(equalTo: heightAnchor),
       container.leadingAnchor.constraint(equalTo: leadingAnchor),
       container.trailingAnchor.constraint(equalTo: trailingAnchor),
-      container.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+      containerBottomAnchorConstraint,
     ])
 
     NotificationCenter.default.addObserver(
@@ -55,6 +59,13 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
       object: nil
     )
 
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(keyboardWillChangeFrame),
+      name: UIResponder.keyboardWillChangeFrameNotification,
+      object: nil
+    )
+  
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(keyboardWillHide),
@@ -74,7 +85,6 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   }
 
   @objc private func keyboardWillShow(_ notification: Notification) {
-    keyboardLayoutGuide.followsUndockedKeyboard = true
     updateInsets(notification)
   }
 
@@ -84,6 +94,14 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
       measurer.addObserver(self, forKeyPath: "center", options: .new, context: nil)
       measurerHasObserver = true
     }
+    keyboardHidden = false
+  }
+
+  @objc private func keyboardWillChangeFrame(_ notification: Notification) {
+    if (keyboardHidden) {
+      return
+    }
+    updateInsets(notification)
   }
 
   private func updateInsets(_ notification: Notification, closing: Bool = false) {
@@ -103,8 +121,13 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
     let keyboardHeight =
       closing || viewIntersection.isEmpty ? 0 : bounds.maxY - viewIntersection.minY
 
-    UIView.animate(withDuration: animationDuration, delay: 0.0, options: animationOptions) {
+    UIView.animate(
+      withDuration: animationDuration, delay: 0.0,
+      options: [animationOptions, .beginFromCurrentState]
+    ) {
       self.scrollView?.setInsetsFromKeyboardHeight(keyboardHeight)
+      self.containerBottomAnchorConstraint.constant = -keyboardHeight
+      self.layoutIfNeeded()
     }
   }
 
@@ -113,7 +136,7 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
       measurer.removeObserver(self, forKeyPath: "center")
       measurerHasObserver = false
     }
-    keyboardLayoutGuide.followsUndockedKeyboard = false
+    keyboardHidden = true
     updateInsets(notification, closing: true)
   }
 
@@ -128,6 +151,8 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
         return
       }
       self.scrollView?.setInsetsFromKeyboardHeight(measurer.frame.height)
+      self.containerBottomAnchorConstraint.constant = -measurer.frame.height
+      self.layoutIfNeeded()
     }
   }
 
