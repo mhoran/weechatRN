@@ -27,6 +27,8 @@ const bufferReducer = createReducer(initialState, (builder) => {
     };
   });
   builder.addCase(bufferLocalvarUpdateAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
     return {
       ...state,
       [action.payload.id]: {
@@ -38,6 +40,8 @@ const bufferReducer = createReducer(initialState, (builder) => {
     };
   });
   builder.addCase(bufferRenamedAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
     return {
       ...state,
       [action.payload.id]: {
@@ -50,6 +54,8 @@ const bufferReducer = createReducer(initialState, (builder) => {
   builder.addCase(lastReadLinesAction, (state, action) => {
     const newState = { ...state };
     action.payload.forEach(({ id, buffer }) => {
+      if (state[buffer] === undefined) return;
+
       newState[buffer] = { ...state[buffer], last_read_line: id };
     });
     return newState;
