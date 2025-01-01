@@ -86,15 +86,16 @@ class KeyboardAvoidingView: ExpoView {
     guard let animationCurve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
       let animationDuration = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey]
         as? Double,
-      let frameEnd = userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+      let frameEnd = userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
       let fromCoordinateSpace = window?.screen.coordinateSpace
     else { return }
 
     let animationOptions = UIView.AnimationOptions(rawValue: animationCurve << 16)
 
-    let absoluteOrigin = convert(bounds, to: fromCoordinateSpace)
+    let convertedFrameEnd = convert(frameEnd, from: fromCoordinateSpace)
+    let viewIntersection = bounds.intersection(convertedFrameEnd)
     let keyboardHeight =
-      closing ? 0 : fmax(CGRectGetMaxY(absoluteOrigin) - frameEnd.cgRectValue.origin.y, 0)
+      closing || viewIntersection.isEmpty ? 0 : bounds.maxY - viewIntersection.minY
 
     animationInProgress = true
     UIView.animate(
