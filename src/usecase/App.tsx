@@ -208,10 +208,7 @@ class App extends React.PureComponent<Props, State> {
               drawerPosition={'left'}
               drawerType="slide"
             >
-              <SafeAreaView
-                style={[styles.container]}
-                edges={['right', 'bottom', 'left']}
-              >
+              <SafeAreaView style={styles.container}>
                 <StatusBar
                   barStyle="light-content"
                   backgroundColor="transparent"
@@ -224,7 +221,7 @@ class App extends React.PureComponent<Props, State> {
                   close={this.toggleShowNicklistModal}
                 />
 
-                <View style={[styles.topbar, { paddingTop: insets?.top }]}>
+                <View style={styles.topbar}>
                   <View style={styles.channelsButtonWrapper}>
                     <TouchableOpacity
                       style={styles.topbarButton}
@@ -322,8 +319,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 10,
-    zIndex: 1
+    paddingBottom: 10
   },
   channelsButtonWrapper: {
     paddingLeft: 10,

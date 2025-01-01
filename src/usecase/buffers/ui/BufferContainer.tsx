@@ -309,7 +309,6 @@ export default connector(BufferContainer);
 
 const styles = StyleSheet.create({
   topic: {
-    zIndex: 1,
     backgroundColor: '#222'
   },
   link: {
