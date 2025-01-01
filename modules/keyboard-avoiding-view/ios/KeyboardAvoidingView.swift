@@ -17,7 +17,7 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   private lazy var containerBottomAnchorConstraint: NSLayoutConstraint = {
     return container.bottomAnchor.constraint(equalTo: bottomAnchor)
   }()
-  private var keyboardHidden = true
+  private var isKeyboardShown = false
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -65,7 +65,7 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
       name: UIResponder.keyboardWillChangeFrameNotification,
       object: nil
     )
-  
+
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(keyboardWillHide),
@@ -85,22 +85,34 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   }
 
   @objc private func keyboardWillShow(_ notification: Notification) {
+    let userInfo = notification.userInfo
+    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
+      isLocalKeyboard
+    else { return }
+
     updateInsets(notification)
   }
 
   @objc private func keyboardDidShow(_ notification: Notification) {
+    let userInfo = notification.userInfo
+    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
+      isLocalKeyboard
+    else { return }
+
     // FIXME: don't use KVO
     if !measurerHasObserver {
       measurer.addObserver(self, forKeyPath: "center", options: .new, context: nil)
       measurerHasObserver = true
     }
-    keyboardHidden = false
+    isKeyboardShown = true
   }
 
   @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-    if (keyboardHidden) {
-      return
-    }
+    let userInfo = notification.userInfo
+    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
+      isLocalKeyboard && isKeyboardShown
+    else { return }
+
     updateInsets(notification)
   }
 
@@ -132,11 +144,16 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   }
 
   @objc private func keyboardWillHide(_ notification: Notification) {
+    let userInfo = notification.userInfo
+    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
+      isLocalKeyboard
+    else { return }
+
     if measurerHasObserver {
       measurer.removeObserver(self, forKeyPath: "center")
       measurerHasObserver = false
     }
-    keyboardHidden = true
+    isKeyboardShown = false
     updateInsets(notification, closing: true)
   }
 
