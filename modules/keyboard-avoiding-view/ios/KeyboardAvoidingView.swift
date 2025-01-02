@@ -2,17 +2,10 @@ import ExpoModulesCore
 
 // This view will be used as a native component. Make sure to inherit from `ExpoView`
 // to apply the proper styling (e.g. border radius and shadows).
-class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate, ViewBoundsObserving {
+class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   private let measurer = BoundsObservableView()
   private let container = UIView()
   private var scrollView: ScrollViewWrapper?
-  private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
-    let panGestureRecognizer = UIPanGestureRecognizer(
-      target: self, action: #selector(scrollViewPanned))
-    panGestureRecognizer.delegate = self
-    return panGestureRecognizer
-  }()
-  private var isScrollViewPanning = false
   private lazy var containerBottomAnchorConstraint: NSLayoutConstraint = {
     return container.bottomAnchor.constraint(equalTo: bottomAnchor)
   }()
@@ -128,26 +121,11 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate, ViewBoundsObs
   }
 
   func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
-    guard isKeyboardShown && isScrollViewPanning else { return }
+    guard isKeyboardShown && scrollView?.isScrollViewPanning == true else { return }
 
     self.scrollView?.setInsetsFromKeyboardHeight(view.bounds.height)
     self.containerBottomAnchorConstraint.constant = -view.bounds.height
     self.layoutIfNeeded()
-  }
-
-  func gestureRecognizer(
-    _ gestureRecognizer: UIGestureRecognizer,
-    shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-  ) -> Bool {
-    return gestureRecognizer.view == otherGestureRecognizer.view
-  }
-
-  @objc func scrollViewPanned(gesture: UIPanGestureRecognizer) {
-    if gesture.state == .began {
-      isScrollViewPanning = true
-    } else if gesture.state == .ended {
-      isScrollViewPanning = false
-    }
   }
 
 #if RCT_NEW_ARCH_ENABLED
@@ -155,7 +133,6 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate, ViewBoundsObs
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
       scrollView = ScrollViewWrapper(view: childComponentView)
-      scrollView?.addGestureRecognizer(panGestureRecognizer)
     }
     container.insertSubview(childComponentView, at: index)
   }
@@ -173,7 +150,6 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate, ViewBoundsObs
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
       scrollView = ScrollViewWrapper(view: subview)
-      scrollView?.addGestureRecognizer(panGestureRecognizer)
     }
     container.insertSubview(subview, at: index)
   }

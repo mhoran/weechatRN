@@ -3,10 +3,10 @@
 
 @interface ScrollViewWrapper : NSObject
 
-- (instancetype)initWithView:(UIView *)view;
+@property(nonatomic, readonly) BOOL isScrollViewPanning;
+
+- (nullable instancetype)initWithView:(nonnull UIView *)view;
 - (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight;
-- (UIView *)view;
-- (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-    NS_SWIFT_NAME(addGestureRecognizer(_:));
+- (nullable UIView *)view;
 
 @end

@@ -8,15 +8,29 @@
 #define ReactScrollViewBase RCTScrollView
 #endif
 
+@interface ScrollViewWrapper ()
+
+@property (nonatomic, readwrite, assign) BOOL isScrollViewPanning;
+
+@end
+
 @implementation ScrollViewWrapper {
   __weak ReactScrollViewBase *_scrollView;
 }
 
+@synthesize isScrollViewPanning;
+
 - (instancetype)initWithView:(UIView *)view {
-  self = [super init];
-  if ([view isKindOfClass:[ReactScrollViewBase class]]) {
-    _scrollView = (ReactScrollViewBase *)view;
+  if (![view isKindOfClass:[ReactScrollViewBase class]]) {
+    return nil;
   }
+
+  self = [super init];
+  _scrollView = (ReactScrollViewBase *)view;
+  isScrollViewPanning = false;
+  [_scrollView.scrollView.panGestureRecognizer
+      addTarget:self
+          action:@selector(scrollViewPanned:)];
   return self;
 }
 
@@ -41,16 +55,16 @@
   return _scrollView.layer.transform.m22 == -1;
 }
 
-- (UIView *)view {
+- (nullable UIView *)view {
   return (UIView *)_scrollView;
 }
 
-- (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer {
-  if (!_scrollView) {
-    return;
+- (void)scrollViewPanned:(UIPanGestureRecognizer *)gesture {
+  if (gesture.state == UIGestureRecognizerStateBegan) {
+    isScrollViewPanning = YES;
+  } else if (gesture.state == UIGestureRecognizerStateEnded) {
+    isScrollViewPanning = NO;
   }
-
-  [_scrollView.scrollView addGestureRecognizer:gestureRecognizer];
 }
 
 @end
