@@ -76,6 +76,7 @@ class KeyboardAvoidingView: ExpoView {
     // FIXME: don't use KVO
     if !measurerHasObserver {
       measurer.addObserver(self, forKeyPath: "center", options: .new, context: nil)
+      measurerHasObserver = true
     }
   }
 
