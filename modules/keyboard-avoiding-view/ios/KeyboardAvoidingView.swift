@@ -73,7 +73,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   @objc private func keyboardWillShow(_ notification: Notification) {
     guard notification.isLocalKeyboard else { return }
 
-    updateInsets(notification)
+    updateInsetsAndBottomAnchor(notification)
   }
 
   @objc private func keyboardDidShow(_ notification: Notification) {
@@ -85,10 +85,10 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   @objc private func keyboardWillChangeFrame(_ notification: Notification) {
     guard notification.isLocalKeyboard && isKeyboardShown else { return }
 
-    updateInsets(notification)
+    updateInsetsAndBottomAnchor(notification)
   }
 
-  private func updateInsets(_ notification: Notification, closing: Bool = false) {
+  private func updateInsetsAndBottomAnchor(_ notification: Notification, closing: Bool = false) {
     guard let animationCurve = notification.animationCurve,
       let animationDuration = notification.animationDuration,
       let keyboardFrameEnd = notification.keyboardFrameEnd,
@@ -116,7 +116,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     guard notification.isLocalKeyboard else { return }
 
     isKeyboardShown = false
-    updateInsets(notification, closing: true)
+    updateInsetsAndBottomAnchor(notification, closing: true)
   }
 
   func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
