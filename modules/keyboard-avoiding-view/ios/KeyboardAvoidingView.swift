@@ -85,19 +85,13 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   }
 
   @objc private func keyboardWillShow(_ notification: Notification) {
-    let userInfo = notification.userInfo
-    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocalKeyboard
-    else { return }
+    guard notification.isLocalKeyboard else { return }
 
     updateInsets(notification)
   }
 
   @objc private func keyboardDidShow(_ notification: Notification) {
-    let userInfo = notification.userInfo
-    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocalKeyboard
-    else { return }
+    guard notification.isLocalKeyboard else { return }
 
     // FIXME: don't use KVO
     if !measurerHasObserver {
@@ -108,27 +102,21 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   }
 
   @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-    let userInfo = notification.userInfo
-    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocalKeyboard && isKeyboardShown
-    else { return }
+    guard notification.isLocalKeyboard && isKeyboardShown else { return }
 
     updateInsets(notification)
   }
 
   private func updateInsets(_ notification: Notification, closing: Bool = false) {
-    let userInfo = notification.userInfo
-
-    guard let animationCurve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
-      let animationDuration = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey]
-        as? Double,
-      let frameEnd = userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+    guard let animationCurve = notification.animationCurve,
+      let animationDuration = notification.animationDuration,
+      let keyboardFrameEnd = notification.keyboardFrameEnd,
       let fromCoordinateSpace = window?.screen.coordinateSpace
     else { return }
 
     let animationOptions = UIView.AnimationOptions(rawValue: animationCurve << 16)
 
-    let convertedFrameEnd = convert(frameEnd, from: fromCoordinateSpace)
+    let convertedFrameEnd = convert(keyboardFrameEnd, from: fromCoordinateSpace)
     let viewIntersection = bounds.intersection(convertedFrameEnd)
     let keyboardHeight =
       closing || viewIntersection.isEmpty ? 0 : bounds.maxY - viewIntersection.minY
@@ -144,10 +132,7 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   }
 
   @objc private func keyboardWillHide(_ notification: Notification) {
-    let userInfo = notification.userInfo
-    guard let isLocalKeyboard = userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocalKeyboard
-    else { return }
+    guard notification.isLocalKeyboard else { return }
 
     if measurerHasObserver {
       measurer.removeObserver(self, forKeyPath: "center")
