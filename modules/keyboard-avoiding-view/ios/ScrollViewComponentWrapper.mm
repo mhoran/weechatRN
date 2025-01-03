@@ -1,4 +1,4 @@
-#include "ScrollViewWrapper.h"
+#include "ScrollViewComponentWrapper.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #include <React/RCTScrollViewComponentView.h>
@@ -8,14 +8,14 @@
 #define ReactScrollViewBase RCTScrollView
 #endif
 
-@interface ScrollViewWrapper ()
+@interface ScrollViewComponentWrapper ()
 
 @property (nonatomic, readwrite, assign) BOOL isScrollViewPanning;
 
 @end
 
-@implementation ScrollViewWrapper {
-  __weak ReactScrollViewBase *_scrollView;
+@implementation ScrollViewComponentWrapper {
+  __weak ReactScrollViewBase *_scrollViewComponentView;
 }
 
 @synthesize isScrollViewPanning;
@@ -26,37 +26,37 @@
   }
 
   self = [super init];
-  _scrollView = (ReactScrollViewBase *)view;
+  _scrollViewComponentView = (ReactScrollViewBase *)view;
   isScrollViewPanning = false;
-  [_scrollView.scrollView.panGestureRecognizer
+  [_scrollViewComponentView.scrollView.panGestureRecognizer
       addTarget:self
           action:@selector(scrollViewPanned:)];
   return self;
 }
 
 - (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight {
-  if (!_scrollView) {
+  if (!_scrollViewComponentView) {
     return;
   }
 
-  UIEdgeInsets newEdgeInsets = _scrollView.scrollView.contentInset;
+  UIEdgeInsets newEdgeInsets = _scrollViewComponentView.scrollView.contentInset;
   if ([self isInverted]) {
     newEdgeInsets.bottom = keyboardHeight;
   } else {
     newEdgeInsets.top = keyboardHeight;
   }
 
-  _scrollView.scrollView.contentInset = newEdgeInsets;
-  _scrollView.scrollView.scrollIndicatorInsets = newEdgeInsets;
+  _scrollViewComponentView.scrollView.contentInset = newEdgeInsets;
+  _scrollViewComponentView.scrollView.scrollIndicatorInsets = newEdgeInsets;
 }
 
 - (bool)isInverted {
   // Look into the entry at position 2,2 to check if scaleY is applied
-  return _scrollView.layer.transform.m22 == -1;
+  return _scrollViewComponentView.layer.transform.m22 == -1;
 }
 
 - (nullable UIView *)view {
-  return (UIView *)_scrollView;
+  return (UIView *)_scrollViewComponentView;
 }
 
 - (void)scrollViewPanned:(UIPanGestureRecognizer *)gesture {

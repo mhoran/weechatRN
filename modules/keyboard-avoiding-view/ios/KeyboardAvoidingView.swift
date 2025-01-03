@@ -5,7 +5,7 @@ import ExpoModulesCore
 class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   private let measurer = BoundsObservableView()
   private let container = UIView()
-  private var scrollView: ScrollViewWrapper?
+  private var scrollViewComponent: ScrollViewComponentWrapper?
   private lazy var containerBottomAnchorConstraint: NSLayoutConstraint = {
     return container.bottomAnchor.constraint(equalTo: bottomAnchor)
   }()
@@ -107,7 +107,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
       withDuration: animationDuration, delay: 0.0,
       options: [animationOptions, .beginFromCurrentState]
     ) {
-      self.scrollView?.setInsetsFromKeyboardHeight(keyboardHeight)
+      self.scrollViewComponent?.setInsetsFromKeyboardHeight(keyboardHeight)
       self.containerBottomAnchorConstraint.constant = -keyboardHeight
       self.layoutIfNeeded()
     }
@@ -121,25 +121,25 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   }
 
   func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
-    guard isKeyboardShown && scrollView?.isScrollViewPanning == true else { return }
+    guard isKeyboardShown && scrollViewComponent?.isScrollViewPanning == true else { return }
 
-    self.scrollView?.setInsetsFromKeyboardHeight(view.bounds.height)
+    self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height)
     self.containerBottomAnchorConstraint.constant = -view.bounds.height
     self.layoutIfNeeded()
-  }
+}
 
 #if RCT_NEW_ARCH_ENABLED
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
-      scrollView = ScrollViewWrapper(view: childComponentView)
+      scrollViewComponent = ScrollViewComponentWrapper(view: childComponentView)
     }
     container.insertSubview(childComponentView, at: index)
   }
 
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if childComponentView === scrollView?.view() {
-      scrollView = nil
+    if childComponentView === scrollViewComponent?.view {
+      scrollViewComponent = nil
     }
     childComponentView.removeFromSuperview()
   }
@@ -149,7 +149,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
 
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
-      scrollView = ScrollViewWrapper(view: subview)
+      scrollViewComponent = ScrollViewComponentWrapper(view: subview)
     }
     container.insertSubview(subview, at: index)
   }
@@ -157,8 +157,8 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   override func removeReactSubview(_ subview: UIView!) {
     super.removeReactSubview(subview)
 
-    if subview === scrollView?.view() {
-      scrollView = nil
+    if subview === scrollViewComponent?.view {
+      scrollViewComponent = nil
     }
     subview.removeFromSuperview()
   }
