@@ -6,9 +6,8 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   private let measurer = BoundsObservableView()
   private let container = UIView()
   private var scrollViewComponent: ScrollViewComponentWrapper?
-  private lazy var containerBottomAnchorConstraint: NSLayoutConstraint = {
-    return container.bottomAnchor.constraint(equalTo: bottomAnchor)
-  }()
+  private lazy var containerBottomAnchorConstraint =
+    container.bottomAnchor.constraint(equalTo: bottomAnchor)
   private var isKeyboardShown = false
 
   required init(appContext: AppContext? = nil) {
