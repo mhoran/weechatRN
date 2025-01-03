@@ -2,11 +2,10 @@ import ExpoModulesCore
 
 // This view will be used as a native component. Make sure to inherit from `ExpoView`
 // to apply the proper styling (e.g. border radius and shadows).
-class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
-  private let measurer = UIView()
+class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate, ViewBoundsObserving {
+  private let measurer = BoundsObservableView()
   private let container = UIView()
   private var scrollView: ScrollViewWrapper?
-  private var measurerHasObserver = false
   private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
     let panGestureRecognizer = UIPanGestureRecognizer(
       target: self, action: #selector(scrollViewPanned))
@@ -24,12 +23,13 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
 
     clipsToBounds = true
 
-    addSubview(measurer)
     measurer.translatesAutoresizingMaskIntoConstraints = false
     measurer.isHidden = true
+    measurer.delegate = self
+    addSubview(measurer)
 
-    addSubview(container)
     container.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(container)
 
     NSLayoutConstraint.activate([
       measurer.topAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
@@ -78,12 +78,6 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
     }
   }
 
-  deinit {
-    if measurerHasObserver {
-      measurer.removeObserver(self, forKeyPath: "center")
-    }
-  }
-
   @objc private func keyboardWillShow(_ notification: Notification) {
     guard notification.isLocalKeyboard else { return }
 
@@ -93,11 +87,6 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   @objc private func keyboardDidShow(_ notification: Notification) {
     guard notification.isLocalKeyboard else { return }
 
-    // FIXME: don't use KVO
-    if !measurerHasObserver {
-      measurer.addObserver(self, forKeyPath: "center", options: .new, context: nil)
-      measurerHasObserver = true
-    }
     isKeyboardShown = true
   }
 
@@ -134,28 +123,16 @@ class KeyboardAvoidingView: ExpoView, UIGestureRecognizerDelegate {
   @objc private func keyboardWillHide(_ notification: Notification) {
     guard notification.isLocalKeyboard else { return }
 
-    if measurerHasObserver {
-      measurer.removeObserver(self, forKeyPath: "center")
-      measurerHasObserver = false
-    }
     isKeyboardShown = false
     updateInsets(notification, closing: true)
   }
 
-  @objc override public func observeValue(
-    forKeyPath keyPath: String?,
-    of object: Any?,
-    change: [NSKeyValueChangeKey: Any]?,
-    context _: UnsafeMutableRawPointer?
-  ) {
-    if keyPath == "center", object as? NSObject == measurer {
-      if !isScrollViewPanning {
-        return
-      }
-      self.scrollView?.setInsetsFromKeyboardHeight(measurer.frame.height)
-      self.containerBottomAnchorConstraint.constant = -measurer.frame.height
-      self.layoutIfNeeded()
-    }
+  func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
+    guard isKeyboardShown && isScrollViewPanning else { return }
+
+    self.scrollView?.setInsetsFromKeyboardHeight(view.bounds.height)
+    self.containerBottomAnchorConstraint.constant = -view.bounds.height
+    self.layoutIfNeeded()
   }
 
   func gestureRecognizer(
