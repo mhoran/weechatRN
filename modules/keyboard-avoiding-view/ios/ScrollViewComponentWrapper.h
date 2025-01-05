@@ -1,5 +1,4 @@
-#import <Foundation/Foundation.h>
-#import <React/RCTView.h>
+#import <UIKit/UIKit.h>
 
 @interface ScrollViewComponentWrapper : NSObject
 

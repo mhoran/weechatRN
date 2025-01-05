@@ -1,10 +1,10 @@
-#include "ScrollViewComponentWrapper.h"
+#import "ScrollViewComponentWrapper.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#include <React/RCTScrollViewComponentView.h>
+#import <React/RCTScrollViewComponentView.h>
 #define ReactScrollViewBase RCTScrollViewComponentView
 #else
-#include <React/RCTScrollView.h>
+#import <React/RCTScrollView.h>
 #define ReactScrollViewBase RCTScrollView
 #endif
 
