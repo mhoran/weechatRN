@@ -1,17 +1,18 @@
+import { configureStore } from '@reduxjs/toolkit';
 import 'react-native';
+import RelayClient from '../../../../src/lib/weechat/client';
+import { reducer } from '../../../../src/store';
+import * as actions from '../../../../src/store/actions';
+import type { AppState } from '../../../../src/store/app';
+import { act, fireEvent, render, screen } from '../../../../src/test-utils';
 import Buffer from '../../../../src/usecase/buffers/ui/Buffer';
 import BufferContainer from '../../../../src/usecase/buffers/ui/BufferContainer';
-import { act, render, screen } from '../../../../src/test-utils';
-import { reducer } from '../../../../src/store';
-import { configureStore } from '@reduxjs/toolkit';
-import * as actions from '../../../../src/store/actions';
-import RelayClient from '../../../../src/lib/weechat/client';
 
 jest.mock('../../../../src/usecase/buffers/ui/Buffer');
 
 describe('BufferContainer', () => {
   beforeEach(() => {
-    jest.mocked(Buffer).mockImplementation();
+    jest.mocked(Buffer).mockReset();
   });
 
   it('defers notification until buffer change and line fetch', () => {
@@ -184,5 +185,52 @@ describe('BufferContainer', () => {
       undefined
     );
     expect(store.getState().app.notification).toBeNull();
+  });
+
+  it('prevents sending message when disconnected', () => {
+    const bufferId = '86c417600';
+    const store = configureStore({
+      reducer,
+      preloadedState: {
+        buffers: {
+          [bufferId]: {
+            _id: '1730555173010842',
+            full_name: 'irc.libera.#weechat',
+            hidden: 0,
+            id: bufferId,
+            local_variables: {
+              channel: '#weechat',
+              name: 'libera.#weechat',
+              plugin: 'irc',
+              type: 'channel'
+            },
+            notify: 3,
+            number: 2,
+            pointers: [bufferId],
+            short_name: '#weechat',
+            title: '',
+            type: 0
+          }
+        },
+        app: { connected: false, currentBufferId: bufferId } as AppState
+      },
+      enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers({ autoBatch: false })
+    });
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+    client.sendMessageToBuffer = jest.fn();
+
+    render(
+      <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
+      { store }
+    );
+
+    const textInput = screen.getByLabelText('Buffer text field');
+
+    fireEvent(textInput, 'onChangeText', 'Hello, world!');
+    fireEvent(textInput, 'submitEditing');
+
+    expect(client.sendMessageToBuffer).not.toHaveBeenCalled();
+    expect(textInput.props.value).toEqual('Hello, world!');
   });
 });

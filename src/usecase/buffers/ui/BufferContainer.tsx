@@ -45,7 +45,8 @@ const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
     bufferId === state.app.notification?.bufferId &&
     state.app.currentBufferLinesFetched
       ? state.app.notification
-      : null
+      : null,
+  connected: state.app.connected
 }));
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -122,6 +123,8 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   handleSubmit = () => {
+    if (!this.props.connected) return;
+
     const { textValue } = this.state;
     textValue.split('\n').forEach((line) => {
       this.props.client.sendMessageToBuffer(this.props.buffer.full_name, line);
@@ -274,6 +277,7 @@ class BufferContainer extends React.Component<Props, State> {
               enablesReturnKeyAutomatically={true}
               multiline={true}
               autoCorrect={false}
+              accessibilityLabel="Buffer text field"
             />
             <Animated.View
               layout={needsAnimation ? LinearTransition : undefined}
