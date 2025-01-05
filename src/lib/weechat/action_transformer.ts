@@ -136,6 +136,13 @@ export const transformToReduxAction = (
 
       return actions.bufferLocalvarUpdateAction(buffer);
     }
+    case '_buffer_title_changed': {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return actions.bufferTitleChangedAction(buffer);
+    }
     case '_upgrade': {
       return actions.upgradeAction();
     }

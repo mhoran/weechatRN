@@ -3,6 +3,7 @@ import {
   bufferLocalvarUpdateAction,
   bufferOpenedAction,
   bufferRenamedAction,
+  bufferTitleChangedAction,
   fetchBuffersAction,
   lastReadLinesAction
 } from './actions';
@@ -36,6 +37,17 @@ const bufferReducer = createReducer(initialState, (builder) => {
         local_variables: {
           ...action.payload.local_variables
         }
+      }
+    };
+  });
+  builder.addCase(bufferTitleChangedAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
+    return {
+      ...state,
+      [action.payload.id]: {
+        ...state[action.payload.id],
+        title: action.payload.title
       }
     };
   });

@@ -61,6 +61,10 @@ export const bufferLocalvarUpdateAction = createAction(
   'BUFFER_LOCALVAR_UPDATE',
   prepareAutoBatched<WeechatBuffer>()
 );
+export const bufferTitleChangedAction = createAction(
+  'BUFFER_TITLE_CHANGED',
+  prepareAutoBatched<WeechatBuffer>()
+);
 export const bufferRenamedAction = createAction(
   'BUFFER_RENAMED',
   prepareAutoBatched<WeechatBuffer>()
