@@ -181,6 +181,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
 
     return (
       <FlatList
+        nativeID="buffer"
         ref={this.linesList}
         accessibilityLabel="Message list"
         style={{ backgroundColor: '#222' }}

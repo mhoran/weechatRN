@@ -9,6 +9,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   private lazy var containerBottomAnchorConstraint =
     container.bottomAnchor.constraint(equalTo: bottomAnchor)
   private var isKeyboardShown = false
+  var scrollViewNativeId: String?
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -125,29 +126,39 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height)
     self.containerBottomAnchorConstraint.constant = -view.bounds.height
     self.layoutIfNeeded()
-}
+  }
 
 #if RCT_NEW_ARCH_ENABLED
+  private func findScrollViewComponent(view: UIView) -> UIView? {
+    let nativeId = FabricViewWrapper(view: view)?.nativeId
+    if nativeId == scrollViewNativeId {
+      return view
+    }
+
+    for subview in view.subviews {
+      if let view = findScrollViewComponent(view: subview) {
+        return view
+      }
+    }
+
+    return nil
+  }
+
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-    // FIXME: Use a nativeID to find the ScrollView
-    if index == 0 {
-      scrollViewComponent = ScrollViewComponentWrapper(view: childComponentView)
+    if let view = findScrollViewComponent(view: childComponentView) {
+      scrollViewComponent = ScrollViewComponentWrapper(view: view)
     }
     container.insertSubview(childComponentView, at: index)
   }
 
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if childComponentView === scrollViewComponent?.view {
-      scrollViewComponent = nil
-    }
     childComponentView.removeFromSuperview()
   }
 #else
   override func insertReactSubview(_ subview: UIView!, at index: Int) {
     super.insertReactSubview(subview, at: index)
 
-    // FIXME: Use a nativeID to find the ScrollView
-    if index == 0 {
+    if subview.nativeID == scrollViewNativeId {
       scrollViewComponent = ScrollViewComponentWrapper(view: subview)
     }
     container.insertSubview(subview, at: index)

@@ -89,8 +89,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
-      <KeyboardAvoidingView>
-        <ScrollView alwaysBounceVertical={false}>
+      <KeyboardAvoidingView scrollViewNativeId="settings">
+        <ScrollView alwaysBounceVertical={false} nativeID="settings">
           <StatusBar barStyle="dark-content" translucent={true} />
           <Text style={styles.text}>
             Use the form below to configure media upload settings. This allows

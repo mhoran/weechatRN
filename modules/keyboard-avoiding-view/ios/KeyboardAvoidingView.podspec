@@ -23,5 +23,9 @@ Pod::Spec.new do |s|
 
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
 
+  if !new_arch_enabled
+    s.exclude_files = "fabric/**/*"
+  end
+
   install_modules_dependencies(s)
 end

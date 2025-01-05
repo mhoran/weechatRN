@@ -246,7 +246,10 @@ class BufferContainer extends React.Component<Props, State> {
             </Text>
           </View>
         )}
-        <KeyboardAvoidingView style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          scrollViewNativeId="buffer"
+        >
           <Buffer
             bufferId={bufferId}
             lines={lines}
