@@ -6,9 +6,6 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   private let measurer = BoundsObservableView()
   private let container = UIView()
   private var scrollViewComponent: ScrollViewComponentWrapper?
-  private lazy var containerBottomAnchorConstraint =
-    container.bottomAnchor.constraint(equalTo: bottomAnchor)
-  private var isKeyboardShown = false
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -24,7 +21,6 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     addSubview(container)
 
     NSLayoutConstraint.activate([
-      measurer.topAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
       measurer.leadingAnchor.constraint(equalTo: leadingAnchor),
       measurer.trailingAnchor.constraint(equalTo: trailingAnchor),
       measurer.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -34,98 +30,34 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
       container.heightAnchor.constraint(equalTo: heightAnchor),
       container.leadingAnchor.constraint(equalTo: leadingAnchor),
       container.trailingAnchor.constraint(equalTo: trailingAnchor),
-      containerBottomAnchorConstraint,
     ])
 
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(keyboardWillShow),
-      name: UIResponder.keyboardWillShowNotification,
-      object: nil
-    )
+    let measurerTopToKeyboard = measurer.topAnchor.constraint(
+      equalTo: keyboardLayoutGuide.topAnchor)
+    measurerTopToKeyboard.identifier = "measurerTopToKeyboard"
+    let containerBottomToKeyboard = container.bottomAnchor.constraint(
+      equalTo: keyboardLayoutGuide.topAnchor)
+    containerBottomToKeyboard.identifier = "containerBottomToKeyboard"
+    keyboardLayoutGuide.setConstraints(
+      [measurerTopToKeyboard, containerBottomToKeyboard], activeWhenNearEdge: .bottom)
 
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(keyboardDidShow),
-      name: UIResponder.keyboardDidShowNotification,
-      object: nil
-    )
+    let measurerTopToBottom = measurer.topAnchor.constraint(equalTo: bottomAnchor)
+    measurerTopToBottom.identifier = "measurerTopToKeyboard"
+    let containerBottomToBottom = container.bottomAnchor.constraint(equalTo: bottomAnchor)
+    containerBottomToBottom.identifier = "containerBottomToKeyboard"
+    keyboardLayoutGuide.setConstraints(
+      [measurerTopToBottom, containerBottomToBottom], activeWhenAwayFrom: .bottom)
 
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(keyboardWillChangeFrame),
-      name: UIResponder.keyboardWillChangeFrameNotification,
-      object: nil
-    )
-
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(keyboardWillHide),
-      name: UIResponder.keyboardWillHideNotification,
-      object: nil
-    )
+    keyboardLayoutGuide.followsUndockedKeyboard = true
 
     if #available(iOS 17.0, *) {
       keyboardLayoutGuide.usesBottomSafeArea = false
     }
   }
 
-  @objc private func keyboardWillShow(_ notification: Notification) {
-    guard notification.isLocalKeyboard else { return }
-
-    updateInsetsAndBottomAnchor(notification)
-  }
-
-  @objc private func keyboardDidShow(_ notification: Notification) {
-    guard notification.isLocalKeyboard else { return }
-
-    isKeyboardShown = true
-  }
-
-  @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-    guard notification.isLocalKeyboard && isKeyboardShown else { return }
-
-    updateInsetsAndBottomAnchor(notification)
-  }
-
-  private func updateInsetsAndBottomAnchor(_ notification: Notification, closing: Bool = false) {
-    guard let animationCurve = notification.animationCurve,
-      let animationDuration = notification.animationDuration,
-      let keyboardFrameEnd = notification.keyboardFrameEnd,
-      let fromCoordinateSpace = window?.screen.coordinateSpace
-    else { return }
-
-    let animationOptions = UIView.AnimationOptions(rawValue: animationCurve << 16)
-
-    let convertedFrameEnd = convert(keyboardFrameEnd, from: fromCoordinateSpace)
-    let viewIntersection = bounds.intersection(convertedFrameEnd)
-    let keyboardHeight =
-      closing || viewIntersection.isEmpty ? 0 : bounds.maxY - viewIntersection.minY
-
-    UIView.animate(
-      withDuration: animationDuration, delay: 0.0,
-      options: [animationOptions, .beginFromCurrentState]
-    ) {
-      self.scrollViewComponent?.setInsetsFromKeyboardHeight(keyboardHeight)
-      self.containerBottomAnchorConstraint.constant = -keyboardHeight
-      self.layoutIfNeeded()
-    }
-  }
-
-  @objc private func keyboardWillHide(_ notification: Notification) {
-    guard notification.isLocalKeyboard else { return }
-
-    isKeyboardShown = false
-    updateInsetsAndBottomAnchor(notification, closing: true)
-  }
-
   func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
-    guard isKeyboardShown && scrollViewComponent?.isScrollViewPanning == true else { return }
-
     self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height)
-    self.containerBottomAnchorConstraint.constant = -view.bounds.height
-    self.layoutIfNeeded()
-}
+  }
 
 #if RCT_NEW_ARCH_ENABLED
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
