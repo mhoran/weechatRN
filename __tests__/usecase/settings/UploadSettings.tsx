@@ -13,8 +13,6 @@ import {
 import type { RootStackParamList } from '../../../src/usecase/Root';
 import UploadSettings from '../../../src/usecase/settings/UploadSettings';
 
-jest.mock('../../../src/usecase/shared/UndoTextInput', () => 'TextInput');
-
 describe('UploadSettings', () => {
   it('stores the configured settings', async () => {
     const store = configureStore({ reducer });
