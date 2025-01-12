@@ -5,6 +5,7 @@
 @property(nullable, nonatomic, readonly) UIView *view;
 
 - (nullable instancetype)initWithView:(nonnull UIView *)view;
-- (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight;
+- (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight
+                       updateOffset:(BOOL)updateoffset;
 
 @end

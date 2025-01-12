@@ -56,7 +56,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   }
 
   func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
-    self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height)
+    self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height, updateOffset: false)
   }
 
 #if RCT_NEW_ARCH_ENABLED
@@ -64,6 +64,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
       scrollViewComponent = ScrollViewComponentWrapper(view: childComponentView)
+      scrollViewComponent?.setInsetsFromKeyboardHeight(measurer.bounds.height, updateOffset: true)
     }
     container.insertSubview(childComponentView, at: index)
   }
@@ -81,6 +82,7 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     // FIXME: Use a nativeID to find the ScrollView
     if index == 0 {
       scrollViewComponent = ScrollViewComponentWrapper(view: subview)
+      scrollViewComponent?.setInsetsFromKeyboardHeight(measurer.bounds.height, updateOffset: true)
     }
     container.insertSubview(subview, at: index)
   }

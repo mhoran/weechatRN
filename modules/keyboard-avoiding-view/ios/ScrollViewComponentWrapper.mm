@@ -22,20 +22,36 @@
   return self;
 }
 
-- (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight {
+- (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight
+                       updateOffset:(BOOL)updateOffset {
   if (!_scrollViewComponentView) {
     return;
   }
 
-  UIEdgeInsets newEdgeInsets = _scrollViewComponentView.scrollView.contentInset;
-  if ([self isInverted]) {
-    newEdgeInsets.bottom = keyboardHeight;
+  CGPoint contentOffset = _scrollViewComponentView.scrollView.contentOffset;
+  UIEdgeInsets currentContentInset =
+      _scrollViewComponentView.scrollView.contentInset;
+  UIEdgeInsets newContentInset =
+      _scrollViewComponentView.scrollView.contentInset;
+
+  bool isInverted = [self isInverted];
+  if (isInverted) {
+    newContentInset.bottom = keyboardHeight;
   } else {
-    newEdgeInsets.top = keyboardHeight;
+    newContentInset.top = keyboardHeight;
   }
 
-  _scrollViewComponentView.scrollView.contentInset = newEdgeInsets;
-  _scrollViewComponentView.scrollView.scrollIndicatorInsets = newEdgeInsets;
+  if (UIEdgeInsetsEqualToEdgeInsets(newContentInset, currentContentInset)) {
+    return;
+  }
+
+  _scrollViewComponentView.scrollView.contentInset = newContentInset;
+  _scrollViewComponentView.scrollView.scrollIndicatorInsets = newContentInset;
+
+  if (updateOffset) {
+    contentOffset.y -= isInverted ? 0 : keyboardHeight;
+    _scrollViewComponentView.scrollView.contentOffset = contentOffset;
+  }
 }
 
 - (bool)isInverted {
