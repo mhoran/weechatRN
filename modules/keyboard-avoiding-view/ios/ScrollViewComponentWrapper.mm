@@ -8,17 +8,9 @@
 #define ReactScrollViewBase RCTScrollView
 #endif
 
-@interface ScrollViewComponentWrapper ()
-
-@property (nonatomic, readwrite, assign) BOOL isScrollViewPanning;
-
-@end
-
 @implementation ScrollViewComponentWrapper {
   __weak ReactScrollViewBase *_scrollViewComponentView;
 }
-
-@synthesize isScrollViewPanning;
 
 - (instancetype)initWithView:(UIView *)view {
   if (![view isKindOfClass:[ReactScrollViewBase class]]) {
@@ -27,27 +19,39 @@
 
   self = [super init];
   _scrollViewComponentView = (ReactScrollViewBase *)view;
-  isScrollViewPanning = false;
-  [_scrollViewComponentView.scrollView.panGestureRecognizer
-      addTarget:self
-          action:@selector(scrollViewPanned:)];
   return self;
 }
 
-- (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight {
+- (void)setInsetsFromKeyboardHeight:(CGFloat)keyboardHeight
+                       updateOffset:(BOOL)updateOffset {
   if (!_scrollViewComponentView) {
     return;
   }
 
-  UIEdgeInsets newEdgeInsets = _scrollViewComponentView.scrollView.contentInset;
-  if ([self isInverted]) {
-    newEdgeInsets.bottom = keyboardHeight;
+  CGPoint contentOffset = _scrollViewComponentView.scrollView.contentOffset;
+  UIEdgeInsets currentContentInset =
+      _scrollViewComponentView.scrollView.contentInset;
+  UIEdgeInsets newContentInset =
+      _scrollViewComponentView.scrollView.contentInset;
+
+  bool isInverted = [self isInverted];
+  if (isInverted) {
+    newContentInset.bottom = keyboardHeight;
   } else {
-    newEdgeInsets.top = keyboardHeight;
+    newContentInset.top = keyboardHeight;
   }
 
-  _scrollViewComponentView.scrollView.contentInset = newEdgeInsets;
-  _scrollViewComponentView.scrollView.scrollIndicatorInsets = newEdgeInsets;
+  if (UIEdgeInsetsEqualToEdgeInsets(newContentInset, currentContentInset)) {
+    return;
+  }
+
+  _scrollViewComponentView.scrollView.contentInset = newContentInset;
+  _scrollViewComponentView.scrollView.scrollIndicatorInsets = newContentInset;
+
+  if (updateOffset) {
+    contentOffset.y -= isInverted ? 0 : keyboardHeight;
+    _scrollViewComponentView.scrollView.contentOffset = contentOffset;
+  }
 }
 
 - (bool)isInverted {
@@ -57,14 +61,6 @@
 
 - (nullable UIView *)view {
   return (UIView *)_scrollViewComponentView;
-}
-
-- (void)scrollViewPanned:(UIPanGestureRecognizer *)gesture {
-  if (gesture.state == UIGestureRecognizerStateBegan) {
-    isScrollViewPanning = YES;
-  } else if (gesture.state == UIGestureRecognizerStateEnded) {
-    isScrollViewPanning = NO;
-  }
 }
 
 @end
