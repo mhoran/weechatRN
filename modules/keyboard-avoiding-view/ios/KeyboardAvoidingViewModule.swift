@@ -13,7 +13,7 @@ public class KeyboardAvoidingViewModule: Module {
     // Enables the module to be used as a native view. Definition components that are accepted as part of the
     // view definition: Prop, Events.
     View(KeyboardAvoidingView.self) {
-
+      Events("onKeyboardHeightChanged")
     }
   }
 }
