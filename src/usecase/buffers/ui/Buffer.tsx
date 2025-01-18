@@ -188,6 +188,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         key={linesListKey}
         inverted
         keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
         initialNumToRender={initialNumToRender}
