@@ -118,6 +118,9 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   handleChangeText = (textValue: string) => {
+    // FIXME: programmatic change of TextInput value triggers onChangeText on Paper.
+    if (textValue === this.state.textValue) return;
+
     this.tabCompleteInProgress = false;
     this.setState({ textValue });
   };
