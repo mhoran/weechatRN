@@ -280,6 +280,7 @@ class BufferContainer extends React.Component<Props, State> {
               enablesReturnKeyAutomatically={true}
               multiline={true}
               autoCorrect={false}
+              spellCheck={true}
               accessibilityLabel="Buffer text field"
             />
             <Animated.View
