@@ -22,13 +22,13 @@ export default {
         }
       ]
     },
-    buildNumber: '11'
+    buildNumber: '1'
   },
   android: {
     package: IS_PROD ? 'com.matthoran.weechatrn' : 'com.matthoran.weechatrn.dev'
   },
   platforms: ['ios', 'android'],
-  version: '1.3.0',
+  version: '1.4.0',
   icon: './assets/icon.png',
   plugins: [
     [
