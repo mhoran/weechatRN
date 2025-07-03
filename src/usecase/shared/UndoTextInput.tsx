@@ -4,7 +4,7 @@ import { TextInput } from 'react-native';
 type Props = React.ComponentProps<typeof TextInput>;
 
 const UndoTextInput: React.FC<Props> = ({ value, onChangeText, ...rest }) => {
-  const lastValue = useRef<string>();
+  const lastValue = useRef<string>(undefined);
   const textInput = useRef<TextInput>(null);
 
   const handleChangeText = (textValue: string) => {

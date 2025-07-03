@@ -228,7 +228,7 @@ describe('App', () => {
         expect.objectContaining({
           message: 'There was an error connecting.'
         }),
-        expect.anything()
+        undefined
       );
 
       const snackbar = screen.getByRole('alert');
@@ -255,11 +255,11 @@ describe('App', () => {
           message: 'There was an error connecting.',
           onDismiss: expect.any(Function)
         }),
-        expect.anything()
+        undefined
       );
       const snackbar = screen.getByRole('alert');
 
-      jest.mocked(Snackbar).mock.calls[0][0].onDismiss();
+      act(() => jest.mocked(Snackbar).mock.calls[0][0].onDismiss());
 
       expect(snackbar).not.toBeOnTheScreen();
     });
@@ -284,7 +284,7 @@ describe('App', () => {
         }
       );
 
-      jest.mocked(Snackbar).mock.calls[0][0].onDismiss();
+      act(() => jest.mocked(Snackbar).mock.calls[0][0].onDismiss());
 
       screen.rerender(
         <App
@@ -303,7 +303,7 @@ describe('App', () => {
         expect.objectContaining({
           message: 'There was a different error connecting.'
         }),
-        expect.anything()
+        undefined
       );
 
       const snackbar = screen.getByRole('alert');

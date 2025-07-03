@@ -38,7 +38,8 @@ export default {
         image: './assets/splash.png',
         imageWidth: 1242
       }
-    ]
+    ],
+    'expo-notifications'
   ],
   updates: {
     fallbackToCacheTimeout: 0,

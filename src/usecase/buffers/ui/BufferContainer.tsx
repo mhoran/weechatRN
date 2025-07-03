@@ -196,10 +196,10 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleLineOnLongPress = (line: WeechatLine) => {
     const prefix = renderWeechatFormat(line.prefix).map(
-      (value) => value.children
+      (value) => value.children as string
     );
     const message = renderWeechatFormat(line.message).map(
-      (value) => value.children
+      (value) => value.children as string
     );
 
     ActionSheetIOS.showActionSheetWithOptions(
