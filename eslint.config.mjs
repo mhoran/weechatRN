@@ -3,10 +3,11 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginJest from 'eslint-plugin-jest';
 import reactPlugin from 'eslint-plugin-react';
 import hooksPlugin from 'eslint-plugin-react-hooks';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: ['src/lib/weechat/parser.js', '.expo/**/*', 'android/**/*']
   },
@@ -23,7 +24,7 @@ export default tseslint.config(
       },
       parser: tseslint.parser,
       parserOptions: {
-        project: true
+        projectService: true
       }
     },
     settings: { react: { version: 'detect' } },

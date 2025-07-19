@@ -4,7 +4,7 @@ export default {
   name: IS_PROD ? 'WeechatRN' : 'WeechatRN (Dev)',
   description: 'Weechat relay client using websockets',
   slug: 'WeechatRN',
-  newArchEnabled: false,
+  newArchEnabled: true,
   ios: {
     bundleIdentifier: IS_PROD
       ? 'com.matthoran.weechatrn'

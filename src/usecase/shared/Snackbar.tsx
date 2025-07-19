@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 interface SnackbarProps {
   message: string;
@@ -34,7 +34,7 @@ export const Snackbar: React.FC<SnackbarProps> = ({ message, onDismiss }) => {
             translateX.value = withTiming(
               translateX.value > 0 ? windowWidth : -windowWidth,
               undefined,
-              () => runOnJS(onDismiss)()
+              () => scheduleOnRN(onDismiss)
             );
           } else {
             translateX.value = withSpring(0);

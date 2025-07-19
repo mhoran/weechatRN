@@ -1,10 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
-import type {
-  NativeSyntheticEvent,
-  TextInputSelectionChangeEventData
-} from 'react-native';
+import type { TextInputSelectionChangeEvent } from 'react-native';
 import {
   ActionSheetIOS,
   Linking,
@@ -18,9 +15,9 @@ import ParsedText from 'react-native-parsed-text';
 import Animated, {
   FadeInRight,
   FadeOutRight,
-  LinearTransition,
-  runOnJS
+  LinearTransition
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import type { ConnectedProps } from 'react-redux';
 import { connect } from 'react-redux';
 import { KeyboardAvoidingView } from '../../../../modules/keyboard-avoiding-view';
@@ -190,7 +187,7 @@ class BufferContainer extends React.Component<Props, State> {
 
   handleSelectionChange = ({
     nativeEvent: { selection }
-  }: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+  }: TextInputSelectionChangeEvent) => {
     this.setState({ selection });
   };
 
@@ -223,7 +220,7 @@ class BufferContainer extends React.Component<Props, State> {
 
   animationComplete = ((disableAnimation) => () => {
     'worklet';
-    runOnJS(disableAnimation)();
+    scheduleOnRN(disableAnimation);
   })(this.disableAnimation);
 
   render() {
