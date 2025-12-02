@@ -39,7 +39,8 @@ export default {
         imageWidth: 1242
       }
     ],
-    'expo-notifications'
+    'expo-notifications',
+    'expo-image-picker'
   ],
   updates: {
     fallbackToCacheTimeout: 0,
