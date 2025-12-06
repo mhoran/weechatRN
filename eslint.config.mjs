@@ -1,4 +1,3 @@
-import { fixupPluginRules } from '@eslint/compat';
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginJest from 'eslint-plugin-jest';
@@ -15,11 +14,9 @@ export default tseslint.config(
   ...tseslint.configs.recommendedTypeChecked,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
+  hooksPlugin.configs.flat.recommended,
   eslintConfigPrettier,
   {
-    plugins: {
-      'react-hooks': fixupPluginRules(hooksPlugin)
-    },
     languageOptions: {
       globals: {
         ...globals.node
@@ -31,8 +28,6 @@ export default tseslint.config(
     },
     settings: { react: { version: 'detect' } },
     rules: {
-      ...hooksPlugin.configs.recommended.rules,
-
       eqeqeq: 'error',
       'no-param-reassign': ['error', { props: true }],
 
