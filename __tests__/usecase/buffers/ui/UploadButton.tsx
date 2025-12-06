@@ -1,6 +1,9 @@
 import { render, screen } from '@testing-library/react-native';
-import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import type { FetchResponse } from 'expo/build/winter/fetch/FetchResponse';
+import { fetch } from 'expo/fetch';
+import * as fs from 'fs';
+import path from 'path';
 import type { TapGesture } from 'react-native-gesture-handler';
 import {
   fireGestureHandler,
@@ -8,17 +11,19 @@ import {
 } from 'react-native-gesture-handler/jest-utils';
 import UploadButton from '../../../../src/usecase/buffers/ui/UploadButton';
 
+const mockFile = new Blob([
+  new Uint8Array(fs.readFileSync(path.join(__dirname, 'test.jpg')))
+]);
 jest.mock('expo-file-system', () => {
-  const FileSystem = jest.requireActual('expo-file-system');
   return {
-    FileSystemUploadType: FileSystem.FileSystemUploadType,
-    uploadAsync: jest.fn()
+    File: jest.fn().mockImplementation(() => mockFile)
   };
 });
-const mockedFileSystem = jest.mocked(FileSystem);
+
+const mockedFetch = jest.mocked(fetch);
 
 describe('UploadButton', () => {
-  let resolveUpload: (result: FileSystem.FileSystemUploadResult) => void;
+  let resolveUpload: (result: FetchResponse) => void;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -29,8 +34,7 @@ describe('UploadButton', () => {
           assets: [{ uri: 'file:///tmp/image.jpg' }]
         } as ImagePicker.ImagePickerResult);
       });
-
-    mockedFileSystem.uploadAsync.mockImplementation(() => {
+    mockedFetch.mockImplementation(() => {
       return new Promise((resolve) => (resolveUpload = resolve));
     });
   });
@@ -51,8 +55,8 @@ describe('UploadButton', () => {
 
     resolveUpload({
       status: 200,
-      body: 'https://example.com/image.jpg'
-    } as FileSystem.FileSystemUploadResult);
+      text: () => Promise.resolve('https://example.com/image.jpg')
+    } as FetchResponse);
 
     await screen.findByLabelText('Upload Image');
 
@@ -61,18 +65,22 @@ describe('UploadButton', () => {
       allowsMultipleSelection: false,
       quality: 1
     });
-    expect(FileSystem.uploadAsync).toHaveBeenCalledWith(
-      'https://example.com',
-      'file:///tmp/image.jpg',
-      {
-        fieldName: 'file',
-        uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-        headers: {
-          Authorization:
-            'Basic ' + Buffer.from('test:changeme').toString('base64')
-        }
+    expect(fetch).toHaveBeenCalledWith('https://example.com', {
+      method: 'POST',
+      body: expect.any(FormData),
+      headers: {
+        Authorization:
+          'Basic ' + Buffer.from('test:changeme').toString('base64')
       }
-    );
+    });
+
+    const fetchOptions = mockedFetch.mock.calls[0][1];
+    expect(fetchOptions).not.toBeNull();
+    const formData = fetchOptions!.body as FormData;
+    expect(formData.has('file')).toEqual(true);
+    const blob = formData.get('file') as Blob;
+    expect(await blob.bytes()).toEqual(await mockFile.bytes());
+
     expect(onUpload).toHaveBeenCalledWith('https://example.com/image.jpg');
   });
 
@@ -128,22 +136,18 @@ describe('UploadButton', () => {
 
       resolveUpload({
         status: 200,
-        body: 'https://example.com/image.jpg'
-      } as FileSystem.FileSystemUploadResult);
+        text: () => Promise.resolve('https://example.com/image.jpg')
+      } as FetchResponse);
 
       await screen.findByLabelText('Upload Image');
 
-      expect(FileSystem.uploadAsync).toHaveBeenCalledWith(
-        'https://example.com',
-        'file:///tmp/image.jpg',
-        {
-          fieldName: 'file',
-          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-          headers: {
-            Authorization: 'Bearer token'
-          }
+      expect(fetch).toHaveBeenCalledWith('https://example.com', {
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: {
+          Authorization: 'Bearer token'
         }
-      );
+      });
     });
   });
 

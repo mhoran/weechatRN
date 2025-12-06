@@ -1,8 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { fetch } from 'expo/fetch';
 import { useState } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
@@ -45,7 +46,9 @@ const UploadButton: React.FC<Props> = ({
       allowsMultipleSelection: false
     });
 
-    void handleImagePicked(result);
+    if (result.canceled) return;
+
+    void handleImagePicked(result.assets[0].uri);
   };
 
   const pickImage = async () => {
@@ -55,7 +58,9 @@ const UploadButton: React.FC<Props> = ({
       quality: 1
     });
 
-    void handleImagePicked(result);
+    if (result.canceled) return;
+
+    void handleImagePicked(result.assets[0].uri);
   };
 
   const pickDocument = async () => {
@@ -64,24 +69,19 @@ const UploadButton: React.FC<Props> = ({
       type: 'image/*'
     });
 
-    void handleImagePicked(result);
+    if (result.canceled) return;
+
+    void handleImagePicked(result.assets[0].uri);
   };
 
-  const handleImagePicked = async (
-    pickerResult:
-      | ImagePicker.ImagePickerResult
-      | DocumentPicker.DocumentPickerResult
-  ) => {
+  const handleImagePicked = async (fileUri: string) => {
     try {
-      if (pickerResult.canceled) {
-        return;
-      } else {
-        setShowSpinner(true);
-        const uploadUrl = await uploadImage(pickerResult.assets[0].uri);
-        const matches = uploadUrl.match(new RegExp(uploadOptionsRegexp));
-        if (!matches) return alert('Failed to extract URL from response');
-        onUpload(matches[1] || matches[0]);
-      }
+      setShowSpinner(true);
+      const file = new File(fileUri);
+      const uploadUrl = await uploadImage(file);
+      const matches = uploadUrl.match(new RegExp(uploadOptionsRegexp));
+      if (!matches) return alert('Failed to extract URL from response');
+      onUpload(matches[1] || matches[0]);
     } catch {
       alert('Upload failed');
     } finally {
@@ -89,10 +89,13 @@ const UploadButton: React.FC<Props> = ({
     }
   };
 
-  const uploadImage = async (fileUri: string) => {
-    const response = await FileSystem.uploadAsync(uploadOptions.url, fileUri, {
-      fieldName: uploadOptionsFieldName,
-      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append(uploadOptionsFieldName, file);
+
+    const response = await fetch(uploadOptions.url, {
+      method: 'POST',
+      body: formData,
       headers: {
         ...(uploadOptions.basicAuth && {
           Authorization:
@@ -105,7 +108,7 @@ const UploadButton: React.FC<Props> = ({
       }
     });
 
-    if (response.status === 200) return response.body;
+    if (response.status === 200) return response.text();
     else throw Error('Upload failed');
   };
 
