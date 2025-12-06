@@ -102,4 +102,68 @@ describe(Buffer, () => {
       });
     });
   });
+
+  describe('load more lines button', () => {
+    const default_line_increment = Buffer.DEFAULT_LINE_INCREMENT;
+
+    beforeEach(() => {
+      Object.defineProperty(Buffer, 'DEFAULT_LINE_INCREMENT', {
+        value: default_line_increment,
+        writable: false
+      });
+    });
+
+    it('only renders when there are more lines to load', () => {
+      Object.defineProperty(Buffer, 'DEFAULT_LINE_INCREMENT', {
+        value: 1,
+        writable: false
+      });
+
+      const lines = [
+        {
+          id: 0,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 1,
+          message: 'First message',
+          pointers: ['86c417600', '8580eeec0', '8580dcf80', '86c2fefd0'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine
+      ];
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <Buffer
+          lines={[]}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+        />
+      );
+
+      measureNickWidth();
+
+      expect(screen.queryByLabelText('Message list')).not.toBeNull();
+
+      expect(screen.queryByText('Load more lines')).toBeNull();
+
+      screen.rerender(
+        <Buffer
+          lines={lines}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+        />
+      );
+
+      expect(screen.queryByText('Load more lines')).not.toBeNull();
+    });
+  });
 });

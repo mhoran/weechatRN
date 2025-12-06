@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type {
   CellRendererProps,
   LayoutChangeEvent,
@@ -25,18 +25,14 @@ interface Props {
 const keyExtractor = (line: WeechatLine) => String(line.id);
 
 interface HeaderProps {
-  bufferId: string;
   lines: number;
   fetchMoreLines: (lines: number) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ bufferId, lines, fetchMoreLines }) => {
+const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
   const [desiredLines, setDesiredLines] = useState(
     Buffer.DEFAULT_LINE_INCREMENT
   );
-  useEffect(() => {
-    setDesiredLines(Buffer.DEFAULT_LINE_INCREMENT);
-  }, [bufferId]);
 
   if (lines < desiredLines) return;
 
@@ -161,7 +157,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { bufferId, lines } = this.props;
+    const { lines } = this.props;
     const { linesListKey, initialNumToRender } = this.state;
 
     if (!this.state.nickWidth) {
@@ -196,11 +192,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         windowSize={15}
         CellRendererComponent={this.renderCell}
         ListFooterComponent={
-          <Header
-            bufferId={bufferId}
-            lines={lines.length}
-            fetchMoreLines={this.fetchMoreLines}
-          />
+          <Header lines={lines.length} fetchMoreLines={this.fetchMoreLines} />
         }
       />
     );
