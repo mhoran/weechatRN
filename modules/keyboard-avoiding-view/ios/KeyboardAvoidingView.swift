@@ -59,45 +59,30 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height, updateOffset: false)
   }
 
-#if RCT_NEW_ARCH_ENABLED
+  private func findScrollViewComponent(view: UIView) -> ScrollViewComponentWrapper? {
+    if let scrollViewComponent = ScrollViewComponentWrapper(view: view) {
+      return scrollViewComponent
+    }
+
+    for subview in view.subviews {
+      if let view = findScrollViewComponent(view: subview) {
+        return view
+      }
+    }
+
+    return nil
+  }
+
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-    // FIXME: Use a nativeID to find the ScrollView
-    if index == 0 {
-      scrollViewComponent = ScrollViewComponentWrapper(view: childComponentView)
+    if let scrollView = findScrollViewComponent(view: childComponentView) {
+      scrollViewComponent = scrollView
       scrollViewComponent?.setInsetsFromKeyboardHeight(measurer.bounds.height, updateOffset: true)
     }
+
     container.insertSubview(childComponentView, at: index)
   }
 
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if childComponentView === scrollViewComponent?.view {
-      scrollViewComponent = nil
-    }
     childComponentView.removeFromSuperview()
   }
-#else
-  override func insertReactSubview(_ subview: UIView!, at index: Int) {
-    super.insertReactSubview(subview, at: index)
-
-    // FIXME: Use a nativeID to find the ScrollView
-    if index == 0 {
-      scrollViewComponent = ScrollViewComponentWrapper(view: subview)
-      scrollViewComponent?.setInsetsFromKeyboardHeight(measurer.bounds.height, updateOffset: true)
-    }
-    container.insertSubview(subview, at: index)
-  }
-
-  override func removeReactSubview(_ subview: UIView!) {
-    super.removeReactSubview(subview)
-
-    if subview === scrollViewComponent?.view {
-      scrollViewComponent = nil
-    }
-    subview.removeFromSuperview()
-  }
-
-  override func didUpdateReactSubviews() {
-    // no-op
-  }
-#endif
 }

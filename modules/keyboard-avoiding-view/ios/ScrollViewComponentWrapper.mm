@@ -1,12 +1,7 @@
 #import "ScrollViewComponentWrapper.h"
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTScrollViewComponentView.h>
 #define ReactScrollViewBase RCTScrollViewComponentView
-#else
-#import <React/RCTScrollView.h>
-#define ReactScrollViewBase RCTScrollView
-#endif
 
 @implementation ScrollViewComponentWrapper {
   __weak ReactScrollViewBase *_scrollViewComponentView;
