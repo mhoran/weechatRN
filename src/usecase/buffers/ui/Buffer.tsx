@@ -1,11 +1,8 @@
+import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
+import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
 import { useState } from 'react';
-import type {
-  CellRendererProps,
-  LayoutChangeEvent,
-  ListRenderItem
-} from 'react-native';
-import { Button, FlatList, Text, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
@@ -50,23 +47,17 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
 
 interface State {
   nickWidth: number;
-  linesListKey: number;
-  initialNumToRender: number;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
   static readonly DEFAULT_LINE_INCREMENT = 300;
   static readonly NUM_LINES_TO_RENDER = 35;
 
-  linesList = React.createRef<FlatList<WeechatLine>>();
+  linesList = React.createRef<FlashListRef<WeechatLine>>();
 
   state: State = {
-    nickWidth: 0,
-    linesListKey: 0,
-    initialNumToRender: Buffer.NUM_LINES_TO_RENDER
+    nickWidth: 0
   };
-
-  notificationLineId: number | null = null;
 
   componentDidUpdate(prevProps: Readonly<Props>): void {
     const { notificationLineId, clearNotification, lines } = this.props;
@@ -80,20 +71,13 @@ export default class Buffer extends React.PureComponent<Props, State> {
       const index = lines.findIndex((line) => line.id === notificationLineId);
       if (index < 0) return;
 
-      this.notificationLineId = notificationLineId;
-      this.setState((state) => ({
-        linesListKey: state.linesListKey + 1,
-        initialNumToRender: index + 1 + Buffer.NUM_LINES_TO_RENDER
-      }));
-
-      return;
-    }
-
-    if (this.props.bufferId !== prevProps.bufferId) {
-      this.setState((state) => ({
-        linesListKey: state.linesListKey + 1,
-        initialNumToRender: Buffer.NUM_LINES_TO_RENDER
-      }));
+      setTimeout(() => {
+        void this.linesList.current?.scrollToIndex({
+          index,
+          animated: true,
+          viewPosition: 0.5
+        });
+      });
     }
   }
 
@@ -106,7 +90,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
     const { nickWidth } = this.state;
 
     let lastMessage;
-    for (let i = index + 1; i < lines.length; i++) {
+    for (let i = index - 1; i >= 0; i--) {
       if (lines[i].displayed) {
         lastMessage = lines[i];
         break;
@@ -125,40 +109,8 @@ export default class Buffer extends React.PureComponent<Props, State> {
     );
   };
 
-  renderCell: React.FC<CellRendererProps<WeechatLine>> = ({
-    cellKey,
-    index,
-    item,
-    ...props
-  }) => {
-    const isNotificationLine =
-      this.notificationLineId !== undefined &&
-      item.id === this.notificationLineId;
-
-    const onLayout = (event: LayoutChangeEvent) => {
-      props.onLayout?.(event);
-
-      this.notificationLineId = null;
-
-      this.linesList.current?.scrollToIndex({
-        index,
-        animated: true,
-        viewPosition: 0.5
-      });
-    };
-
-    return (
-      <View
-        {...props}
-        testID={`renderCell(${index})`}
-        onLayout={isNotificationLine ? onLayout : props.onLayout}
-      />
-    );
-  };
-
   render() {
-    const { lines } = this.props;
-    const { linesListKey, initialNumToRender } = this.state;
+    const { lines, bufferId } = this.props;
 
     if (!this.state.nickWidth) {
       return (
@@ -176,23 +128,23 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
 
     return (
-      <FlatList
+      <FlashList
         ref={this.linesList}
         accessibilityLabel="Message list"
         style={{ backgroundColor: '#222' }}
         data={lines}
-        key={linesListKey}
-        inverted
+        key={bufferId}
+        maintainVisibleContentPosition={{
+          startRenderingFromBottom: true,
+          autoscrollToBottomThreshold: 0.2,
+          animateAutoScrollToBottom: false
+        }}
         scrollsToTop={false}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
         keyExtractor={keyExtractor}
         renderItem={this.renderBuffer}
-        initialNumToRender={initialNumToRender}
-        maxToRenderPerBatch={Buffer.NUM_LINES_TO_RENDER}
-        windowSize={15}
-        CellRendererComponent={this.renderCell}
-        ListFooterComponent={
+        ListHeaderComponent={
           <Header lines={lines.length} fetchMoreLines={this.fetchMoreLines} />
         }
       />

@@ -1,5 +1,4 @@
 import { isSameDay } from 'date-fns';
-import { memo } from 'react';
 import { Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import { formatDateDayChange } from '../../../lib/helpers/date-formatter';
@@ -55,4 +54,4 @@ const BufferLine: React.FC<Props> = ({
   );
 };
 
-export default memo(BufferLine);
+export default BufferLine;

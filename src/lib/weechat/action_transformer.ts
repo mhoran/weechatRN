@@ -228,7 +228,8 @@ export const transformToReduxAction = (
       ) => {
         dispatch(
           actions.fetchLinesAction(
-            object.content.map((line) => {
+            object.content.map((_, index, lines) => {
+              const line = lines[lines.length - 1 - index];
               const { id, pointers, date, date_printed } = line;
 
               return {

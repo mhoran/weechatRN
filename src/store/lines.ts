@@ -33,8 +33,8 @@ const linesReducer = createReducer(initialState, (builder) => {
     return {
       ...state,
       [action.payload.line.buffer]: [
-        action.payload.line,
-        ...(state[action.payload.line.buffer] ?? [])
+        ...(state[action.payload.line.buffer] ?? []),
+        action.payload.line
       ]
     };
   });
