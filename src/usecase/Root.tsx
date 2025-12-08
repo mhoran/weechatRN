@@ -50,21 +50,27 @@ export default class WeechatNative extends React.Component<null, State> {
     }
   });
 
+  notificationHandler = (response: Notifications.NotificationResponse) => {
+    const request = response.notification.request;
+    const { bufferId, lineId } = request.content.data;
+
+    console.log('got', bufferId, lineId);
+
+    if (bufferId === undefined || lineId === undefined) return;
+
+    store.dispatch(
+      actions.pendingBufferNotificationAction({
+        identifier: request.identifier,
+        bufferId: BigInt(bufferId as string).toString(),
+        lineId: Number(lineId)
+      })
+    );
+
+    Notifications.clearLastNotificationResponse();
+  };
+
   responseListener = Notifications.addNotificationResponseReceivedListener(
-    (response) => {
-      const request = response.notification.request;
-      const { bufferId, lineId } = request.content.data;
-
-      if (bufferId === undefined || lineId === undefined) return;
-
-      store.dispatch(
-        actions.pendingBufferNotificationAction({
-          identifier: request.identifier,
-          bufferId: BigInt(bufferId as string).toString(),
-          lineId: Number(lineId)
-        })
-      );
-    }
+    this.notificationHandler
   );
 
   unsubscribeUpgradeListener: UnsubscribeListener;
@@ -73,6 +79,7 @@ export default class WeechatNative extends React.Component<null, State> {
 
   constructor(props: null) {
     super(props);
+
     this.unsubscribeUpgradeListener = store.dispatch(
       addListener({
         actionCreator: actions.upgradeAction,
@@ -95,6 +102,9 @@ export default class WeechatNative extends React.Component<null, State> {
         PendingBufferNotificationListener(this.client)
       )
     );
+
+    const pendingNotification = Notifications.getLastNotificationResponse();
+    if (pendingNotification) this.notificationHandler(pendingNotification);
   }
 
   componentWillUnmount(): void {
