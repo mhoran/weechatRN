@@ -183,6 +183,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
         data={lines}
         key={linesListKey}
         inverted
+        scrollsToTop={false}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
         keyExtractor={keyExtractor}

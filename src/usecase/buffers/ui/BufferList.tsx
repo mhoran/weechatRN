@@ -58,6 +58,7 @@ const BufferList: React.FC<Props> = ({ currentBufferId, onSelectBuffer }) => {
         data={buffers}
         keyExtractor={keyExtractor}
         renderItem={renderListItem}
+        scrollsToTop={false}
       />
     </View>
   );
