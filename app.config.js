@@ -22,7 +22,10 @@ export default {
         }
       ]
     },
-    buildNumber: '3'
+    buildNumber: '3',
+    infoPlist: {
+      UIDesignRequiresCompatibility: true
+    }
   },
   android: {
     package: IS_PROD ? 'com.matthoran.weechatrn' : 'com.matthoran.weechatrn.dev'
