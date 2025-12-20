@@ -1,8 +1,14 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
 import { useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import type {
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent
+} from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
@@ -47,6 +53,8 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
 
 interface State {
   nickWidth: number;
+  listHeight: number;
+  showScrollToEndButton: boolean;
 }
 
 export default class Buffer extends React.PureComponent<Props, State> {
@@ -56,7 +64,9 @@ export default class Buffer extends React.PureComponent<Props, State> {
   linesList = React.createRef<FlashListRef<WeechatLine>>();
 
   state: State = {
-    nickWidth: 0
+    nickWidth: 0,
+    listHeight: 0,
+    showScrollToEndButton: false
   };
 
   componentDidUpdate(prevProps: Readonly<Props>): void {
@@ -109,6 +119,25 @@ export default class Buffer extends React.PureComponent<Props, State> {
     );
   };
 
+  updateListHeight = (event: LayoutChangeEvent) =>
+    this.setState({ listHeight: event.nativeEvent.layout.height });
+
+  handleOnScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const {
+      nativeEvent: {
+        contentOffset: { y: contentOffsetY },
+        contentSize: { height: contentHeight }
+      }
+    } = event;
+
+    // FIXME: layoutMeasurement.height is incorrect when backgrounded on iOS
+    if (contentOffsetY + this.state.listHeight < contentHeight) {
+      this.setState({ showScrollToEndButton: true });
+    } else {
+      this.setState({ showScrollToEndButton: false });
+    }
+  };
+
   render() {
     const { lines, bufferId } = this.props;
 
@@ -128,26 +157,60 @@ export default class Buffer extends React.PureComponent<Props, State> {
     }
 
     return (
-      <FlashList
-        ref={this.linesList}
-        accessibilityLabel="Message list"
-        style={{ backgroundColor: '#222' }}
-        data={lines}
-        key={bufferId}
-        maintainVisibleContentPosition={{
-          startRenderingFromBottom: true,
-          autoscrollToBottomThreshold: 0.2,
-          animateAutoScrollToBottom: false
-        }}
-        scrollsToTop={false}
-        keyboardDismissMode="interactive"
-        keyboardShouldPersistTaps="handled"
-        keyExtractor={keyExtractor}
-        renderItem={this.renderBuffer}
-        ListHeaderComponent={
-          <Header lines={lines.length} fetchMoreLines={this.fetchMoreLines} />
-        }
-      />
+      <View style={styles.container}>
+        <FlashList
+          ref={this.linesList}
+          accessibilityLabel="Message list"
+          style={{ backgroundColor: '#222' }}
+          data={lines}
+          key={bufferId}
+          maintainVisibleContentPosition={{
+            startRenderingFromBottom: true,
+            autoscrollToBottomThreshold: 0.2,
+            animateAutoScrollToBottom: false
+          }}
+          scrollsToTop={false}
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
+          keyExtractor={keyExtractor}
+          renderItem={this.renderBuffer}
+          ListHeaderComponent={
+            <Header lines={lines.length} fetchMoreLines={this.fetchMoreLines} />
+          }
+          onLayout={this.updateListHeight}
+          onScroll={this.handleOnScroll}
+        />
+        {this.state.showScrollToEndButton && (
+          <View style={styles.scrollToEndButton}>
+            <MaterialIcons
+              name="keyboard-arrow-down"
+              size={44}
+              color="#fff"
+              onPress={() =>
+                this.linesList.current?.scrollToEnd({ animated: true })
+              }
+              accessibilityLabel="Scroll to end"
+            />
+          </View>
+        )}
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  scrollToEndButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    marginBottom: 10,
+    marginRight: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    backgroundColor: '#222'
+  }
+});
