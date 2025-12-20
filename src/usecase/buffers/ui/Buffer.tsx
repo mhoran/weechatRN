@@ -87,7 +87,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
           animated: true,
           viewPosition: 0.5
         });
-      });
+      }, 100);
     }
   }
 
