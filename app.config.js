@@ -22,7 +22,7 @@ export default {
         }
       ]
     },
-    buildNumber: '3',
+    buildNumber: '1',
     infoPlist: {
       UIDesignRequiresCompatibility: true
     }
@@ -31,7 +31,7 @@ export default {
     package: IS_PROD ? 'com.matthoran.weechatrn' : 'com.matthoran.weechatrn.dev'
   },
   platforms: ['ios', 'android'],
-  version: '1.4.0',
+  version: '1.5.0',
   icon: './assets/icon.png',
   plugins: [
     [
