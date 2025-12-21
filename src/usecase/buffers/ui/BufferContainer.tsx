@@ -63,7 +63,7 @@ interface State {
   selection: { start: number; end: number };
 }
 
-class BufferContainer extends React.Component<Props, State> {
+class BufferContainer extends React.PureComponent<Props, State> {
   state = {
     showTabButton: false,
     needsAnimation: false,
@@ -115,9 +115,6 @@ class BufferContainer extends React.Component<Props, State> {
   };
 
   handleChangeText = (textValue: string) => {
-    // FIXME: programmatic change of TextInput value triggers onChangeText on Paper.
-    if (textValue === this.state.textValue) return;
-
     this.tabCompleteInProgress = false;
     this.setState({ textValue });
   };
@@ -276,7 +273,6 @@ class BufferContainer extends React.Component<Props, State> {
               onSubmitEditing={this.handleSubmit}
               enablesReturnKeyAutomatically={true}
               multiline={true}
-              autoCorrect={false}
               spellCheck={true}
               accessibilityLabel="Buffer text field"
             />
