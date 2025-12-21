@@ -1,5 +1,5 @@
 import eslint from '@eslint/js';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import pluginJest from 'eslint-plugin-jest';
 import reactPlugin from 'eslint-plugin-react';
 import hooksPlugin from 'eslint-plugin-react-hooks';
