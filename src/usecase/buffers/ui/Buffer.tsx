@@ -6,7 +6,8 @@ import { useState } from 'react';
 import type {
   LayoutChangeEvent,
   NativeScrollEvent,
-  NativeSyntheticEvent
+  NativeSyntheticEvent,
+  ViewStyle
 } from 'react-native';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
@@ -49,6 +50,10 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
       }}
     />
   );
+};
+
+const CellComponent: React.FC<{ style: ViewStyle }> = ({ style, ...props }) => {
+  return <View {...props} style={[style, styles.cell]} />;
 };
 
 interface State {
@@ -174,6 +179,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
           keyboardShouldPersistTaps="handled"
           keyExtractor={keyExtractor}
           renderItem={this.renderBuffer}
+          CellRendererComponent={CellComponent}
           ListHeaderComponent={
             <Header lines={lines.length} fetchMoreLines={this.fetchMoreLines} />
           }
@@ -213,5 +219,8 @@ const styles = StyleSheet.create({
     borderRadius: '50%',
     backgroundColor: '#222',
     overflow: 'hidden'
+  },
+  cell: {
+    backgroundColor: '#2e3440'
   }
 });
