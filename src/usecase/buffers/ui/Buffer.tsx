@@ -3,12 +3,12 @@ import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
 import type {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent
 } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
@@ -210,7 +210,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
     width: 44,
     height: 44,
-    borderRadius: 44 / 2,
-    backgroundColor: '#222'
+    borderRadius: '50%',
+    backgroundColor: '#222',
+    overflow: 'hidden'
   }
 });
