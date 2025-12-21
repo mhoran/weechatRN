@@ -44,11 +44,12 @@ export default class BufferListItem extends React.PureComponent<Props> {
       this.props;
 
     if (
-      filterBuffers &&
       !isCurrentBuffer &&
-      (!buffer.local_variables.type ||
-        buffer.local_variables.type === 'server') &&
-      hotlist.sum === 0
+      (buffer.hidden ||
+        (filterBuffers &&
+          (!buffer.local_variables.type ||
+            buffer.local_variables.type === 'server') &&
+          hotlist.sum === 0))
     )
       return;
 
