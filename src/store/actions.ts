@@ -73,6 +73,14 @@ export const bufferMovedAction = createAction(
   'BUFFER_MOVED',
   prepareAutoBatched<WeechatBuffer>()
 );
+export const bufferHiddenAction = createAction(
+  'BUFFER_HIDDEN',
+  prepareAutoBatched<WeechatBuffer>()
+);
+export const bufferUnhiddenAction = createAction(
+  'BUFFER_UNHIDDEN',
+  prepareAutoBatched<WeechatBuffer>()
+);
 
 export const fetchScriptsAction = createAction(
   'FETCH_SCRIPTS',

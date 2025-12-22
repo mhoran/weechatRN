@@ -1,10 +1,12 @@
 import {
   bufferClosedAction,
+  bufferHiddenAction,
   bufferLocalvarUpdateAction,
   bufferMovedAction,
   bufferOpenedAction,
   bufferRenamedAction,
   bufferTitleChangedAction,
+  bufferUnhiddenAction,
   fetchBuffersAction,
   lastReadLinesAction
 } from './actions';
@@ -72,6 +74,28 @@ const bufferReducer = createReducer(initialState, (builder) => {
       [action.payload.id]: {
         ...state[action.payload.id],
         number: action.payload.number
+      }
+    };
+  });
+  builder.addCase(bufferHiddenAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
+    return {
+      ...state,
+      [action.payload.id]: {
+        ...state[action.payload.id],
+        hidden: 1
+      }
+    };
+  });
+  builder.addCase(bufferUnhiddenAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
+    return {
+      ...state,
+      [action.payload.id]: {
+        ...state[action.payload.id],
+        hidden: 0
       }
     };
   });

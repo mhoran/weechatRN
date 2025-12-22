@@ -445,6 +445,86 @@ describe('transformToReduxAction', () => {
     });
   });
 
+  describe('on _buffer_hidden', () => {
+    it('sets the buffer to hidden', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': { hidden: 0 } as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_hidden',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: '1730555173010842',
+                pointers: ['83a41cd80'],
+                hidden: 1
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.hidden).toEqual(1);
+    });
+  });
+
+  describe('on _buffer_hidden', () => {
+    it('sets the buffer to hidden', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': { hidden: 1 } as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_unhidden',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: '1730555173010842',
+                pointers: ['83a41cd80'],
+                hidden: 1
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.hidden).toEqual(0);
+    });
+  });
+
   describe('on _buffer_localvar_removed', () => {
     it('removes omitted local variables', () => {
       const preloadedState = {
