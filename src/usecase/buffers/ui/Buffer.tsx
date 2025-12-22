@@ -144,7 +144,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { lines, bufferId } = this.props;
+    const { lines, bufferId, lastReadLine } = this.props;
 
     if (!this.state.nickWidth) {
       return (
@@ -168,6 +168,7 @@ export default class Buffer extends React.PureComponent<Props, State> {
           accessibilityLabel="Message list"
           style={{ backgroundColor: '#222' }}
           data={lines}
+          extraData={lastReadLine}
           key={bufferId}
           maintainVisibleContentPosition={{
             startRenderingFromBottom: true,
