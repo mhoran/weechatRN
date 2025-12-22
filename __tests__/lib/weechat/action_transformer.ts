@@ -405,6 +405,46 @@ describe('transformToReduxAction', () => {
     });
   });
 
+  describe('on _buffer_moved', () => {
+    it('updates the buffer number', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': {} as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_moved',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: '1730555173010842',
+                pointers: ['83a41cd80'],
+                number: 2
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.number).toEqual(2);
+    });
+  });
+
   describe('on _buffer_localvar_removed', () => {
     it('removes omitted local variables', () => {
       const preloadedState = {

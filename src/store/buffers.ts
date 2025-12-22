@@ -1,6 +1,7 @@
 import {
   bufferClosedAction,
   bufferLocalvarUpdateAction,
+  bufferMovedAction,
   bufferOpenedAction,
   bufferRenamedAction,
   bufferTitleChangedAction,
@@ -60,6 +61,17 @@ const bufferReducer = createReducer(initialState, (builder) => {
         ...state[action.payload.id],
         full_name: action.payload.full_name,
         short_name: action.payload.short_name
+      }
+    };
+  });
+  builder.addCase(bufferMovedAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
+    return {
+      ...state,
+      [action.payload.id]: {
+        ...state[action.payload.id],
+        number: action.payload.number
       }
     };
   });

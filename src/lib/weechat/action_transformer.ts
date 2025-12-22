@@ -127,6 +127,15 @@ export const transformToReduxAction = (
 
       return actions.bufferRenamedAction(buffer);
     }
+    case '_buffer_moved':
+    case '_buffer_merged':
+    case '_buffer_unmerged': {
+      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return actions.bufferMovedAction(buffer);
+    }
     case '_buffer_localvar_removed':
     case '_buffer_localvar_changed':
     case '_buffer_localvar_added': {

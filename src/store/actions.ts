@@ -69,6 +69,10 @@ export const bufferRenamedAction = createAction(
   'BUFFER_RENAMED',
   prepareAutoBatched<WeechatBuffer>()
 );
+export const bufferMovedAction = createAction(
+  'BUFFER_MOVED',
+  prepareAutoBatched<WeechatBuffer>()
+);
 
 export const fetchScriptsAction = createAction(
   'FETCH_SCRIPTS',
