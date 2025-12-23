@@ -77,16 +77,17 @@ describe('App', () => {
 
   describe('on notification', () => {
     it('changes the current buffer to the notification buffer', () => {
-      const bufferId = '86c417600';
+      const currentBufferId = '83fd7ac00';
+      const notificationBufferId = '86c417600';
       const store = configureStore({
         reducer,
         preloadedState: {
           buffers: {
-            [bufferId]: {
+            [notificationBufferId]: {
               _id: '1730555173010842',
               full_name: 'irc.libera.#weechat',
               hidden: 0,
-              id: bufferId,
+              id: notificationBufferId,
               local_variables: {
                 channel: '#weechat',
                 name: 'libera.#weechat',
@@ -95,13 +96,31 @@ describe('App', () => {
               },
               notify: 3,
               number: 2,
-              pointers: [bufferId],
+              pointers: [notificationBufferId],
               short_name: '#weechat',
+              title: '',
+              type: 0
+            },
+            [currentBufferId]: {
+              _id: '1765043412858698',
+              full_name: 'irc.libera.#weechat-android',
+              hidden: 0,
+              id: currentBufferId,
+              local_variables: {
+                channel: '#weechat-android',
+                name: 'libera.#weechat-android',
+                plugin: 'irc',
+                type: 'channel'
+              },
+              notify: 3,
+              number: 4,
+              pointers: [currentBufferId],
+              short_name: '#weechat-android',
               title: '',
               type: 0
             }
           },
-          app: { currentBufferId: null } as AppState
+          app: { currentBufferId: currentBufferId } as AppState
         }
       });
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
@@ -125,16 +144,19 @@ describe('App', () => {
       act(() => {
         store.dispatch(
           actions.bufferNotificationAction({
-            bufferId,
+            bufferId: notificationBufferId,
             lineId: 0,
             identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
           })
         );
       });
 
-      expect(store.getState().app.currentBufferId).toEqual(bufferId);
-      expect(fetchBufferInfo).toHaveBeenCalledWith(bufferId);
-      expect(clearHotlistForBuffer).toHaveBeenCalledWith(bufferId);
+      expect(store.getState().app.currentBufferId).toEqual(
+        notificationBufferId
+      );
+      expect(clearHotlistForBuffer).not.toHaveBeenCalledWith(currentBufferId);
+      expect(fetchBufferInfo).toHaveBeenCalledWith(notificationBufferId);
+      expect(clearHotlistForBuffer).toHaveBeenCalledWith(notificationBufferId);
       expect(fetchBufferInfo.mock.invocationCallOrder[0]).toBeLessThan(
         clearHotlistForBuffer.mock.invocationCallOrder[0]
       );
@@ -143,16 +165,17 @@ describe('App', () => {
 
   describe('on buffer selection', () => {
     it('sets the selected buffer as the current buffer', () => {
-      const bufferId = '86c417600';
+      const currentBufferId = '83fd7ac00';
+      const selectedBufferId = '86c417600';
       const store = configureStore({
         reducer,
         preloadedState: {
           buffers: {
-            [bufferId]: {
+            [selectedBufferId]: {
               _id: '1730555173010842',
               full_name: 'irc.libera.#weechat',
               hidden: 0,
-              id: bufferId,
+              id: selectedBufferId,
               local_variables: {
                 channel: '#weechat',
                 name: 'libera.#weechat',
@@ -161,13 +184,31 @@ describe('App', () => {
               },
               notify: 3,
               number: 2,
-              pointers: [bufferId],
+              pointers: [selectedBufferId],
               short_name: '#weechat',
+              title: '',
+              type: 0
+            },
+            [currentBufferId]: {
+              _id: '1765043412858698',
+              full_name: 'irc.libera.#weechat-android',
+              hidden: 0,
+              id: currentBufferId,
+              local_variables: {
+                channel: '#weechat-android',
+                name: 'libera.#weechat-android',
+                plugin: 'irc',
+                type: 'channel'
+              },
+              notify: 3,
+              number: 4,
+              pointers: [currentBufferId],
+              short_name: '#weechat-android',
               title: '',
               type: 0
             }
           },
-          app: { currentBufferId: null } as AppState
+          app: { currentBufferId: currentBufferId } as AppState
         }
       });
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
@@ -194,11 +235,15 @@ describe('App', () => {
       const bufferListItem = screen.getByText('#weechat');
       fireEvent(bufferListItem, 'press');
 
-      expect(store.getState().app.currentBufferId).toEqual(bufferId);
-      expect(fetchBufferInfo).toHaveBeenCalledWith(bufferId);
-      expect(clearHotlistForBuffer).toHaveBeenCalledWith(bufferId);
+      expect(store.getState().app.currentBufferId).toEqual(selectedBufferId);
+      expect(clearHotlistForBuffer).toHaveBeenNthCalledWith(1, currentBufferId);
+      expect(fetchBufferInfo).toHaveBeenCalledWith(selectedBufferId);
+      expect(clearHotlistForBuffer).toHaveBeenNthCalledWith(
+        2,
+        selectedBufferId
+      );
       expect(fetchBufferInfo.mock.invocationCallOrder[0]).toBeLessThan(
-        clearHotlistForBuffer.mock.invocationCallOrder[0]
+        clearHotlistForBuffer.mock.invocationCallOrder[1]
       );
     });
   });

@@ -72,9 +72,7 @@ export default class RelayClient {
     this.connection.send(`(nicklist) nicklist 0x${bufferId}`);
   };
 
-  clearHotlistForBuffer = (currentBufferId: string | null): void => {
-    if (!currentBufferId) return;
-
+  clearHotlistForBuffer = (currentBufferId: string): void => {
     this.sendMessageToBuffer(`0x${currentBufferId}`, '/buffer set hotlist -1');
     this.sendMessageToBuffer(
       `0x${currentBufferId}`,

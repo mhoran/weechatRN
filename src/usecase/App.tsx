@@ -95,12 +95,17 @@ class App extends React.PureComponent<Props, State> {
     connectionErrorDismissed: false
   };
 
-  changeCurrentBuffer = (buffer: WeechatBuffer | string) => {
+  changeCurrentBuffer = (
+    buffer: WeechatBuffer | string,
+    clearHotlistForCurrentBuffer = true
+  ) => {
     const { currentBufferId, dispatch, client } = this.props;
     const bufferId = typeof buffer === 'string' ? buffer : buffer.id;
 
     this.closeDrawer();
     if (currentBufferId !== bufferId) {
+      if (clearHotlistForCurrentBuffer && currentBufferId)
+        client.clearHotlistForBuffer(currentBufferId);
       dispatch(actions.changeCurrentBufferAction(bufferId));
       client.fetchBufferInfo(bufferId);
       client.clearHotlistForBuffer(bufferId);
@@ -166,7 +171,7 @@ class App extends React.PureComponent<Props, State> {
       notification &&
       notification.identifier !== prevProps.notification?.identifier
     ) {
-      this.changeCurrentBuffer(notification.bufferId);
+      this.changeCurrentBuffer(notification.bufferId, false);
 
       return;
     }
