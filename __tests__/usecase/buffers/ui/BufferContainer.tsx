@@ -105,9 +105,8 @@ describe('BufferContainer', () => {
       typeof import('../../../../src/usecase/buffers/ui/Buffer')
     >('../../../../src/usecase/buffers/ui/Buffer').default;
     jest.mocked(Buffer).mockImplementation((props) => {
-      return new ActualBuffer(props);
+      return ActualBuffer(props);
     });
-    jest.spyOn(ActualBuffer.prototype, 'componentDidUpdate');
 
     const bufferId = '86c417600';
     const store = configureStore({
@@ -179,9 +178,8 @@ describe('BufferContainer', () => {
       );
     });
 
-    expect(ActualBuffer.prototype.componentDidUpdate).toHaveBeenCalledWith(
+    expect(Buffer).toHaveBeenCalledWith(
       expect.objectContaining({ notificationLineId: 0 }),
-      expect.anything(),
       undefined
     );
     expect(store.getState().app.notification).toBeNull();

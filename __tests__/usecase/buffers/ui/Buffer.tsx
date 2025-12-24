@@ -111,17 +111,11 @@ describe(Buffer, () => {
     const default_line_increment = Buffer.DEFAULT_LINE_INCREMENT;
 
     beforeEach(() => {
-      Object.defineProperty(Buffer, 'DEFAULT_LINE_INCREMENT', {
-        value: default_line_increment,
-        writable: false
-      });
+      Buffer.DEFAULT_LINE_INCREMENT = default_line_increment;
     });
 
     it('only renders when there are more lines to load', () => {
-      Object.defineProperty(Buffer, 'DEFAULT_LINE_INCREMENT', {
-        value: 1,
-        writable: false
-      });
+      Buffer.DEFAULT_LINE_INCREMENT = 1;
 
       const lines = [
         {

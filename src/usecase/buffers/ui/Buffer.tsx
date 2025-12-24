@@ -1,8 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
-import * as React from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   LayoutChangeEvent,
   NativeScrollEvent,
@@ -51,153 +50,153 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
   );
 };
 
-interface State {
-  nickWidth: number;
-  listHeight: number;
-  showScrollToEndButton: boolean;
-}
+const Buffer = ({
+  lines,
+  lastReadLine,
+  onLongPress,
+  parseArgs,
+  bufferId,
+  client,
+  notificationLineId,
+  clearNotification
+}: Props) => {
+  const linesList = useRef<FlashListRef<WeechatLine>>(null);
+  const listHeight = useRef(0);
 
-export default class Buffer extends React.PureComponent<Props, State> {
-  static readonly DEFAULT_LINE_INCREMENT = 300;
-  static readonly NUM_LINES_TO_RENDER = 35;
+  const [nickWidth, setNickWidth] = useState(0);
+  const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
 
-  linesList = React.createRef<FlashListRef<WeechatLine>>();
+  useEffect(() => {
+    if (notificationLineId === undefined) return;
 
-  state: State = {
-    nickWidth: 0,
-    listHeight: 0,
-    showScrollToEndButton: false
-  };
+    clearNotification();
 
-  componentDidUpdate(prevProps: Readonly<Props>): void {
-    const { notificationLineId, clearNotification, lines } = this.props;
+    const index = lines.findIndex((line) => line.id === notificationLineId);
+    if (index < 0) return;
 
-    if (
-      notificationLineId !== undefined &&
-      notificationLineId !== prevProps.notificationLineId
-    ) {
-      clearNotification();
+    setTimeout(() => {
+      void linesList.current?.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5
+      });
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notificationLineId]);
 
-      const index = lines.findIndex((line) => line.id === notificationLineId);
-      if (index < 0) return;
+  const fetchMoreLines = useCallback(
+    (lines: number) => {
+      client.fetchBufferInfo(bufferId, lines);
+    },
+    [bufferId, client]
+  );
 
-      setTimeout(() => {
-        void this.linesList.current?.scrollToIndex({
-          index,
-          animated: true,
-          viewPosition: 0.5
-        });
-      }, 100);
-    }
-  }
-
-  fetchMoreLines = (lines: number) => {
-    this.props.client.fetchBufferInfo(this.props.bufferId, lines);
-  };
-
-  renderBuffer: ListRenderItem<WeechatLine> = ({ item, index }) => {
-    const { onLongPress, parseArgs, lastReadLine, lines } = this.props;
-    const { nickWidth } = this.state;
-
-    let lastMessage;
-    for (let i = index - 1; i >= 0; i--) {
-      if (lines[i].displayed) {
-        lastMessage = lines[i];
-        break;
+  const renderBuffer: ListRenderItem<WeechatLine> = useCallback(
+    ({ item, index }) => {
+      let lastMessage;
+      for (let i = index - 1; i >= 0; i--) {
+        if (lines[i].displayed) {
+          lastMessage = lines[i];
+          break;
+        }
       }
-    }
 
-    return (
-      <BufferLine
-        line={item}
-        onLongPress={onLongPress}
-        parseArgs={parseArgs}
-        nickWidth={nickWidth}
-        lastReadLine={lastReadLine}
-        lastMessageDate={lastMessage?.date}
-      />
-    );
-  };
-
-  updateListHeight = (event: LayoutChangeEvent) =>
-    this.setState({ listHeight: event.nativeEvent.layout.height });
-
-  handleOnScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const {
-      nativeEvent: {
-        contentOffset: { y: contentOffsetY },
-        contentSize: { height: contentHeight }
-      }
-    } = event;
-
-    // FIXME: layoutMeasurement.height is incorrect when backgrounded on iOS
-    if (contentOffsetY + this.state.listHeight < contentHeight) {
-      this.setState({ showScrollToEndButton: true });
-    } else {
-      this.setState({ showScrollToEndButton: false });
-    }
-  };
-
-  render() {
-    const { lines, bufferId, lastReadLine } = this.props;
-
-    if (!this.state.nickWidth) {
       return (
-        <View style={{ flex: 1, opacity: 0 }} aria-hidden>
-          <Text
-            onLayout={(layout) => {
-              this.setState({ nickWidth: layout.nativeEvent.layout.width });
-            }}
-            style={[lineStyles.text, { position: 'absolute' }]}
-          >
-            aaaaaaaa
-          </Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.container}>
-        <FlashList
-          ref={this.linesList}
-          accessibilityLabel="Message list"
-          style={{ backgroundColor: '#222' }}
-          data={lines}
-          extraData={lastReadLine}
-          key={bufferId}
-          maintainVisibleContentPosition={{
-            startRenderingFromBottom: true,
-            autoscrollToBottomThreshold: 0.2,
-            animateAutoScrollToBottom: false
-          }}
-          scrollsToTop={false}
-          keyboardDismissMode="interactive"
-          keyboardShouldPersistTaps="handled"
-          keyExtractor={keyExtractor}
-          renderItem={this.renderBuffer}
-          ListHeaderComponent={
-            <Header lines={lines.length} fetchMoreLines={this.fetchMoreLines} />
-          }
-          onLayout={this.updateListHeight}
-          onScroll={this.handleOnScroll}
+        <BufferLine
+          line={item}
+          onLongPress={onLongPress}
+          parseArgs={parseArgs}
+          nickWidth={nickWidth}
+          lastReadLine={lastReadLine}
+          lastMessageDate={lastMessage?.date}
         />
-        {this.state.showScrollToEndButton && (
-          <View style={styles.scrollToEndButton}>
-            <MaterialIcons
-              name="keyboard-arrow-down"
-              size={44}
-              color="#fff"
-              onPress={() =>
-                this.linesList.current?.scrollToEnd({ animated: true })
-              }
-              accessibilityLabel="Scroll to end"
-            />
-          </View>
-        )}
+      );
+    },
+    [lastReadLine, lines, nickWidth, onLongPress, parseArgs]
+  );
+
+  const updateListHeight = useCallback(
+    (event: LayoutChangeEvent) =>
+      (listHeight.current = event.nativeEvent.layout.height),
+    []
+  );
+
+  const handleOnScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const {
+        nativeEvent: {
+          contentOffset: { y: contentOffsetY },
+          contentSize: { height: contentHeight }
+        }
+      } = event;
+
+      // FIXME: layoutMeasurement.height is incorrect when backgrounded on iOS
+      if (contentOffsetY + listHeight.current < contentHeight) {
+        setShowScrollToEndButton(true);
+      } else {
+        setShowScrollToEndButton(false);
+      }
+    },
+    []
+  );
+
+  if (!nickWidth) {
+    return (
+      <View style={{ flex: 1, opacity: 0 }} aria-hidden>
+        <Text
+          onLayout={(layout) => {
+            setNickWidth(layout.nativeEvent.layout.width);
+          }}
+          style={[lineStyles.text, { position: 'absolute' }]}
+        >
+          aaaaaaaa
+        </Text>
       </View>
     );
   }
-}
+
+  return (
+    <View style={styles.container}>
+      <FlashList
+        ref={linesList}
+        accessibilityLabel="Message list"
+        style={{ backgroundColor: '#222' }}
+        data={lines}
+        key={bufferId}
+        maintainVisibleContentPosition={{
+          startRenderingFromBottom: true,
+          autoscrollToBottomThreshold: 0.2,
+          animateAutoScrollToBottom: false
+        }}
+        scrollsToTop={false}
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
+        keyExtractor={keyExtractor}
+        renderItem={renderBuffer}
+        ListHeaderComponent={
+          <Header lines={lines.length} fetchMoreLines={fetchMoreLines} />
+        }
+        onLayout={updateListHeight}
+        onScroll={handleOnScroll}
+      />
+      {showScrollToEndButton && (
+        <View style={styles.scrollToEndButton}>
+          <MaterialIcons
+            name="keyboard-arrow-down"
+            size={44}
+            color="#fff"
+            onPress={() => linesList.current?.scrollToEnd({ animated: true })}
+            accessibilityLabel="Scroll to end"
+          />
+        </View>
+      )}
+    </View>
+  );
+};
+
+Buffer.DEFAULT_LINE_INCREMENT = 300;
+
+export default Buffer;
 
 const styles = StyleSheet.create({
   container: {
