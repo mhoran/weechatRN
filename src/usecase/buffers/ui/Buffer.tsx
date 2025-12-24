@@ -156,7 +156,7 @@ const Buffer = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} collapsable={false} key={bufferId}>
       <FlashList
         ref={linesList}
         accessibilityLabel="Message list"
