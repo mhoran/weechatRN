@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import RelayClient from '../../../../src/lib/weechat/client';
 import Buffer from '../../../../src/usecase/buffers/ui/Buffer';
 
@@ -33,14 +33,11 @@ jest.mock('@shopify/flash-list/dist/recyclerview/utils/measureLayout', () => {
 });
 
 describe(Buffer, () => {
-  const measureNickWidth = () => {
-    const nickWidthText = screen.getByText('aaaaaaaa', { hidden: true });
-    fireEvent(nickWidthText, 'layout', {
-      nativeEvent: {
-        layout: { height: 16.7, width: 68, x: 0, y: 0 }
-      }
-    });
-  };
+  beforeEach(() => {
+    jest
+      .spyOn(View.prototype, 'measure')
+      .mockImplementationOnce((callback) => callback(0, 0, 68, 16.7, 0, 0));
+  });
 
   describe('when notificationLineId is provided', () => {
     it('scrolls to the corresponding line', () => {
@@ -82,8 +79,6 @@ describe(Buffer, () => {
           clearNotification={() => {}}
         />
       );
-
-      measureNickWidth();
 
       screen.rerender(
         <Buffer
@@ -144,8 +139,6 @@ describe(Buffer, () => {
         />
       );
 
-      measureNickWidth();
-
       expect(screen.queryByLabelText('Message list')).not.toBeNull();
 
       expect(screen.queryByText('Load more lines')).toBeNull();
@@ -205,8 +198,6 @@ describe(Buffer, () => {
           clearNotification={() => {}}
         />
       );
-
-      measureNickWidth();
 
       const scrollView = screen.getByLabelText('Message list');
       fireEvent(scrollView, 'layout', {

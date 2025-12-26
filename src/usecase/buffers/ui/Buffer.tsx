@@ -1,11 +1,18 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react';
 import type {
   LayoutChangeEvent,
   NativeScrollEvent,
-  NativeSyntheticEvent
+  NativeSyntheticEvent,
+  TextInput
 } from 'react-native';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
@@ -60,11 +67,16 @@ const Buffer = ({
   notificationLineId,
   clearNotification
 }: Props) => {
+  const measurer = useRef<TextInput>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
   const listHeight = useRef(0);
 
   const [nickWidth, setNickWidth] = useState(0);
   const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
+
+  useLayoutEffect(() => {
+    measurer.current?.measure((x, y, width) => setNickWidth(width));
+  }, []);
 
   useEffect(() => {
     if (notificationLineId === undefined) return;
@@ -144,9 +156,7 @@ const Buffer = ({
     return (
       <View style={{ flex: 1, opacity: 0 }} aria-hidden>
         <Text
-          onLayout={(layout) => {
-            setNickWidth(layout.nativeEvent.layout.width);
-          }}
+          ref={measurer}
           style={[lineStyles.text, { position: 'absolute' }]}
         >
           aaaaaaaa
@@ -156,7 +166,7 @@ const Buffer = ({
   }
 
   return (
-    <View style={styles.container} collapsable={false} key={bufferId}>
+    <View style={styles.container}>
       <FlashList
         ref={linesList}
         accessibilityLabel="Message list"
