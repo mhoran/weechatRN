@@ -170,7 +170,7 @@ const Buffer = ({
       <FlashList
         ref={linesList}
         accessibilityLabel="Message list"
-        style={{ backgroundColor: '#222' }}
+        style={styles.list}
         data={lines}
         key={bufferId}
         maintainVisibleContentPosition={{
@@ -211,6 +211,9 @@ export default Buffer;
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  list: {
+    backgroundColor: '#2e3440'
   },
   scrollToEndButton: {
     position: 'absolute',
