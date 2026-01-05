@@ -45,11 +45,12 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
     Buffer.DEFAULT_LINE_INCREMENT
   );
   const [loading, setLoading] = useState(false);
+  const [prevLines, setPrevLines] = useState(lines);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (lines !== prevLines) {
+    setPrevLines(lines);
     setLoading(false);
-  }, [lines]);
+  }
 
   if (!loading && lines.length < desiredLines) return;
 
