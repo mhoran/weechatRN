@@ -33,7 +33,7 @@ interface Props {
 
 const keyExtractor = (line: WeechatLine) => String(line.id);
 
-const getItemType = (line: WeechatLine) => line.displayed
+const getItemType = (line: WeechatLine) => line.displayed;
 
 interface HeaderProps {
   lines: WeechatLine[];
