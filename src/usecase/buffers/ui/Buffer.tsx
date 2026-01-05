@@ -34,7 +34,7 @@ interface Props {
 const keyExtractor = (line: WeechatLine) => String(line.id);
 
 interface HeaderProps {
-  lines: number;
+  lines: WeechatLine[];
   fetchMoreLines: (lines: number) => void;
 }
 
@@ -42,16 +42,24 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
   const [desiredLines, setDesiredLines] = useState(
     Buffer.DEFAULT_LINE_INCREMENT
   );
+  const [loading, setLoading] = useState(false);
 
-  if (lines < desiredLines) return;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(false);
+  }, [lines]);
+
+  if (!loading && lines.length < desiredLines) return;
 
   return (
     <Button
-      title="Load more lines"
+      title={loading ? 'Loading...' : 'Load more lines'}
+      disabled={loading}
       onPress={() => {
         const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
-        fetchMoreLines(next);
+        setLoading(true);
         setDesiredLines(next);
+        fetchMoreLines(next);
       }}
     />
   );
@@ -184,7 +192,7 @@ const Buffer = ({
         keyExtractor={keyExtractor}
         renderItem={renderBuffer}
         ListHeaderComponent={
-          <Header lines={lines.length} fetchMoreLines={fetchMoreLines} />
+          <Header lines={lines} fetchMoreLines={fetchMoreLines} />
         }
         onLayout={updateListHeight}
         onScroll={handleOnScroll}

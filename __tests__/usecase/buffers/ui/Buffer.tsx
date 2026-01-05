@@ -154,7 +154,11 @@ describe(Buffer, () => {
         />
       );
 
-      expect(screen.queryByText('Load more lines')).not.toBeNull();
+      const button = screen.getByText('Load more lines');
+
+      fireEvent(button, 'press');
+
+      expect(screen.queryByText('Load more lines')).toBeNull();
     });
   });
 
