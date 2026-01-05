@@ -33,6 +33,8 @@ interface Props {
 
 const keyExtractor = (line: WeechatLine) => String(line.id);
 
+const getItemType = (line: WeechatLine) => line.displayed
+
 interface HeaderProps {
   lines: WeechatLine[];
   fetchMoreLines: (lines: number) => void;
@@ -191,6 +193,7 @@ const Buffer = ({
         keyboardShouldPersistTaps="handled"
         keyExtractor={keyExtractor}
         renderItem={renderBuffer}
+        getItemType={getItemType}
         ListHeaderComponent={
           <Header lines={lines} fetchMoreLines={fetchMoreLines} />
         }
