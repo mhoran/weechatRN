@@ -109,7 +109,7 @@ const Buffer = ({
 
   const fetchMoreLines = useCallback(
     (lines: number) => {
-      client.fetchBufferInfo(bufferId, lines);
+      client.fetchBufferLines(bufferId, lines);
     },
     [bufferId, client]
   );

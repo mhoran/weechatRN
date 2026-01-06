@@ -57,19 +57,25 @@ export default class RelayClient {
     this.connection?.send(`(input) input ${bufferIdOrFullName} ${message}`);
   };
 
-  fetchBufferInfo = (
+  fetchBufferInfo = (bufferId: string): void => {
+    if (!this.connection) return;
+
+    this.connection.send(
+      `(last_read_lines) hdata buffer:0x${bufferId}/own_lines/last_read_line/data id,buffer`
+    );
+    this.fetchBufferLines(bufferId);
+    this.connection.send(`(nicklist) nicklist 0x${bufferId}`);
+  };
+
+  fetchBufferLines = (
     bufferId: string,
     numLines = Buffer.DEFAULT_LINE_INCREMENT
   ): void => {
     if (!this.connection) return;
 
     this.connection.send(
-      `(last_read_lines) hdata buffer:0x${bufferId}/own_lines/last_read_line/data id,buffer`
-    );
-    this.connection.send(
       `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`
     );
-    this.connection.send(`(nicklist) nicklist 0x${bufferId}`);
   };
 
   clearHotlistForBuffer = (currentBufferId: string): void => {
