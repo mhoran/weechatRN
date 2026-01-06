@@ -1,0 +1,16 @@
+diff --git a/node_modules/@shopify/flash-list/dist/utils/AverageWindow.js b/node_modules/@shopify/flash-list/dist/utils/AverageWindow.js
+index 810ae93..cd8e57a 100644
+--- a/node_modules/@shopify/flash-list/dist/utils/AverageWindow.js
++++ b/node_modules/@shopify/flash-list/dist/utils/AverageWindow.js
+@@ -26,8 +26,9 @@ export class AverageWindow {
+         const newCount = oldValue === undefined ? this.currentCount + 1 : this.currentCount;
+         this.inputValues[target] = value;
+         this.currentAverage =
+-            this.currentAverage * (this.currentCount / newCount) +
+-                (value - (oldValue !== null && oldValue !== void 0 ? oldValue : 0)) / newCount;
++            (Math.max(0, this.currentAverage * this.currentCount - (oldValue !== null && oldValue !== void 0 ? oldValue : 0)) +
++                value) /
++                newCount;
+         this.currentCount = newCount;
+     }
+     getNextIndex() {
