@@ -1,11 +1,11 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import type { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import type { EmitterSubscription } from 'react-native';
 import {
   Dimensions,
   Keyboard,
-  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -66,6 +66,7 @@ interface State {
   drawerOpen: boolean;
   showNicklistModal: boolean;
   connectionErrorDismissed: boolean;
+  headerHeight: number;
 }
 
 class App extends React.PureComponent<Props, State> {
@@ -79,20 +80,22 @@ class App extends React.PureComponent<Props, State> {
      */
     const { height, width } = Dimensions.get('window');
     const smallerAxisSize = Math.min(height, width);
-    const isLandscape = width > height;
     const isTablet = smallerAxisSize >= 600;
-    const appBarHeight = Platform.OS === 'ios' ? (isLandscape ? 32 : 44) : 56;
     const maxWidth = isTablet ? 320 : 280;
 
-    return Math.min(smallerAxisSize - appBarHeight, maxWidth);
+    return Math.min(smallerAxisSize - this.headerHeight(), maxWidth);
   };
+
+  headerHeight = () =>
+    getDefaultHeaderHeight(Dimensions.get('window'), false, 0);
 
   state: State = {
     showTopic: false,
     drawerWidth: this.drawerWidth(),
     drawerOpen: this.props.connected && !this.props.currentBufferId,
     showNicklistModal: false,
-    connectionErrorDismissed: false
+    connectionErrorDismissed: false,
+    headerHeight: this.headerHeight()
   };
 
   changeCurrentBuffer = (
@@ -131,10 +134,11 @@ class App extends React.PureComponent<Props, State> {
     this.setState({ drawerOpen: false });
   };
 
-  updateWidth = () => {
-    if (this.state.drawerWidth !== this.drawerWidth()) {
-      this.setState({ drawerWidth: this.drawerWidth() });
-    }
+  updateDimensions = () => {
+    this.setState({
+      drawerWidth: this.drawerWidth(),
+      headerHeight: this.headerHeight()
+    });
   };
 
   dismissConnectionError = () => {
@@ -146,7 +150,7 @@ class App extends React.PureComponent<Props, State> {
   componentDidMount() {
     this.dimensionsListener = Dimensions.addEventListener(
       'change',
-      this.updateWidth
+      this.updateDimensions
     );
   }
 
@@ -207,7 +211,8 @@ class App extends React.PureComponent<Props, State> {
       showTopic,
       drawerWidth,
       showNicklistModal,
-      connectionErrorDismissed
+      connectionErrorDismissed,
+      headerHeight
     } = this.state;
 
     const sidebar = () => (
@@ -251,7 +256,7 @@ class App extends React.PureComponent<Props, State> {
                   close={this.toggleShowNicklistModal}
                 />
 
-                <View style={styles.topbar}>
+                <View style={[styles.topbar, { height: headerHeight }]}>
                   <View style={styles.channelsButtonWrapper}>
                     <TouchableOpacity
                       style={styles.topbarButton}
@@ -359,9 +364,7 @@ const styles = StyleSheet.create({
   topbar: {
     flexDirection: 'row',
     backgroundColor: '#333',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 10
+    alignItems: 'center'
   },
   channelsButtonWrapper: {
     paddingLeft: 10,
@@ -370,11 +373,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start'
   },
   topbarButton: {
-    paddingVertical: 5,
     paddingHorizontal: 5
   },
   channelsButtonText: {
-    textAlign: 'center',
     fontSize: 20,
     color: '#eee',
     fontWeight: 'bold'
