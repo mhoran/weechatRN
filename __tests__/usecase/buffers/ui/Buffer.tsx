@@ -315,7 +315,8 @@ describe(Buffer, () => {
       fireEvent(scrollView, 'onScroll', {
         nativeEvent: {
           contentOffset: { y: 0 },
-          contentSize: { height: 26.5 * 2 }
+          contentSize: { height: 26.5 * 2 },
+          layoutMeasurement: { width: 1024, height: 26.5 }
         }
       });
 

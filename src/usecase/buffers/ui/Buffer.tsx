@@ -9,7 +9,6 @@ import {
   useState
 } from 'react';
 import type {
-  LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
   TextInput
@@ -78,7 +77,6 @@ const Buffer = ({
 }: Props) => {
   const measurer = useRef<TextInput>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
-  const listHeight = useRef(0);
 
   const [nickWidth, setNickWidth] = useState(0);
   const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
@@ -136,23 +134,20 @@ const Buffer = ({
     [lastReadLine, lines, nickWidth, onLongPress, parseArgs]
   );
 
-  const updateListHeight = useCallback(
-    (event: LayoutChangeEvent) =>
-      (listHeight.current = event.nativeEvent.layout.height),
-    []
-  );
-
   const handleOnScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const {
         nativeEvent: {
           contentOffset: { y: contentOffsetY },
-          contentSize: { height: contentHeight }
+          contentSize: { height: contentHeight },
+          layoutMeasurement: { height: listHeight }
         }
       } = event;
 
-      // FIXME: layoutMeasurement.height is incorrect when backgrounded on iOS
-      if (contentOffsetY + listHeight.current < contentHeight) {
+      if (
+        Math.ceil(contentOffsetY + listHeight) <
+        contentHeight - listHeight * 0.2
+      ) {
         setShowScrollToEndButton(true);
       } else {
         setShowScrollToEndButton(false);
@@ -195,7 +190,6 @@ const Buffer = ({
         ListHeaderComponent={
           <Header lines={lines} fetchMoreLines={fetchMoreLines} />
         }
-        onLayout={updateListHeight}
         onScroll={handleOnScroll}
       />
       {showScrollToEndButton && (
