@@ -92,6 +92,10 @@ const Buffer = ({
     measurer.current?.measure((x, y, width) => setNickWidth(width));
   }, []);
 
+  useLayoutEffect(() => {
+    setShowScrollToEndButton(false);
+  }, [bufferId]);
+
   useEffect(() => {
     if (notificationLineId === undefined) return;
 
