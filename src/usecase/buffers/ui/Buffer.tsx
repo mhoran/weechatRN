@@ -11,9 +11,10 @@ import {
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
+  ScrollViewProps,
   TextInput
 } from 'react-native';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
@@ -52,18 +53,24 @@ const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
   if (!loading && lines.length < desiredLines) return;
 
   return (
-    <Button
-      title={loading ? 'Loading...' : 'Load more lines'}
-      disabled={loading}
-      onPress={() => {
-        const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
-        setLoading(true);
-        setDesiredLines(next);
-        fetchMoreLines(next);
-      }}
-    />
+    <View style={{ transform: [{ scaleY: -1 }] }}>
+      <Button
+        title={loading ? 'Loading...' : 'Load more lines'}
+        disabled={loading}
+        onPress={() => {
+          const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
+          setLoading(true);
+          setDesiredLines(next);
+          fetchMoreLines(next);
+        }}
+      />
+    </View>
   );
 };
+
+const renderScrollComponent = (props: ScrollViewProps) => (
+  <ScrollView {...props} style={{ transform: [{ scaleY: -1 }] }} />
+);
 
 const Buffer = ({
   lines,
@@ -113,7 +120,7 @@ const Buffer = ({
   const renderBuffer: ListRenderItem<WeechatLine> = useCallback(
     ({ item, index }) => {
       let lastMessage;
-      for (let i = index - 1; i >= 0; i--) {
+      for (let i = index + 1; i < lines.length; i++) {
         if (lines[i].displayed) {
           lastMessage = lines[i];
           break;
@@ -139,15 +146,11 @@ const Buffer = ({
       const {
         nativeEvent: {
           contentOffset: { y: contentOffsetY },
-          contentSize: { height: contentHeight },
           layoutMeasurement: { height: listHeight }
         }
       } = event;
 
-      if (
-        Math.ceil(contentOffsetY + listHeight) <
-        contentHeight - listHeight * 0.2
-      ) {
+      if (contentOffsetY > listHeight * 0.2) {
         setShowScrollToEndButton(true);
       } else {
         setShowScrollToEndButton(false);
@@ -178,19 +181,18 @@ const Buffer = ({
         data={lines}
         key={bufferId}
         maintainVisibleContentPosition={{
-          startRenderingFromBottom: true,
-          autoscrollToBottomThreshold: 0.2,
-          animateAutoScrollToBottom: false
+          disabled: true
         }}
         scrollsToTop={false}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
         keyExtractor={keyExtractor}
         renderItem={renderBuffer}
-        ListHeaderComponent={
+        ListFooterComponent={
           <Header lines={lines} fetchMoreLines={fetchMoreLines} />
         }
         onScroll={handleOnScroll}
+        renderScrollComponent={renderScrollComponent}
       />
       {showScrollToEndButton && (
         <View style={styles.scrollToEndButton}>
@@ -198,7 +200,7 @@ const Buffer = ({
             name="keyboard-arrow-down"
             size={44}
             color="#fff"
-            onPress={() => linesList.current?.scrollToEnd({ animated: true })}
+            onPress={() => linesList.current?.scrollToTop({ animated: true })}
             accessibilityLabel="Scroll to end"
           />
         </View>
