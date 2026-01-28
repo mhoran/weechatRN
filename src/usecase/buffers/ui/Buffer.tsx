@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
+import type { ViewToken } from '@shopify/flash-list';
 import {
   useCallback,
   useEffect,
@@ -84,9 +85,11 @@ const Buffer = ({
 }: Props) => {
   const measurer = useRef<TextInput>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
+  const seenLastLine = useRef(false);
 
   const [nickWidth, setNickWidth] = useState(0);
   const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
+  const [showJumpToUnread, setShowJumpToUnread] = useState(false);
 
   useLayoutEffect(() => {
     measurer.current?.measure((x, y, width) => setNickWidth(width));
@@ -94,6 +97,8 @@ const Buffer = ({
 
   useLayoutEffect(() => {
     setShowScrollToEndButton(false);
+    seenLastLine.current = false;
+    setShowJumpToUnread(false);
   }, [bufferId]);
 
   useEffect(() => {
@@ -163,6 +168,26 @@ const Buffer = ({
     []
   );
 
+  const handleViewableItemsChanged: (info: {
+    viewableItems: ViewToken<WeechatLine>[];
+  }) => void = useCallback(
+    ({ viewableItems }) => {
+      if (lastReadLine === undefined || seenLastLine.current) return;
+
+      const item = viewableItems.find(
+        (token) => token.item.id === lastReadLine
+      )?.item;
+
+      if (item) {
+        setShowJumpToUnread(false);
+        seenLastLine.current = true;
+      } else {
+        setShowJumpToUnread(true);
+      }
+    },
+    [lastReadLine]
+  );
+
   if (!nickWidth) {
     return (
       <View style={{ flex: 1, opacity: 0 }} aria-hidden>
@@ -196,15 +221,40 @@ const Buffer = ({
           <Header lines={lines} fetchMoreLines={fetchMoreLines} />
         }
         onScroll={handleOnScroll}
+        onViewableItemsChanged={handleViewableItemsChanged}
         renderScrollComponent={renderScrollComponent}
       />
+      {showJumpToUnread && (
+        <View style={styles.jumpToUnreadWrapper}>
+          <View style={styles.jumpToUnread}>
+            <Text
+              style={{ color: '#fff' }}
+              accessibilityLabel="Scroll to unread"
+              onPress={() => {
+                const index = lines.findIndex(
+                  (item) => item.id === lastReadLine
+                );
+                void linesList.current?.scrollToIndex({
+                  index: index >= 0 ? index : lines.length - 1,
+                  animated: true,
+                  viewPosition: 1
+                });
+              }}
+            >
+              Scroll to unread
+            </Text>
+          </View>
+        </View>
+      )}
       {showScrollToEndButton && (
         <View style={styles.scrollToEndButton}>
           <MaterialIcons
             name="keyboard-arrow-down"
             size={44}
             color="#fff"
-            onPress={() => linesList.current?.scrollToTop({ animated: true })}
+            onPress={() => {
+              linesList.current?.scrollToTop({ animated: true });
+            }}
             accessibilityLabel="Scroll to end"
           />
         </View>
@@ -235,5 +285,27 @@ const styles = StyleSheet.create({
     borderRadius: '50%',
     backgroundColor: '#222',
     overflow: 'hidden'
+  },
+  jumpToUnreadWrapper: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  jumpToUnread: {
+    backgroundColor: '#222',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
 });

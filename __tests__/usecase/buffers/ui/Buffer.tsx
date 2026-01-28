@@ -312,7 +312,7 @@ describe(Buffer, () => {
 
       expect(screen.queryByLabelText('Scroll to end')).toBeNull();
 
-      fireEvent(scrollView, 'onScroll', {
+      fireEvent(scrollView, 'scroll', {
         nativeEvent: {
           contentOffset: { y: 26.5 },
           contentSize: { height: 26.5 * 2 },
@@ -370,7 +370,7 @@ describe(Buffer, () => {
         }
       });
 
-      fireEvent(scrollView, 'onScroll', {
+      fireEvent(scrollView, 'scroll', {
         nativeEvent: {
           contentOffset: { y: 26.5 },
           contentSize: { height: 26.5 * 2 },
@@ -392,6 +392,195 @@ describe(Buffer, () => {
       );
 
       expect(screen.queryByLabelText('Scroll to end')).toBeNull();
+    });
+  });
+
+  describe('unread message notification', () => {
+    it('scrolls to the last unread message', () => {
+      const lines = [
+        {
+          id: 1,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 0,
+          message: 'Second message',
+          pointers: ['86c417600', '8580eeec0', '8580dcc40', '86c2ff040'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine,
+        {
+          id: 0,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 1,
+          message: 'First message',
+          pointers: ['86c417600', '8580eeec0', '8580dcf80', '86c2fefd0'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine
+      ];
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <Buffer
+          lines={lines}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+          lastReadLine={0}
+        />
+      );
+
+      const scrollView = screen.getByLabelText('Message list');
+      fireEvent(scrollView, 'layout', {
+        nativeEvent: {
+          layout: { height: 26.5, width: 1024, x: 0, y: 0 }
+        }
+      });
+
+      act(() => jest.runAllTimers());
+
+      const button = screen.getByLabelText('Scroll to unread');
+
+      fireEvent(button, 'press');
+
+      expect(ScrollView.prototype.scrollTo).toHaveBeenLastCalledWith({
+        animated: true,
+        x: 0,
+        y: 26.5
+      });
+    });
+
+    it('is not displayed for viewed messages', () => {
+      const lines = [
+        {
+          id: 1,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 0,
+          message: 'Second message',
+          pointers: ['86c417600', '8580eeec0', '8580dcc40', '86c2ff040'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine,
+        {
+          id: 0,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 1,
+          message: 'First message',
+          pointers: ['86c417600', '8580eeec0', '8580dcf80', '86c2fefd0'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine
+      ];
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <Buffer
+          lines={lines}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+          lastReadLine={1}
+        />
+      );
+
+      const scrollView = screen.getByLabelText('Message list');
+      fireEvent(scrollView, 'layout', {
+        nativeEvent: {
+          layout: { height: 26.5, width: 1024, x: 0, y: 0 }
+        }
+      });
+
+      act(() => jest.runAllTimers());
+
+      expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
+
+      fireEvent(scrollView, 'scroll', {
+        nativeEvent: {
+          contentOffset: { y: 26.5 },
+          contentSize: { height: 26.5 * 2 },
+          layoutMeasurement: { width: 1024, height: 26.5 }
+        }
+      });
+
+      act(() => jest.runAllTimers());
+
+      expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
+    });
+
+    it('scrolls to the end if the message is not loaded', () => {
+      const lines = [
+        {
+          id: 1,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 0,
+          message: 'Second message',
+          pointers: ['86c417600', '8580eeec0', '8580dcc40', '86c2ff040'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine,
+        {
+          id: 0,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 1,
+          message: 'First message',
+          pointers: ['86c417600', '8580eeec0', '8580dcf80', '86c2fefd0'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine
+      ];
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      render(
+        <Buffer
+          lines={lines}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+          lastReadLine={2}
+        />
+      );
+
+      const scrollView = screen.getByLabelText('Message list');
+      fireEvent(scrollView, 'layout', {
+        nativeEvent: {
+          layout: { height: 26.5, width: 1024, x: 0, y: 0 }
+        }
+      });
+
+      act(() => jest.runAllTimers());
+
+      const button = screen.getByLabelText('Scroll to unread');
+
+      fireEvent(button, 'press');
+
+      expect(ScrollView.prototype.scrollTo).toHaveBeenLastCalledWith({
+        animated: true,
+        x: 0,
+        y: 26.5
+      });
     });
   });
 });
