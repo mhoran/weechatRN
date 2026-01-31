@@ -234,8 +234,12 @@ const Buffer = ({
                 const index = lines.findIndex(
                   (item) => item.id === lastReadLine
                 );
+                if (index < 0) {
+                  linesList.current?.scrollToEnd({ animated: true });
+                  return;
+                }
                 void linesList.current?.scrollToIndex({
-                  index: index >= 0 ? index : lines.length - 1,
+                  index: index,
                   animated: true,
                   viewPosition: 1
                 });
