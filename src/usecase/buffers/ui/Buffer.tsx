@@ -37,34 +37,53 @@ const keyExtractor = (line: WeechatLine) => String(line.id);
 interface HeaderProps {
   lines: WeechatLine[];
   fetchMoreLines: (lines: number) => void;
+  showJumpToUnread: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ lines, fetchMoreLines }) => {
+const Header: React.FC<HeaderProps> = ({
+  lines,
+  fetchMoreLines,
+  showJumpToUnread
+}) => {
+  const measurer = useRef<View>(null);
+
   const [desiredLines, setDesiredLines] = useState(
     Buffer.DEFAULT_LINE_INCREMENT
   );
   const [loading, setLoading] = useState(false);
   const [prevLines, setPrevLines] = useState(lines);
+  const [buttonHeight, setButtonHeight] = useState(0);
 
   if (lines !== prevLines) {
     setPrevLines(lines);
     setLoading(false);
   }
 
+  useLayoutEffect(() => {
+    measurer.current?.measure((x, y, width, height) => setButtonHeight(height));
+  });
+
   if (!loading && lines.length < desiredLines) return;
 
   return (
-    <View style={{ transform: [{ scaleY: -1 }] }}>
-      <Button
-        title={loading ? 'Loading...' : 'Load more lines'}
-        disabled={loading}
-        onPress={() => {
-          const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
-          setLoading(true);
-          setDesiredLines(next);
-          fetchMoreLines(next);
-        }}
-      />
+    <View
+      style={{
+        transform: [{ scaleY: -1 }],
+        ...(showJumpToUnread && { paddingTop: buttonHeight })
+      }}
+    >
+      <View ref={measurer}>
+        <Button
+          title={loading ? 'Loading...' : 'Load more lines'}
+          disabled={loading}
+          onPress={() => {
+            const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
+            setLoading(true);
+            setDesiredLines(next);
+            fetchMoreLines(next);
+          }}
+        />
+      </View>
     </View>
   );
 };
@@ -218,7 +237,11 @@ const Buffer = ({
         keyExtractor={keyExtractor}
         renderItem={renderBuffer}
         ListFooterComponent={
-          <Header lines={lines} fetchMoreLines={fetchMoreLines} />
+          <Header
+            lines={lines}
+            fetchMoreLines={fetchMoreLines}
+            showJumpToUnread={showJumpToUnread}
+          />
         }
         onScroll={handleOnScroll}
         onViewableItemsChanged={handleViewableItemsChanged}
