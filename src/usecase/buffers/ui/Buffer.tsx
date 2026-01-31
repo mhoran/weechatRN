@@ -37,31 +37,24 @@ const keyExtractor = (line: WeechatLine) => String(line.id);
 interface HeaderProps {
   lines: WeechatLine[];
   fetchMoreLines: (lines: number) => void;
-  showJumpToUnread: boolean;
+  unreadButtonHeight: number;
 }
 
 const Header: React.FC<HeaderProps> = ({
   lines,
   fetchMoreLines,
-  showJumpToUnread
+  unreadButtonHeight
 }) => {
-  const measurer = useRef<View>(null);
-
   const [desiredLines, setDesiredLines] = useState(
     Buffer.DEFAULT_LINE_INCREMENT
   );
   const [loading, setLoading] = useState(false);
   const [prevLines, setPrevLines] = useState(lines);
-  const [buttonHeight, setButtonHeight] = useState(0);
 
   if (lines !== prevLines) {
     setPrevLines(lines);
     setLoading(false);
   }
-
-  useLayoutEffect(() => {
-    measurer.current?.measure((x, y, width, height) => setButtonHeight(height));
-  });
 
   if (!loading && lines.length < desiredLines) return;
 
@@ -69,21 +62,19 @@ const Header: React.FC<HeaderProps> = ({
     <View
       style={{
         transform: [{ scaleY: -1 }],
-        ...(showJumpToUnread && { paddingTop: buttonHeight })
+        ...{ paddingTop: unreadButtonHeight }
       }}
     >
-      <View ref={measurer}>
-        <Button
-          title={loading ? 'Loading...' : 'Load more lines'}
-          disabled={loading}
-          onPress={() => {
-            const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
-            setLoading(true);
-            setDesiredLines(next);
-            fetchMoreLines(next);
-          }}
-        />
-      </View>
+      <Button
+        title={loading ? 'Loading...' : 'Load more lines'}
+        disabled={loading}
+        onPress={() => {
+          const next = desiredLines + Buffer.DEFAULT_LINE_INCREMENT;
+          setLoading(true);
+          setDesiredLines(next);
+          fetchMoreLines(next);
+        }}
+      />
     </View>
   );
 };
@@ -102,17 +93,30 @@ const Buffer = ({
   notificationLineId,
   clearNotification
 }: Props) => {
-  const measurer = useRef<TextInput>(null);
+  const nickWidthMeasurer = useRef<TextInput>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
+  const jumpToUnreadButton = useRef<View>(null);
   const seenLastLine = useRef(false);
 
   const [nickWidth, setNickWidth] = useState(0);
   const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
   const [showJumpToUnread, setShowJumpToUnread] = useState(false);
+  const [unreadButtonHeight, setUnreadButtonHeight] = useState(0);
 
   useLayoutEffect(() => {
-    measurer.current?.measure((x, y, width) => setNickWidth(width));
+    nickWidthMeasurer.current?.measure((x, y, width) => setNickWidth(width));
   }, []);
+
+  useLayoutEffect(() => {
+    if (!showJumpToUnread) {
+      setUnreadButtonHeight(0);
+      return;
+    }
+
+    jumpToUnreadButton.current?.measure((x, y, width, height) =>
+      setUnreadButtonHeight(height)
+    );
+  }, [showJumpToUnread]);
 
   useLayoutEffect(() => {
     setShowScrollToEndButton(false);
@@ -211,7 +215,7 @@ const Buffer = ({
     return (
       <View style={{ flex: 1, opacity: 0 }} aria-hidden>
         <Text
-          ref={measurer}
+          ref={nickWidthMeasurer}
           style={[lineStyles.text, { position: 'absolute' }]}
         >
           aaaaaaaa
@@ -240,7 +244,7 @@ const Buffer = ({
           <Header
             lines={lines}
             fetchMoreLines={fetchMoreLines}
-            showJumpToUnread={showJumpToUnread}
+            unreadButtonHeight={unreadButtonHeight}
           />
         }
         onScroll={handleOnScroll}
@@ -249,7 +253,7 @@ const Buffer = ({
       />
       {showJumpToUnread && (
         <View style={styles.jumpToUnreadWrapper}>
-          <View style={styles.jumpToUnread}>
+          <View ref={jumpToUnreadButton} style={styles.jumpToUnread}>
             <Text
               style={{ color: '#fff' }}
               accessibilityLabel="Scroll to unread"
