@@ -1,7 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import type { FlashListRef, ListRenderItem } from '@shopify/flash-list';
+import type {
+  FlashListRef,
+  ListRenderItem,
+  ViewToken
+} from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
-import type { ViewToken } from '@shopify/flash-list';
 import {
   useCallback,
   useEffect,
@@ -12,10 +15,9 @@ import {
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollViewProps,
   TextInput
 } from 'react-native';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
 import type RelayClient from '../../../lib/weechat/client';
 import BufferLine from './BufferLine';
@@ -61,7 +63,6 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <View
       style={{
-        transform: [{ scaleY: -1 }],
         ...{ paddingTop: unreadButtonHeight }
       }}
     >
@@ -78,10 +79,6 @@ const Header: React.FC<HeaderProps> = ({
     </View>
   );
 };
-
-const renderScrollComponent = (props: ScrollViewProps) => (
-  <ScrollView {...props} style={{ transform: [{ scaleY: -1 }] }} />
-);
 
 const Buffer = ({
   lines,
@@ -231,6 +228,7 @@ const Buffer = ({
         accessibilityLabel="Message list"
         style={styles.list}
         data={lines}
+        inverted
         key={bufferId}
         maintainVisibleContentPosition={{
           disabled: true
@@ -249,7 +247,6 @@ const Buffer = ({
         }
         onScroll={handleOnScroll}
         onViewableItemsChanged={handleViewableItemsChanged}
-        renderScrollComponent={renderScrollComponent}
       />
       {showJumpToUnread && (
         <View style={styles.jumpToUnreadWrapper}>
