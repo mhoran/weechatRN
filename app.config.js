@@ -44,14 +44,7 @@ export default {
     ],
     'expo-notifications',
     'expo-image-picker',
-    [
-      'expo-build-properties',
-      {
-        ios: {
-          buildReactNativeFromSource: true
-        }
-      }
-    ]
+    'expo-build-properties'
   ],
   updates: {
     fallbackToCacheTimeout: 0,
