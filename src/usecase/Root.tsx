@@ -52,7 +52,7 @@ export default class WeechatNative extends React.Component<null, State> {
 
   notificationHandler = (response: Notifications.NotificationResponse) => {
     const request = response.notification.request;
-    const { bufferId, lineId } = request.content.data;
+    const { bufferId, lineId } = request.content.data ?? {};
 
     if (bufferId === undefined || lineId === undefined) return;
 
