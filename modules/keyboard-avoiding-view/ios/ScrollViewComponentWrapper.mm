@@ -51,7 +51,8 @@
 
 - (bool)isInverted {
   // Look into the entry at position 2,2 to check if scaleY is applied
-  return _scrollViewComponentView.layer.transform.m22 == -1;
+  return _scrollViewComponentView.layer.transform.m22 == -1 ||
+         _scrollViewComponentView.superview.layer.transform.m22 == -1;
 }
 
 - (nullable UIView *)view {
