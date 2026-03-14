@@ -27,7 +27,7 @@ const BufferLine: React.FC<Props> = ({
   const showReadMarker = line.id === lastReadLine;
 
   return (
-    <View style={{ transform: [{ scaleY: -1 }] }}>
+    <View>
       {showLine && (
         <>
           {showDate && (
