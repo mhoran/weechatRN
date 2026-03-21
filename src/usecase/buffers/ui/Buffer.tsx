@@ -235,7 +235,7 @@ const Buffer = ({
         }}
         scrollsToTop={false}
         keyboardDismissMode="interactive"
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps="always"
         keyExtractor={keyExtractor}
         renderItem={renderBuffer}
         ListFooterComponent={

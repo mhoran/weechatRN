@@ -1,13 +1,14 @@
 import type * as React from 'react';
+import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View
-} from 'react-native';
+  GestureDetector,
+  InterceptingGestureDetector,
+  useExclusiveGestures,
+  useLongPressGesture,
+  useTapGesture,
+  VirtualGestureDetector
+} from 'react-native-gesture-handler';
 import type { ParseShape } from 'react-native-parsed-text';
-import ParsedText from 'react-native-parsed-text';
 import { formatDate } from '../../../../lib/helpers/date-formatter';
 import { renderWeechatFormat } from '../../../../lib/weechat/color-formatter';
 
@@ -18,14 +19,40 @@ interface Props {
   nickWidth: number;
 }
 
-const BufferLine: React.FC<Props> = ({
-  line,
-  onLongPress,
-  parseArgs,
-  nickWidth
-}) => {
+const PressableText: React.FC<{
+  onPress: () => void;
+  children: React.ReactNode;
+}> = ({ onPress, children }) => {
+  const longPressGesture = useLongPressGesture({
+    onActivate: () => {
+      console.log(children);
+    }
+  });
+
+  const tapGesture = useTapGesture({
+    onActivate: () => onPress(),
+    runOnJS: true
+  });
+
+  const gesture = useExclusiveGestures(longPressGesture, tapGesture);
+
   return (
-    <TouchableHighlight onLongPress={() => onLongPress(line)}>
+    <VirtualGestureDetector gesture={gesture}>
+      <Text style={{ textDecorationLine: 'underline' }}>{children}</Text>
+    </VirtualGestureDetector>
+  );
+};
+
+const BufferLine: React.FC<Props> = ({ line, onLongPress, nickWidth }) => {
+  const longPressAll = useLongPressGesture({
+    onActivate: () => {
+      onLongPress(line);
+    },
+    runOnJS: true
+  });
+
+  return (
+    <GestureDetector gesture={longPressAll}>
       <View style={[styles.container]}>
         <Text
           numberOfLines={1}
@@ -52,16 +79,36 @@ const BufferLine: React.FC<Props> = ({
         <Text style={styles.text}> </Text>
 
         <View style={[styles.messageContainer]}>
-          <Text style={styles.text}>
-            {renderWeechatFormat(line.message).map((props, index) => (
-              <ParsedText {...props} key={index} parse={parseArgs} />
-            ))}
-          </Text>
+          <InterceptingGestureDetector>
+            <Text style={styles.text}>
+              {renderWeechatFormat(line.message).map(
+                ({ children, ...props }, index) => (
+                  <Text key={index} {...props}>
+                    {(children as string)
+                      .split(/(https?:\/\/[^\s]+)/)
+                      .map((s, index) => {
+                        if (s.match(/^http/)) {
+                          return (
+                            <PressableText
+                              key={index}
+                              onPress={() => Linking.openURL(s)}
+                            >
+                              {s}
+                            </PressableText>
+                          );
+                        }
+                        return s;
+                      })}
+                  </Text>
+                )
+              )}
+            </Text>
+          </InterceptingGestureDetector>
         </View>
 
         <Text style={[styles.text]}> {formatDate(line.date)}</Text>
       </View>
-    </TouchableHighlight>
+    </GestureDetector>
   );
 };
 
