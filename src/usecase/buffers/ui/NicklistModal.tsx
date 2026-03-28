@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import type { Ref } from 'react';
+import { useImperativeHandle, useState } from 'react';
 import type { ListRenderItem } from 'react-native';
 import {
   Button,
@@ -11,10 +12,13 @@ import {
 } from 'react-native';
 import { useAppSelector } from '../../../store/hooks';
 
+export type NicklistModalHandle = {
+  show: () => void;
+};
+
 type Props = {
+  ref?: Ref<NicklistModalHandle>;
   bufferId: string | null;
-  visible: boolean;
-  close: () => void;
 };
 
 const renderItem: ListRenderItem<WeechatNicklist> = ({ item }) => (
@@ -28,33 +32,30 @@ const renderItem: ListRenderItem<WeechatNicklist> = ({ item }) => (
 const keyExtractor = (item: WeechatNicklist) =>
   item.pointers[item.pointers.length - 1];
 
-const NicklistModal: React.FC<Props> = ({ bufferId, visible, close }) => {
+const NicklistModal: React.FC<Props> = ({ ref, bufferId }) => {
+  const [visible, setVisible] = useState(false);
+
+  useImperativeHandle(ref, () => {
+    return { show: () => setVisible(true) };
+  });
+
   const nicklist = useAppSelector((state) =>
     bufferId ? (state.nicklists[bufferId] ?? null) : null
   );
-
-  const lastBufferId = useRef(bufferId);
-
-  useEffect(() => {
-    if (bufferId !== lastBufferId.current) {
-      lastBufferId.current = bufferId;
-      if (visible) close();
-    }
-  });
 
   if (!bufferId) return;
 
   return (
     <Modal
       visible={visible}
-      onRequestClose={close}
+      onRequestClose={() => setVisible(false)}
       transparent={true}
       animationType="slide"
     >
       <View style={styles.modalWrapper}>
         <Pressable
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
-          onPress={close}
+          onPress={() => setVisible(false)}
         />
         <View style={styles.modalView}>
           <FlatList
@@ -62,7 +63,7 @@ const NicklistModal: React.FC<Props> = ({ bufferId, visible, close }) => {
             renderItem={renderItem}
             keyExtractor={keyExtractor}
           />
-          <Button title="Close" onPress={close} />
+          <Button title="Close" onPress={() => setVisible(false)} />
         </View>
       </View>
     </Modal>

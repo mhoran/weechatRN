@@ -25,6 +25,7 @@ import type { StoreState } from '../store';
 import * as actions from '../store/actions';
 import BufferGate from './buffers/ui/BufferGate';
 import BufferList from './buffers/ui/BufferList';
+import type { NicklistModalHandle } from './buffers/ui/NicklistModal';
 import NicklistModal from './buffers/ui/NicklistModal';
 import type { RootStackParamList } from './Root';
 import { Snackbar } from './shared/Snackbar';
@@ -64,13 +65,13 @@ interface State {
   showTopic: boolean;
   drawerWidth: number;
   drawerOpen: boolean;
-  showNicklistModal: boolean;
   connectionErrorDismissed: boolean;
   headerHeight: number;
 }
 
 class App extends React.PureComponent<Props, State> {
   dimensionsListener: EmitterSubscription | undefined;
+  nicklistRef = React.createRef<NicklistModalHandle>();
 
   drawerWidth = () => {
     /*
@@ -93,7 +94,6 @@ class App extends React.PureComponent<Props, State> {
     showTopic: false,
     drawerWidth: this.drawerWidth(),
     drawerOpen: this.props.connected && !this.props.currentBufferId,
-    showNicklistModal: false,
     connectionErrorDismissed: false,
     headerHeight: this.headerHeight()
   };
@@ -122,7 +122,7 @@ class App extends React.PureComponent<Props, State> {
   };
 
   toggleShowNicklistModal = () => {
-    this.setState((state) => ({ showNicklistModal: !state.showNicklistModal }));
+    this.nicklistRef.current?.show();
   };
 
   openDrawer = () => {
@@ -207,13 +207,8 @@ class App extends React.PureComponent<Props, State> {
       connectionError
     } = this.props;
 
-    const {
-      showTopic,
-      drawerWidth,
-      showNicklistModal,
-      connectionErrorDismissed,
-      headerHeight
-    } = this.state;
+    const { showTopic, drawerWidth, connectionErrorDismissed, headerHeight } =
+      this.state;
 
     const sidebar = () => (
       <BufferList
@@ -251,9 +246,9 @@ class App extends React.PureComponent<Props, State> {
                 />
 
                 <NicklistModal
+                  key={currentBufferId}
+                  ref={this.nicklistRef}
                   bufferId={currentBufferId}
-                  visible={showNicklistModal}
-                  close={this.toggleShowNicklistModal}
                 />
 
                 <View style={[styles.topbar, { height: headerHeight }]}>
