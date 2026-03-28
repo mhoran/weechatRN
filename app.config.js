@@ -52,6 +52,7 @@ export default {
     'expo-image-picker',
     'expo-build-properties',
     'expo-font',
+    'expo-secure-store',
     './plugins/with-ios-scene-lifecycle.ts'
   ],
   updates: {
