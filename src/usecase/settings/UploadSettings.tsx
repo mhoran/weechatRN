@@ -1,5 +1,5 @@
 import type { StackScreenProps } from '@react-navigation/stack';
-import { memo, useCallback, useEffect, useReducer, useRef } from 'react';
+import { memo, useEffect, useEffectEvent, useReducer } from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -14,6 +14,7 @@ import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
+import type { MediaUploadOptions } from '../../store/connection-info';
 
 type NavigationProps = StackScreenProps<
   RootStackParamList,
@@ -25,6 +26,14 @@ const mergeState = <T,>(oldState: T, newState: Partial<T>): T => ({
   ...newState
 });
 
+const initialState = (uploadOptions: MediaUploadOptions) => {
+  const headers: [string, string][] = uploadOptions.headers
+    ? Object.entries(uploadOptions.headers)
+    : [['', '']];
+
+  return { ...uploadOptions, headers };
+};
+
 const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
@@ -32,25 +41,11 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
     (state) => state.connection.mediaUploadOptions
   );
 
-  const initialStateHeaders: [string, string][] = uploadOptions.headers
-    ? Object.entries(uploadOptions.headers)
-    : [['', '']];
-
-  const initialState = {
-    ...uploadOptions,
-    headers: initialStateHeaders
-  };
-
   const [state, setState] = useReducer(
-    mergeState<typeof initialState>,
+    mergeState<ReturnType<typeof initialState>>,
+    uploadOptions,
     initialState
   );
-
-  const stateRef = useRef(state);
-
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
 
   const setUploadOptionsHeaderName = (index: number, name: string) => {
     const header: [string, string] = [name, state.headers[index][1]];
@@ -62,8 +57,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
     setState({ headers: state.headers.toSpliced(index, 1, header) });
   };
 
-  const setUploadOptions = useCallback(() => {
-    const { headers, ...rest } = stateRef.current;
+  const setUploadOptions = useEffectEvent(() => {
+    const { headers, ...rest } = state;
     const filteredHeaders = Object.fromEntries(
       headers.filter(([name, value]) => name && value)
     );
@@ -80,11 +75,11 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
         })
       })
     );
-  }, [dispatch, stateRef]);
+  });
 
   useEffect(() => {
     return navigation.addListener('beforeRemove', setUploadOptions);
-  }, [navigation, setUploadOptions]);
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>

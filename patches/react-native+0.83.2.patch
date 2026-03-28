@@ -1,0 +1,138 @@
+diff --git a/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-dev.js b/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-dev.js
+index 98a91dc..2647d73 100644
+--- a/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-dev.js
++++ b/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-dev.js
+@@ -10968,6 +10968,8 @@ __DEV__ &&
+               flags = firstChild.flags;
+             switch (firstChild.tag) {
+               case 0:
++              case 11:
++              case 15:
+                 if (
+                   0 !== (flags & 4) &&
+                   ((firstChild = firstChild.updateQueue),
+@@ -10978,9 +10980,6 @@ __DEV__ &&
+                     (flags = firstChild[current]),
+                       (flags.ref.impl = flags.nextImpl);
+                 break;
+-              case 11:
+-              case 15:
+-                break;
+               case 1:
+                 0 !== (flags & 1024) &&
+                   null !== current &&
+diff --git a/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-prod.js b/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-prod.js
+index a5abb00..21533f5 100644
+--- a/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-prod.js
++++ b/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-prod.js
+@@ -7685,6 +7685,8 @@ function commitBeforeMutationEffects(root, firstChild) {
+         firstChild = root.flags;
+         switch (root.tag) {
+           case 0:
++          case 11:
++          case 15:
+             if (
+               0 !== (firstChild & 4) &&
+               ((firstChild = root.updateQueue),
+@@ -7696,9 +7698,6 @@ function commitBeforeMutationEffects(root, firstChild) {
+                 _eventPayloads$ii.ref.impl = _eventPayloads$ii.nextImpl;
+               }
+             break;
+-          case 11:
+-          case 15:
+-            break;
+           case 1:
+             if (0 !== (firstChild & 1024) && null !== current) {
+               firstChild = void 0;
+diff --git a/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-profiling.js b/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-profiling.js
+index 9d49450..4784feb 100644
+--- a/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-profiling.js
++++ b/node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-profiling.js
+@@ -8330,6 +8330,8 @@ function commitBeforeMutationEffects(root, firstChild) {
+         firstChild = root.flags;
+         switch (root.tag) {
+           case 0:
++          case 11:
++          case 15:
+             if (
+               0 !== (firstChild & 4) &&
+               ((firstChild = root.updateQueue),
+@@ -8341,9 +8343,6 @@ function commitBeforeMutationEffects(root, firstChild) {
+                 _eventPayloads$ii.ref.impl = _eventPayloads$ii.nextImpl;
+               }
+             break;
+-          case 11:
+-          case 15:
+-            break;
+           case 1:
+             if (0 !== (firstChild & 1024) && null !== current) {
+               firstChild = void 0;
+diff --git a/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js b/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js
+index 030ef4d..008a8ad 100644
+--- a/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js
++++ b/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js
+@@ -11376,6 +11376,8 @@ __DEV__ &&
+               flags = firstChild.flags;
+             switch (firstChild.tag) {
+               case 0:
++              case 11:
++              case 15:
+                 if (
+                   0 !== (flags & 4) &&
+                   ((firstChild = firstChild.updateQueue),
+@@ -11386,9 +11388,6 @@ __DEV__ &&
+                     (flags = firstChild[current]),
+                       (flags.ref.impl = flags.nextImpl);
+                 break;
+-              case 11:
+-              case 15:
+-                break;
+               case 1:
+                 0 !== (flags & 1024) &&
+                   null !== current &&
+diff --git a/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-prod.js b/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-prod.js
+index 4d9b841..fde6a93 100644
+--- a/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-prod.js
++++ b/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-prod.js
+@@ -8077,6 +8077,8 @@ function commitBeforeMutationEffects(root, firstChild) {
+         firstChild = root.flags;
+         switch (root.tag) {
+           case 0:
++          case 11:
++          case 15:
+             if (
+               0 !== (firstChild & 4) &&
+               ((firstChild = root.updateQueue),
+@@ -8088,9 +8090,6 @@ function commitBeforeMutationEffects(root, firstChild) {
+                 _eventPayloads$ii.ref.impl = _eventPayloads$ii.nextImpl;
+               }
+             break;
+-          case 11:
+-          case 15:
+-            break;
+           case 1:
+             if (0 !== (firstChild & 1024) && null !== current) {
+               firstChild = void 0;
+diff --git a/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling.js b/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling.js
+index e307475..829be40 100644
+--- a/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling.js
++++ b/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling.js
+@@ -8720,6 +8720,8 @@ function commitBeforeMutationEffects(root, firstChild) {
+         firstChild = root.flags;
+         switch (root.tag) {
+           case 0:
++          case 11:
++          case 15:
+             if (
+               0 !== (firstChild & 4) &&
+               ((firstChild = root.updateQueue),
+@@ -8731,9 +8733,6 @@ function commitBeforeMutationEffects(root, firstChild) {
+                 _eventPayloads$ii.ref.impl = _eventPayloads$ii.nextImpl;
+               }
+             break;
+-          case 11:
+-          case 15:
+-            break;
+           case 1:
+             if (0 !== (firstChild & 1024) && null !== current) {
+               firstChild = void 0;

@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-test-renderer/cjs/react-test-renderer.development.js b/node_modules/react-test-renderer/cjs/react-test-renderer.development.js
+index a4a3018..cf547f0 100644
+--- a/node_modules/react-test-renderer/cjs/react-test-renderer.development.js
++++ b/node_modules/react-test-renderer/cjs/react-test-renderer.development.js
+@@ -13636,6 +13636,8 @@
+                     flags = lanes.flags;
+                   switch (lanes.tag) {
+                     case 0:
++                    case 11:
++                    case 15:
+                       if (0 !== (flags & 4)) {
+                         var updateQueue = lanes.updateQueue,
+                           eventPayloads =
+@@ -13652,9 +13654,6 @@
+                           }
+                       }
+                       break;
+-                    case 11:
+-                    case 15:
+-                      break;
+                     case 1:
+                       0 !== (flags & 1024) &&
+                         null !== current &&
