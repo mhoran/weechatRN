@@ -6,7 +6,11 @@ import buffers from './buffers';
 import hotlists from './hotlists';
 import lines from './lines';
 import nicklists from './nicklists';
-import { persistMiddleware, persistReducer } from './persist';
+import {
+  AsyncStoragePersistor,
+  persistMiddleware,
+  persistReducer
+} from './persist';
 import type { MediaUploadOptions, Settings } from './settings';
 import settings from './settings';
 
@@ -98,7 +102,7 @@ export const store = configureStore({
     getDefaultMiddleware().prepend(
       listenerMiddleware.middleware,
       persistMiddleware<StoreState>({
-        key: 'state',
+        persistor: new AsyncStoragePersistor('state'),
         allowlist: ['settings'],
         version: 2,
         migrate: (

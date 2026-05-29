@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Reducer } from '@reduxjs/toolkit';
 import { configureStore, createAction, createReducer } from '@reduxjs/toolkit';
+import type { PersistPartial, Persistor } from '../../src/store/persist';
 import {
   initializeStoreAction,
   persistMiddleware,
@@ -16,9 +16,24 @@ const reducer = createReducer({ preloaded: false }, (builder) => {
   });
 });
 
-beforeEach(async () => {
-  await AsyncStorage.clear();
-  jest.clearAllMocks();
+let dummyPersistor: Persistor<Record<string, unknown>>;
+
+beforeEach(() => {
+  dummyPersistor = new (class<S> implements Persistor<S> {
+    state: (S & PersistPartial) | null = null;
+
+    getPersistedState(): Promise<(S & PersistPartial) | null> {
+      return Promise.resolve(this.state);
+    }
+
+    setPersistedState(persistedKeys: string[], state: S & PersistPartial) {
+      const inner = Object.fromEntries(
+        persistedKeys.map((key) => [key, state[key as keyof S]])
+      );
+
+      this.state = inner as S & PersistPartial;
+    }
+  })();
 });
 
 it('defaults _persist state prior to rehydration', () => {
@@ -39,18 +54,15 @@ it('merges _persist state with preloaded state', () => {
 });
 
 it('merges persisted state on rehydration', async () => {
-  await AsyncStorage.setItem(
-    'persist:state',
-    JSON.stringify({
-      _persist: JSON.stringify({ version: -1, rehydrated: true }),
-      allowed: JSON.stringify(true)
-    })
-  );
+  dummyPersistor.setPersistedState(['_persist', 'allowed'], {
+    _persist: { version: -1, rehydrated: true },
+    allowed: true
+  });
   const store = configureStore({
     reducer: persistReducer(reducer),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(
-        persistMiddleware({ key: 'state', allowlist: ['allowed'] })
+        persistMiddleware({ persistor: dummyPersistor, allowlist: ['allowed'] })
       )
   });
 
@@ -66,7 +78,7 @@ it('persists allowlisted keys on dispatch', async () => {
     reducer: persistReducer(reducer),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(
-        persistMiddleware({ key: 'state', allowlist: ['allowed'] })
+        persistMiddleware({ persistor: dummyPersistor, allowlist: ['allowed'] })
       )
   });
 
@@ -76,22 +88,15 @@ it('persists allowlisted keys on dispatch', async () => {
 
   store.dispatch(testAction());
 
-  await jest.runAllTimersAsync();
-
-  const persisted = await AsyncStorage.getItem('persist:state');
+  const persisted = await dummyPersistor.getPersistedState();
   expect(persisted).not.toBeNull();
 
-  const outer = JSON.parse(persisted!);
+  expect(persisted).toHaveProperty('_persist');
+  expect(persisted).toHaveProperty('allowed');
 
-  expect(outer).toHaveProperty('_persist');
-  expect(outer).toHaveProperty('allowed');
-
-  const _persist = JSON.parse(outer['_persist']);
-  const allowed = JSON.parse(outer['allowed']);
-
-  expect(_persist.version).toEqual(-1);
-  expect(_persist.rehydrated).toEqual(true);
-  expect(allowed).toEqual(true);
+  expect(persisted!._persist.version).toEqual(-1);
+  expect(persisted!._persist.rehydrated).toEqual(true);
+  expect(persisted!.allowed).toEqual(true);
 });
 
 it('does not persist before rehydration', async () => {
@@ -108,7 +113,7 @@ it('does not persist before rehydration', async () => {
     reducer: mockPersistReducer(reducer),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(
-        persistMiddleware({ key: 'state', allowlist: ['allowed'] })
+        persistMiddleware({ persistor: dummyPersistor, allowlist: ['allowed'] })
       )
   });
 
@@ -116,9 +121,7 @@ it('does not persist before rehydration', async () => {
 
   store.dispatch(testAction());
 
-  await jest.runAllTimersAsync();
-
-  const persisted = await AsyncStorage.getItem('persist:state');
+  const persisted = await dummyPersistor.getPersistedState();
   expect(persisted).toBeNull();
 });
 
@@ -127,7 +130,7 @@ it('does not persist unallowed keys', async () => {
     reducer: persistReducer(reducer),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(
-        persistMiddleware({ key: 'state', allowlist: ['allowed'] })
+        persistMiddleware({ persistor: dummyPersistor, allowlist: ['allowed'] })
       )
   });
 
@@ -135,15 +138,11 @@ it('does not persist unallowed keys', async () => {
 
   store.dispatch(testAction());
 
-  await jest.runAllTimersAsync();
-
-  const persisted = await AsyncStorage.getItem('persist:state');
+  const persisted = await dummyPersistor.getPersistedState();
   expect(persisted).not.toBeNull();
 
-  const outer = JSON.parse(persisted!);
-
-  expect(outer).toHaveProperty('allowed');
-  expect(outer).not.toHaveProperty('unallowed');
+  expect(persisted).toHaveProperty('allowed');
+  expect(persisted).not.toHaveProperty('unallowed');
 });
 
 it('does not run migrations when there is no persisted state', async () => {
@@ -153,7 +152,7 @@ it('does not run migrations when there is no persisted state', async () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(
         persistMiddleware({
-          key: 'state',
+          persistor: dummyPersistor,
           allowlist: ['allowed'],
           version: 0,
           migrate
@@ -169,13 +168,10 @@ it('does not run migrations when there is no persisted state', async () => {
 });
 
 it('runs necessary migrations', async () => {
-  await AsyncStorage.setItem(
-    'persist:state',
-    JSON.stringify({
-      _persist: JSON.stringify({ version: -1, rehydrated: true }),
-      allowed: JSON.stringify(true)
-    })
-  );
+  dummyPersistor.setPersistedState(['_persist', 'allowed'], {
+    _persist: { version: -1, rehydrated: true },
+    allowed: true
+  });
   const migrate = jest.fn(() => ({
     _persist: { version: -1, rehydrated: true },
     allowed: true
@@ -185,7 +181,7 @@ it('runs necessary migrations', async () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(
         persistMiddleware({
-          key: 'state',
+          persistor: dummyPersistor,
           allowlist: ['allowed'],
           version: 0,
           migrate

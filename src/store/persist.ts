@@ -44,37 +44,44 @@ export const persistReducer = <S, A extends Action = UnknownAction, P = S>(
   };
 };
 
-const getPersistedState = async <S>(
-  key: string
-): Promise<(S & PersistPartial) | null> => {
-  const persisted = await AsyncStorage.getItem(`persist:${key}`);
+export class AsyncStoragePersistor<S> implements Persistor<S> {
+  key: string;
 
-  if (!persisted) return null;
+  constructor(key: string) {
+    this.key = key;
+  }
 
-  const outer = JSON.parse(persisted || '{}') as Record<string, string>;
-  const parsed = Object.fromEntries(
-    Object.entries(outer).map(([key, value]) => [key, JSON.parse(value)])
-  );
+  getPersistedState = async (): Promise<(S & PersistPartial) | null> => {
+    const persisted = await AsyncStorage.getItem(`persist:${this.key}`);
 
-  return parsed as S & PersistPartial;
-};
+    if (!persisted) return null;
 
-const setPersistedState = <S>(
-  key: string,
-  persistedKeys: string[],
-  state: S
-) => {
-  const inner = Object.fromEntries(
-    persistedKeys.map((key) => [key, JSON.stringify(state[key as keyof S])])
-  );
-  void AsyncStorage.setItem(`persist:${key}`, JSON.stringify(inner));
-};
+    const outer = JSON.parse(persisted || '{}') as Record<string, string>;
+    const parsed = Object.fromEntries(
+      Object.entries(outer).map(([key, value]) => [key, JSON.parse(value)])
+    );
+
+    return parsed as S & PersistPartial;
+  };
+
+  setPersistedState = (persistedKeys: string[], state: S) => {
+    const inner = Object.fromEntries(
+      persistedKeys.map((key) => [key, JSON.stringify(state[key as keyof S])])
+    );
+    void AsyncStorage.setItem(`persist:${this.key}`, JSON.stringify(inner));
+  };
+}
+
+export interface Persistor<S> {
+  getPersistedState(): Promise<(S & PersistPartial) | null>;
+  setPersistedState(persistedKeys: string[], state: S): void;
+}
 
 export const persistMiddleware = <
   S,
   D extends Dispatch<UnknownAction> = Dispatch<UnknownAction>
 >(options: {
-  key: string;
+  persistor: Persistor<S>;
   allowlist: string[];
   version?: number;
   migrate?: (state: unknown, currentVersion: number) => S;
@@ -82,7 +89,7 @@ export const persistMiddleware = <
   const persistedKeys = ['_persist', ...options.allowlist];
 
   return (store) => {
-    void getPersistedState<S>(options.key).then((parsed) => {
+    void options.persistor.getPersistedState().then((parsed) => {
       const migrated =
         parsed && options.migrate
           ? options.migrate(parsed, parsed._persist.version)
@@ -107,7 +114,7 @@ export const persistMiddleware = <
       );
 
       if (afterState._persist.rehydrated && changed) {
-        setPersistedState(options.key, persistedKeys, afterState);
+        options.persistor.setPersistedState(persistedKeys, afterState);
       }
 
       return result;
