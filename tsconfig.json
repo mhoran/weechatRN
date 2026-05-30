@@ -2,7 +2,8 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "strict": true
+    "strict": true,
+    "types": ["jest"]
   },
   "extends": "expo/tsconfig.base"
 }

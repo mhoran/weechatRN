@@ -19,7 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import type { ConnectedProps } from 'react-redux';
-import { connect } from 'react-redux';
+import { legacy_connect as connect } from 'react-redux';
 import { KeyboardAvoidingView } from '../../../../modules/keyboard-avoiding-view';
 import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';

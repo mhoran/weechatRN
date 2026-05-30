@@ -23,23 +23,25 @@ export const Snackbar: React.FC<SnackbarProps> = ({ message, onDismiss }) => {
     () =>
       Gesture.Pan()
         .onBegin(() => {
-          panning.value = true;
+          panning.set(true);
         })
         .onChange((event) => {
-          translateX.value = event.translationX;
+          translateX.set(event.translationX);
         })
         .onFinalize(() => {
           const shouldDismiss = Math.abs(translateX.value) > windowWidth * 0.3;
           if (shouldDismiss) {
-            translateX.value = withTiming(
-              translateX.value > 0 ? windowWidth : -windowWidth,
-              undefined,
-              () => scheduleOnRN(onDismiss)
+            translateX.set(
+              withTiming(
+                translateX.value > 0 ? windowWidth : -windowWidth,
+                undefined,
+                () => scheduleOnRN(onDismiss)
+              )
             );
           } else {
-            translateX.value = withSpring(0);
+            translateX.set(withSpring(0));
           }
-          panning.value = false;
+          panning.set(false);
         })
         .withTestId('snackbarPan'),
     [panning, translateX, windowWidth, onDismiss]

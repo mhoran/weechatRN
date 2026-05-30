@@ -106,6 +106,7 @@ const Buffer = ({
 
   useLayoutEffect(() => {
     if (!showJumpToUnread) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUnreadButtonHeight(0);
       return;
     }
@@ -116,6 +117,7 @@ const Buffer = ({
   }, [showJumpToUnread]);
 
   useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowScrollToEndButton(false);
     seenLastLine.current = false;
     setShowJumpToUnread(false);

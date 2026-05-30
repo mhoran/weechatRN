@@ -18,7 +18,7 @@ import {
   SafeAreaView
 } from 'react-native-safe-area-context';
 import type { ConnectedProps } from 'react-redux';
-import { connect } from 'react-redux';
+import { legacy_connect as connect } from 'react-redux';
 import type RelayClient from '../lib/weechat/client';
 import type { ConnectionError } from '../lib/weechat/connection';
 import type { StoreState } from '../store';
