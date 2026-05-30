@@ -1,5 +1,5 @@
 import type { StackScreenProps } from '@react-navigation/stack';
-import * as React from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import {
   StatusBar,
   Switch,
@@ -9,146 +9,102 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { ConnectedProps } from 'react-redux';
-import { connect } from 'react-redux';
-import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-
-const connector = connect((state: StoreState) => ({
-  hostname: state.connection.hostname || '',
-  password: state.connection.password || '',
-  ssl: state.connection.ssl,
-  filterBuffers: state.connection.filterBuffers
-}));
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type NavigationProps = StackScreenProps<
   RootStackParamList,
   'Connection Settings'
 >;
 
-type Props = PropsFromRedux & NavigationProps;
+const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
+  const connectionOptions = useAppSelector((state) => ({
+    hostname: state.connection.hostname || '',
+    password: state.connection.password || '',
+    ssl: state.connection.ssl,
+    filterBuffers: state.connection.filterBuffers
+  }));
 
-interface State {
-  hostname: string;
-  password: string;
-  ssl: boolean;
-  filterBuffers: boolean;
-}
+  const [hostname, setHostname] = useState(connectionOptions.hostname);
+  const [password, setPassword] = useState(connectionOptions.password);
+  const [ssl, setSsl] = useState(connectionOptions.ssl);
+  const [filterBuffers, setFilterBuffers] = useState(
+    connectionOptions.filterBuffers
+  );
 
-class ConnectionSettings extends React.PureComponent<Props, State> {
-  state: State = {
-    hostname: this.props.hostname,
-    password: this.props.password,
-    ssl: this.props.ssl,
-    filterBuffers: this.props.filterBuffers
-  };
+  const dispatch = useAppDispatch();
 
-  componentDidMount(): void {
-    this.props.navigation.addListener('beforeRemove', this.onBeforeRemove);
-  }
-
-  componentWillUnmount(): void {
-    this.props.navigation.removeListener('beforeRemove', this.onBeforeRemove);
-  }
-
-  onBeforeRemove = () => {
-    this.props.dispatch(
+  const onBeforeRemove = useEffectEvent(() => {
+    dispatch(
       setConnectionInfoAction({
-        hostname: this.state.hostname,
-        password: this.state.password,
-        ssl: this.state.ssl,
-        filterBuffers: this.state.filterBuffers
+        hostname,
+        password,
+        ssl,
+        filterBuffers
       })
     );
-  };
+  });
 
-  setHostname = (hostname: string) => {
-    this.setState({ hostname });
-  };
+  useEffect(() => {
+    return navigation.addListener('beforeRemove', onBeforeRemove);
+  }, [navigation]);
 
-  setPassword = (password: string) => {
-    this.setState({ password });
-  };
-
-  setSSL = (ssl: boolean) => {
-    this.setState({ ssl });
-  };
-
-  setFilterBuffers = (filterBuffers: boolean) => {
-    this.setState({ filterBuffers });
-  };
-
-  render() {
-    const { navigation } = this.props;
-    const { hostname, password, ssl, filterBuffers } = this.state;
-
-    return (
-      <View style={styles.container}>
-        <SafeAreaView edges={['right', 'bottom', 'left']}>
-          <StatusBar barStyle="dark-content" translucent={true} />
-          <Text style={styles.text}>
-            WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
-            supports the WebSocket connection method only. Configure your relay
-            hostname and password below, then go back to the main screen and
-            click the connect icon. Hostname will be prepended with the
-            appropriate scheme (http(s)://) and suffixed with /weechat.
-          </Text>
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#4157af"
-            keyboardType="url"
-            autoCapitalize="none"
-            placeholder="Hostname"
-            onChangeText={this.setHostname}
-            value={hostname}
-            autoCorrect={false}
+  return (
+    <View style={styles.container}>
+      <SafeAreaView edges={['right', 'bottom', 'left']}>
+        <StatusBar barStyle="dark-content" translucent={true} />
+        <Text style={styles.text}>
+          WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
+          supports the WebSocket connection method only. Configure your relay
+          hostname and password below, then go back to the main screen and click
+          the connect icon. Hostname will be prepended with the appropriate
+          scheme (http(s)://) and suffixed with /weechat.
+        </Text>
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#4157af"
+          keyboardType="url"
+          autoCapitalize="none"
+          placeholder="Hostname"
+          onChangeText={setHostname}
+          value={hostname}
+          autoCorrect={false}
+        />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#4157af"
+          autoCapitalize="none"
+          placeholder="Password"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.text}>SSL</Text>
+          <Switch style={{ margin: 10 }} value={ssl} onValueChange={setSsl} />
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.text}>Hide server buffers</Text>
+          <Switch
+            style={{ margin: 10 }}
+            value={filterBuffers}
+            onValueChange={setFilterBuffers}
           />
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#4157af"
-            autoCapitalize="none"
-            placeholder="Password"
-            secureTextEntry
-            onChangeText={this.setPassword}
-            value={password}
-          />
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+        </View>
+        <View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Media Upload Settings')}
           >
-            <Text style={styles.text}>SSL</Text>
-            <Switch
-              style={{ margin: 10 }}
-              value={ssl}
-              onValueChange={this.setSSL}
-            />
-          </View>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <Text style={styles.text}>Hide server buffers</Text>
-            <Switch
-              style={{ margin: 10 }}
-              value={filterBuffers}
-              onValueChange={this.setFilterBuffers}
-            />
-          </View>
-          <View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Media Upload Settings')}
-            >
-              <Text style={[styles.text, { textDecorationLine: 'underline' }]}>
-                Media Upload Settings
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </View>
-    );
-  }
-}
+            <Text style={[styles.text, { textDecorationLine: 'underline' }]}>
+              Media Upload Settings
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+};
 
-export default connector(ConnectionSettings);
+export default ConnectionSettings;
