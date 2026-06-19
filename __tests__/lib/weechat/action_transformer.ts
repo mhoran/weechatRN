@@ -485,8 +485,8 @@ describe('transformToReduxAction', () => {
     });
   });
 
-  describe('on _buffer_hidden', () => {
-    it('sets the buffer to hidden', () => {
+  describe('on _buffer_unhidden', () => {
+    it('sets the buffer to unhidden', () => {
       const preloadedState = {
         buffers: {
           '83a41cd80': { hidden: 1 } as WeechatBuffer
@@ -509,7 +509,7 @@ describe('transformToReduxAction', () => {
               {
                 id: '1730555173010842',
                 pointers: ['83a41cd80'],
-                hidden: 1
+                hidden: 0
               }
             ]
           }
