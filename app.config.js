@@ -44,7 +44,8 @@ export default {
     ],
     'expo-notifications',
     'expo-image-picker',
-    'expo-build-properties'
+    'expo-build-properties',
+    'expo-font'
   ],
   updates: {
     fallbackToCacheTimeout: 0,
