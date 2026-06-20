@@ -9,7 +9,10 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createSelector } from 'reselect';
+import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
+import type { ConnectionInfo } from '../../store/connection-info';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
@@ -18,14 +21,18 @@ type NavigationProps = StackScreenProps<
   RootStackParamList,
   'Connection Settings'
 >;
+const selectConnectionState = createSelector(
+  [(state: StoreState) => state.connection],
+  (connectionState: ConnectionInfo) => ({
+    hostname: connectionState.hostname || '',
+    password: connectionState.password || '',
+    ssl: connectionState.ssl,
+    filterBuffers: connectionState.filterBuffers
+  })
+);
 
 const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
-  const connectionOptions = useAppSelector((state) => ({
-    hostname: state.connection.hostname || '',
-    password: state.connection.password || '',
-    ssl: state.connection.ssl,
-    filterBuffers: state.connection.filterBuffers
-  }));
+  const connectionOptions = useAppSelector(selectConnectionState);
 
   const [hostname, setHostname] = useState(connectionOptions.hostname);
   const [password, setPassword] = useState(connectionOptions.password);
