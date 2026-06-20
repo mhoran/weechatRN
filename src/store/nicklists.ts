@@ -22,10 +22,7 @@ const nicklistsReducer = createReducer(initialState, (builder) => {
     const nicklist = state[bufferId] ?? [];
 
     const filtered = nicklist.filter(
-      (nick) =>
-        !removed.some(
-          (removed) => nick.pointers.at(-1) === removed.pointers.at(-1)
-        )
+      (nick) => !removed.some((removed) => nick.id === removed.id)
     );
 
     return { ...state, [bufferId]: [...filtered, ...added] };

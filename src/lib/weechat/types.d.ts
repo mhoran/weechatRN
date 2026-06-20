@@ -37,6 +37,7 @@ interface WeechatHotlist {
 }
 
 interface WeechatNicklist {
+  id: string;
   color: string;
   group: number;
   level: number;

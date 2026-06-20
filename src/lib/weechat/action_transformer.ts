@@ -43,13 +43,15 @@ export const transformToReduxAction = (
       const removed = [] as WeechatNicklist[];
 
       nicks.forEach((nick) => {
+        const id = nick.pointers[nick.pointers.length - 1];
+
         switch (String.fromCharCode(nick._diff)) {
           case '+': {
-            added.push(nick);
+            added.push({ ...nick, id });
             break;
           }
           case '-': {
-            removed.push(nick);
+            removed.push({ ...nick, id });
             break;
           }
         }
@@ -206,7 +208,10 @@ export const transformToReduxAction = (
 
       return actions.fetchNicklistAction({
         bufferId: object.content[0].pointers[0],
-        nicklist: nicks
+        nicklist: nicks.map((nick) => ({
+          ...nick,
+          id: nick.pointers[nick.pointers.length - 1]
+        }))
       });
     }
     case 'buffers': {

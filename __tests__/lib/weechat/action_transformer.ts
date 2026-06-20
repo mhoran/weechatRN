@@ -713,6 +713,7 @@ describe('transformToReduxAction', () => {
       const nicklist = store.getState().nicklists['8578d9c00'];
       expect(nicklist).toHaveLength(1);
       expect(nicklist[0].name).toEqual('FlashCode');
+      expect(nicklist[0].id).toEqual('83ed4dd40');
     });
   });
 
@@ -811,8 +812,8 @@ describe('transformToReduxAction', () => {
         nicklists: {
           '84ed37600': [
             {
-              name: 'oldnick',
-              pointers: ['84ed37600', '85139f000']
+              id: '85139f000',
+              name: 'oldnick'
             } as WeechatNicklist
           ]
         }
@@ -852,7 +853,7 @@ describe('transformToReduxAction', () => {
       store.dispatch(action!);
 
       expect(store.getState().nicklists).toMatchObject({
-        '84ed37600': [{ name: 'newnick', pointers: ['84ed37600', '85139f000'] }]
+        '84ed37600': [{ name: 'newnick', id: '85139f000' }]
       });
     });
   });
