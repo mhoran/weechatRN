@@ -55,27 +55,27 @@ export const bufferClosedAction = createAction(
 );
 export const bufferLocalvarUpdateAction = createAction(
   'BUFFER_LOCALVAR_UPDATE',
-  prepareAutoBatched<WeechatBuffer>()
+  prepareAutoBatched<Pick<WeechatBuffer, 'id' | 'local_variables'>>()
 );
 export const bufferTitleChangedAction = createAction(
   'BUFFER_TITLE_CHANGED',
-  prepareAutoBatched<WeechatBuffer>()
+  prepareAutoBatched<Pick<WeechatBuffer, 'id' | 'title'>>()
 );
 export const bufferRenamedAction = createAction(
   'BUFFER_RENAMED',
-  prepareAutoBatched<WeechatBuffer>()
+  prepareAutoBatched<Pick<WeechatBuffer, 'id' | 'short_name' | 'full_name'>>()
 );
 export const bufferMovedAction = createAction(
   'BUFFER_MOVED',
-  prepareAutoBatched<WeechatBuffer>()
+  prepareAutoBatched<Pick<WeechatBuffer, 'id' | 'number'>>()
 );
 export const bufferHiddenAction = createAction(
   'BUFFER_HIDDEN',
-  prepareAutoBatched<WeechatBuffer>()
+  prepareAutoBatched<Pick<WeechatBuffer, 'id'>>()
 );
 export const bufferUnhiddenAction = createAction(
   'BUFFER_UNHIDDEN',
-  prepareAutoBatched<WeechatBuffer>()
+  prepareAutoBatched<Pick<WeechatBuffer, 'id'>>()
 );
 
 export const fetchScriptsAction = createAction(

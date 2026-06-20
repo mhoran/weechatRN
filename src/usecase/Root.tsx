@@ -90,7 +90,7 @@ export default class WeechatNative extends React.Component<null, State> {
       addListener({
         actionCreator: actions.fetchScriptsAction,
         effect: (scripts) => {
-          if (scripts.payload.includes('WeechatRN'))
+          if (scripts.payload.some((s) => /^WeechatRN/.test(s)))
             void this.setNotificationToken();
         }
       })
@@ -117,7 +117,10 @@ export default class WeechatNative extends React.Component<null, State> {
   setNotificationToken = async (): Promise<void> => {
     const token = await registerForPushNotificationsAsync();
     if (token)
-      this.client.sendMessageToBuffer('core.weechat', '/weechatrn ' + token);
+      this.client.sendMessageToBuffer(
+        { bufferName: 'core.weechat' },
+        '/weechatrn ' + token
+      );
   };
 
   onConnectionSuccess = (): void => {
@@ -142,11 +145,12 @@ export default class WeechatNative extends React.Component<null, State> {
   );
 
   onConnect = (): void => {
-    const { hostname, path, password, ssl } = store.getState().settings;
+    const { hostname, path, password, ssl, protocol } =
+      store.getState().settings;
     if (!hostname || !password) return;
 
     try {
-      this.client.connect(hostname, path, password, ssl);
+      this.client.connect(hostname, path, password, ssl, protocol);
     } catch {
       return;
     }

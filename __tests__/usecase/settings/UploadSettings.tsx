@@ -3,6 +3,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from '../../../src/store';
+import type { Settings } from '../../../src/store/settings';
 import {
   act,
   fireEvent,
@@ -164,12 +165,13 @@ describe('UploadSettings', () => {
         password: null,
         ssl: true,
         filterBuffers: true,
+        protocol: 'weechat',
         mediaUploadOptions: {
           url: 'https://example.com',
           basicAuth: false,
           headers: { Authorization: 'Bearer token' }
         }
-      }
+      } as Settings
     };
     const store = configureStore({ reducer, preloadedState });
     render(

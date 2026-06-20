@@ -2,6 +2,9 @@ import {
   Button,
   FieldGroup,
   Host,
+  Picker,
+  Row,
+  Spacer,
   Switch,
   Text,
   TextInput,
@@ -27,12 +30,13 @@ type NavigationProps = StackScreenProps<
 >;
 const selectConnectionState = createSelector(
   [(state: StoreState) => state.settings],
-  (connectionState: Settings) => ({
-    hostname: connectionState.hostname || '',
-    password: connectionState.password || '',
-    ssl: connectionState.ssl,
-    filterBuffers: connectionState.filterBuffers,
-    path: connectionState.path || ''
+  (settings: Settings) => ({
+    hostname: settings.hostname || '',
+    password: settings.password || '',
+    ssl: settings.ssl,
+    filterBuffers: settings.filterBuffers,
+    path: settings.path || '',
+    protocol: settings.protocol
   })
 );
 
@@ -43,6 +47,7 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const path = useNativeState(connectionOptions.path);
   const password = useNativeState(connectionOptions.password);
   const [ssl, setSsl] = useState(connectionOptions.ssl);
+  const [protocol, setProtocol] = useState(connectionOptions.protocol);
   const [filterBuffers, setFilterBuffers] = useState(
     connectionOptions.filterBuffers
   );
@@ -55,8 +60,9 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
         hostname: hostname.value || null,
         path: path.value || null,
         password: password.value || null,
-        ssl: ssl,
-        filterBuffers: filterBuffers
+        ssl,
+        filterBuffers,
+        protocol
       })
     );
   });
@@ -74,11 +80,9 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
           <FieldGroup>
             <Text>
               WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
-              supports the WebSocket connection method only. Configure your
-              relay hostname and password below, then go back to the main screen
-              and click the connect icon. Hostname will be prepended with the
-              appropriate scheme (ws(s)://) and suffixed with the configured
-              path (/weechat by default).
+              supports the relay and API protocols over WebSockets. Configure
+              your relay hostname and password below, then go back to the main
+              screen and click the connect icon.
             </Text>
 
             <FieldGroup.Section title="Relay Settings">
@@ -93,7 +97,7 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
               <TextInput
                 keyboardType="url"
                 autoCapitalize="none"
-                placeholder="/weechat"
+                placeholder={protocol === 'api' ? '/api' : '/weechat'}
                 modifiers={[accessibilityLabel('Relay Path')]}
                 value={path}
                 autoCorrect={false}
@@ -106,6 +110,14 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 value={password}
               />
               <Switch label="Use TLS" value={ssl} onValueChange={setSsl} />
+              <Row alignment="center">
+                <Text>Relay Protocol</Text>
+                <Spacer flexible />
+                <Picker selectedValue={protocol} onValueChange={setProtocol}>
+                  <Picker.Item label={'WeeChat'} value={'weechat'} />
+                  <Picker.Item label={'API'} value={'api'} />
+                </Picker>
+              </Row>
             </FieldGroup.Section>
             <FieldGroup.Section title="Options">
               <Switch

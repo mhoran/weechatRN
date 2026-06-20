@@ -7,7 +7,7 @@ import hotlists from './hotlists';
 import lines from './lines';
 import nicklists from './nicklists';
 import { persistMiddleware, persistReducer } from './persist';
-import type { MediaUploadOptions } from './settings';
+import type { MediaUploadOptions, Settings } from './settings';
 import settings from './settings';
 
 export type StoreState = ReturnType<typeof reducer>;
@@ -35,7 +35,7 @@ const migrations: Record<number, (state: unknown) => unknown> = {
       }
     };
   },
-  1: (state): Partial<StoreState> => {
+  1: (state) => {
     const {
       connection: { hostname, password, mediaUploadOptions, ...connection }
     } = state as {
@@ -68,6 +68,16 @@ const migrations: Record<number, (state: unknown) => unknown> = {
         }
       }
     };
+  },
+  2: (state): Partial<StoreState> => {
+    const { settings } = state as { settings: Settings };
+
+    return {
+      settings: {
+        ...settings,
+        protocol: 'weechat'
+      }
+    };
   }
 };
 
@@ -90,13 +100,13 @@ export const store = configureStore({
       persistMiddleware<StoreState>({
         key: 'state',
         allowlist: ['settings'],
-        version: 1,
+        version: 2,
         migrate: (
           currentState: unknown,
           currentVersion: number
         ): StoreState => {
           let state = currentState;
-          for (let next = currentVersion + 1; next <= 1; next++) {
+          for (let next = currentVersion + 1; next <= 2; next++) {
             state = migrations[next](state);
           }
           return state as StoreState;

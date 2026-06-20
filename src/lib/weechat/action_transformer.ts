@@ -12,7 +12,7 @@ interface RelayLine extends Omit<WeechatLine, 'id' | 'date' | 'date_printed'> {
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
 
-const reduceToObjectByKey = <T, U>(
+export const reduceToObjectByKey = <T, U>(
   array: T[],
   keyFn: KeyFn<T>,
   mapFn: MapFn<T, U> = (a) => a

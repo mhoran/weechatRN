@@ -11,6 +11,7 @@ export type ConnectionOptions = {
   ssl: boolean;
   filterBuffers: boolean;
   path: string | null;
+  protocol: 'weechat' | 'api';
 };
 
 export type MediaUploadOptions = {
@@ -33,6 +34,7 @@ const initialState: Settings = {
   ssl: true,
   filterBuffers: true,
   path: null,
+  protocol: 'weechat',
   mediaUploadOptions: {
     basicAuth: true
   }

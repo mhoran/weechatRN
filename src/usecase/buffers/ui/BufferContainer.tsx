@@ -146,7 +146,10 @@ class BufferContainer extends React.PureComponent<Props, State> {
 
     const { textValue } = this.state;
     textValue.split('\n').forEach((line) => {
-      this.props.client.sendMessageToBuffer(this.props.buffer.full_name, line);
+      this.props.client.sendMessageToBuffer(
+        { bufferId: this.props.buffer.id },
+        line
+      );
     });
     this.handleChangeText('');
   };
