@@ -1,20 +1,15 @@
+import { Host, List, Switch, Text, TextInput } from '@expo/ui';
+import { Section } from '@expo/ui/swift-ui';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { memo, useEffect, useEffectEvent, useReducer } from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  Switch,
-  Text,
-  TextInput,
-  View
-} from 'react-native';
+import { StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 import { setMediaUploadOptionsAction } from '../../store/actions';
+import type { MediaUploadOptions } from '../../store/connection-info';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-import type { MediaUploadOptions } from '../../store/connection-info';
+import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 
 type NavigationProps = StackScreenProps<
   RootStackParamList,
@@ -83,10 +78,10 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
-      <KeyboardAvoidingView>
-        <ScrollView alwaysBounceVertical={false}>
-          <StatusBar barStyle="dark-content" translucent={true} />
-          <Text style={styles.text}>
+      <StatusBar barStyle="dark-content" translucent={true} />
+      <Host style={{ flex: 1 }}>
+        <List>
+          <Text>
             Use the form below to configure media upload settings. This allows
             for uploading media to hosting provider and will automatically paste
             the link in the input box. When configured, an upload button will
@@ -94,102 +89,97 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             from the camera roll. Press the button twice to upload media from
             elsewhere on your device. Press and hold the button to take a photo.
           </Text>
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#4157af"
-            keyboardType="url"
-            autoCapitalize="none"
-            placeholder="Upload Service URL"
-            onChangeText={(url) => setState({ url })}
-            value={state.url}
-            autoCorrect={false}
-          />
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <Text style={styles.text}>Use Basic Auth</Text>
+
+          <Section title="Upload Service URL">
+            <TextInput
+              keyboardType="url"
+              autoCapitalize="none"
+              placeholder="Required"
+              modifiers={[accessibilityLabel('Upload Service URL')]}
+              testID="upload-settings-upload-service-url"
+              onChangeText={(url) => setState({ url })}
+              defaultValue={state.url}
+              autoCorrect={false}
+            />
+          </Section>
+          <Section title="Basic Auth">
             <Switch
-              style={{ margin: 10 }}
               onValueChange={(basicAuth) => setState({ basicAuth })}
               value={state.basicAuth}
-              accessibilityLabel="Use Basic Auth"
+              label="Use Basic Auth"
+              testID="upload-settings-use-basic-auth"
             />
-          </View>
-          {state.basicAuth && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholderTextColor="#4157af"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholder="Upload Service Username"
-                onChangeText={(username) => setState({ username })}
-                value={state.username}
-                autoCorrect={false}
-              />
-              <TextInput
-                style={styles.input}
-                placeholderTextColor="#4157af"
-                autoCapitalize="none"
-                placeholder="Upload Service Password"
-                secureTextEntry
-                onChangeText={(password) => setState({ password })}
-                value={state.password}
-              />
-            </>
-          )}
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#4157af"
-            autoCapitalize="none"
-            placeholder="Form Field Name (default: file)"
-            autoCorrect={false}
-            onChangeText={(fieldName) => setState({ fieldName })}
-            value={state.fieldName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#4157af"
-            autoCapitalize="none"
-            placeholder="RegExp (default: /^https://\S+/)"
-            autoCorrect={false}
-            keyboardType="ascii-capable"
-            onChangeText={(regexp) => setState({ regexp })}
-            value={state.regexp}
-          />
+            {state.basicAuth && (
+              <>
+                <TextInput
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholder="Username"
+                  modifiers={[accessibilityLabel('Upload Service Username')]}
+                  onChangeText={(username) => setState({ username })}
+                  defaultValue={state.username}
+                  autoCorrect={false}
+                />
+                <TextInput
+                  autoCapitalize="none"
+                  placeholder="Password"
+                  modifiers={[accessibilityLabel('Upload Service Password')]}
+                  secureTextEntry
+                  onChangeText={(password) => setState({ password })}
+                  defaultValue={state.password}
+                />
+              </>
+            )}
+          </Section>
+          <Section title="Form Field Name">
+            <TextInput
+              autoCapitalize="none"
+              placeholder="file"
+              modifiers={[accessibilityLabel('Form Field Name')]}
+              autoCorrect={false}
+              onChangeText={(fieldName) => setState({ fieldName })}
+              defaultValue={state.fieldName}
+            />
+          </Section>
+          <Section title="Response Regexp">
+            <TextInput
+              autoCapitalize="none"
+              placeholder="/^https://\S+/"
+              modifiers={[accessibilityLabel('Response Regexp')]}
+              autoCorrect={false}
+              keyboardType="ascii-capable"
+              onChangeText={(regexp) => setState({ regexp })}
+              defaultValue={state.regexp}
+            />
+          </Section>
           {state.headers.map(([headerName, headerValue], index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                columnGap: 10
-              }}
-            >
-              <TextInput
-                style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
-                placeholderTextColor="#4157af"
-                autoCapitalize="none"
-                placeholder="Header Name (optional)"
-                autoCorrect={false}
-                value={headerName}
-                onChangeText={(text) => setUploadOptionsHeaderName(index, text)}
-              />
-              <TextInput
-                style={[styles.input, { minWidth: 300, flexGrow: 1 }]}
-                placeholderTextColor="#4157af"
-                autoCapitalize="none"
-                placeholder="Header Value (optional)"
-                autoCorrect={false}
-                value={headerValue}
-                onChangeText={(text) =>
-                  setUploadOptionsHeaderValue(index, text)
-                }
-              />
-            </View>
+            <Section key={index} title="Additional Headers">
+              <>
+                <TextInput
+                  autoCapitalize="none"
+                  placeholder="Name"
+                  modifiers={[accessibilityLabel('Header Name')]}
+                  autoCorrect={false}
+                  defaultValue={headerName}
+                  onChangeText={(text) =>
+                    setUploadOptionsHeaderName(index, text)
+                  }
+                />
+                <TextInput
+                  autoCapitalize="none"
+                  placeholder="Value"
+                  modifiers={[accessibilityLabel('Header Value')]}
+                  autoCorrect={false}
+                  defaultValue={headerValue}
+                  onChangeText={(text) =>
+                    setUploadOptionsHeaderValue(index, text)
+                  }
+                />
+              </>
+            </Section>
           ))}
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </List>
+      </Host>
     </SafeAreaView>
   );
 };

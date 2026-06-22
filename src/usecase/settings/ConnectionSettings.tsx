@@ -1,13 +1,8 @@
+import { Host, List, Switch, Text, TextInput, useNativeState } from '@expo/ui';
+import { Button, Section } from '@expo/ui/swift-ui';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { useEffect, useEffectEvent, useState } from 'react';
-import {
-  StatusBar,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createSelector } from 'reselect';
 import type { StoreState } from '../../store';
@@ -16,6 +11,7 @@ import type { ConnectionInfo } from '../../store/connection-info';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
+import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 
 type NavigationProps = StackScreenProps<
   RootStackParamList,
@@ -34,8 +30,8 @@ const selectConnectionState = createSelector(
 const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const connectionOptions = useAppSelector(selectConnectionState);
 
-  const [hostname, setHostname] = useState(connectionOptions.hostname);
-  const [password, setPassword] = useState(connectionOptions.password);
+  const hostname = useNativeState(connectionOptions.hostname);
+  const password = useNativeState(connectionOptions.password);
   const [ssl, setSsl] = useState(connectionOptions.ssl);
   const [filterBuffers, setFilterBuffers] = useState(
     connectionOptions.filterBuffers
@@ -46,10 +42,10 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const onBeforeRemove = useEffectEvent(() => {
     dispatch(
       setConnectionInfoAction({
-        hostname,
-        password,
-        ssl,
-        filterBuffers
+        hostname: hostname.value,
+        password: password.value,
+        ssl: ssl,
+        filterBuffers: filterBuffers
       })
     );
   });
@@ -60,55 +56,50 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['right', 'bottom', 'left']}>
+      <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" translucent={true} />
-        <Text style={styles.text}>
-          WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
-          supports the WebSocket connection method only. Configure your relay
-          hostname and password below, then go back to the main screen and click
-          the connect icon. Hostname will be prepended with the appropriate
-          scheme (http(s)://) and suffixed with /weechat.
-        </Text>
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#4157af"
-          keyboardType="url"
-          autoCapitalize="none"
-          placeholder="Hostname"
-          onChangeText={setHostname}
-          value={hostname}
-          autoCorrect={false}
-        />
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#4157af"
-          autoCapitalize="none"
-          placeholder="Password"
-          secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.text}>SSL</Text>
-          <Switch style={{ margin: 10 }} value={ssl} onValueChange={setSsl} />
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.text}>Hide server buffers</Text>
-          <Switch
-            style={{ margin: 10 }}
-            value={filterBuffers}
-            onValueChange={setFilterBuffers}
-          />
-        </View>
-        <View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Media Upload Settings')}
-          >
-            <Text style={[styles.text, { textDecorationLine: 'underline' }]}>
-              Media Upload Settings
+
+        <Host style={{ flex: 1 }}>
+          <List>
+            <Text>
+              WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
+              supports the WebSocket connection method only. Configure your
+              relay hostname and password below, then go back to the main screen
+              and click the connect icon. Hostname will be prepended with the
+              appropriate scheme (http(s)://) and suffixed with /weechat.
             </Text>
-          </TouchableOpacity>
-        </View>
+
+            <Section title="Relay Settings">
+              <TextInput
+                keyboardType="url"
+                autoCapitalize="none"
+                placeholder="Hostname"
+                modifiers={[accessibilityLabel('Relay Hostname')]}
+                value={hostname}
+                autoCorrect={false}
+              />
+              <TextInput
+                autoCapitalize="none"
+                placeholder="Password"
+                modifiers={[accessibilityLabel('Relay Password')]}
+                secureTextEntry
+                value={password}
+              />
+              <Switch label="Use TLS" value={ssl} onValueChange={setSsl} />
+            </Section>
+            <Section title="Options">
+              <Switch
+                label="Hide server buffers"
+                value={filterBuffers}
+                onValueChange={setFilterBuffers}
+              />
+            </Section>
+            <Button
+              onPress={() => navigation.navigate('Media Upload Settings')}
+              label="Media Upload Settings"
+            />
+          </List>
+        </Host>
       </SafeAreaView>
     </View>
   );

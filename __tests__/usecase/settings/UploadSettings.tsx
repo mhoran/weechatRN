@@ -39,17 +39,13 @@ describe('UploadSettings', () => {
       }
     );
 
-    const urlInput = screen.getByPlaceholderText('Upload Service URL');
+    const urlInput = screen.getByTestId('upload-settings-upload-service-url');
     await userEvent.type(urlInput, 'https://example.com');
 
-    const usernameInput = screen.getByPlaceholderText(
-      'Upload Service Username'
-    );
+    const usernameInput = screen.getByPlaceholderText('Username');
     await userEvent.type(usernameInput, 'root');
 
-    const passwordInput = screen.getByPlaceholderText(
-      'Upload Service Password'
-    );
+    const passwordInput = screen.getByPlaceholderText('Password');
     await userEvent.type(passwordInput, 'changeme');
 
     act(() => listeners.forEach((listener) => listener()));
@@ -90,20 +86,18 @@ describe('UploadSettings', () => {
       }
     );
 
-    const urlInput = screen.getByPlaceholderText('Upload Service URL');
+    const urlInput = screen.getByTestId('upload-settings-upload-service-url');
     await userEvent.type(urlInput, 'https://example.com');
 
-    const basicAuthSwitch = screen.getByLabelText('Use Basic Auth');
+    const basicAuthSwitch = screen.getByTestId(
+      'upload-settings-use-basic-auth'
+    );
     fireEvent(basicAuthSwitch, 'onValueChange', false);
 
-    const headerNameInput = screen.getByPlaceholderText(
-      'Header Name (optional)'
-    );
+    const headerNameInput = screen.getByPlaceholderText('Name');
     await userEvent.type(headerNameInput, 'Authorization');
 
-    const headerValueInput = screen.getByPlaceholderText(
-      'Header Value (optional)'
-    );
+    const headerValueInput = screen.getByPlaceholderText('Value');
     await userEvent.type(headerValueInput, 'Bearer token');
 
     act(() => listeners.forEach((listener) => listener()));
@@ -144,9 +138,7 @@ describe('UploadSettings', () => {
       }
     );
 
-    const headerNameInput = screen.getByPlaceholderText(
-      'Header Name (optional)'
-    );
+    const headerNameInput = screen.getByPlaceholderText('Name');
     await userEvent.type(headerNameInput, 'Authorization');
 
     act(() => listeners.forEach((listener) => listener()));
@@ -157,9 +149,7 @@ describe('UploadSettings', () => {
 
     await userEvent.type(headerNameInput, '');
 
-    const headerValueInput = screen.getByPlaceholderText(
-      'Header Value (optional)'
-    );
+    const headerValueInput = screen.getByPlaceholderText('Value');
     await userEvent.type(headerValueInput, 'Bearer token');
 
     uploadOptions = store.getState().connection.mediaUploadOptions;
@@ -202,20 +192,18 @@ describe('UploadSettings', () => {
       }
     );
 
-    const urlInput = screen.getByPlaceholderText('Upload Service URL');
-    expect(urlInput.props.value).toEqual('https://example.com');
+    const urlInput = screen.getByTestId('upload-settings-upload-service-url');
+    expect(urlInput.props.defaultValue).toEqual('https://example.com');
 
-    const basicAuthSwitch = screen.getByLabelText('Use Basic Auth');
+    const basicAuthSwitch = screen.getByTestId(
+      'upload-settings-use-basic-auth'
+    );
     expect(basicAuthSwitch.props.value).toBe(false);
 
-    const headerNameInput = screen.getByPlaceholderText(
-      'Header Name (optional)'
-    );
-    expect(headerNameInput.props.value).toEqual('Authorization');
+    const headerNameInput = screen.getByPlaceholderText('Name');
+    expect(headerNameInput.props.defaultValue).toEqual('Authorization');
 
-    const headerValueInput = screen.getByPlaceholderText(
-      'Header Value (optional)'
-    );
-    expect(headerValueInput.props.value).toEqual('Bearer token');
+    const headerValueInput = screen.getByPlaceholderText('Value');
+    expect(headerValueInput.props.defaultValue).toEqual('Bearer token');
   });
 });
