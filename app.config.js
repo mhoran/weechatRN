@@ -22,7 +22,7 @@ export default {
         }
       ]
     },
-    buildNumber: '2',
+    buildNumber: '3',
     infoPlist: {
       UIDesignRequiresCompatibility: true
     }
