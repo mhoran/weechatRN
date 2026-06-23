@@ -50,7 +50,7 @@ describe('UploadSettings', () => {
 
     act(() => listeners.forEach((listener) => listener()));
 
-    const uploadOptions = store.getState().connection.mediaUploadOptions;
+    const uploadOptions = store.getState().settings.mediaUploadOptions;
 
     expect(uploadOptions.url).toEqual('https://example.com');
     expect(uploadOptions.basicAuth).toEqual(true);
@@ -102,7 +102,7 @@ describe('UploadSettings', () => {
 
     act(() => listeners.forEach((listener) => listener()));
 
-    const uploadOptions = store.getState().connection.mediaUploadOptions;
+    const uploadOptions = store.getState().settings.mediaUploadOptions;
 
     expect(uploadOptions.url).toEqual('https://example.com');
     expect(uploadOptions.basicAuth).toEqual(false);
@@ -143,7 +143,7 @@ describe('UploadSettings', () => {
 
     act(() => listeners.forEach((listener) => listener()));
 
-    let uploadOptions = store.getState().connection.mediaUploadOptions;
+    let uploadOptions = store.getState().settings.mediaUploadOptions;
 
     expect(uploadOptions.headers).toBeUndefined();
 
@@ -152,14 +152,15 @@ describe('UploadSettings', () => {
     const headerValueInput = screen.getByPlaceholderText('Value');
     await userEvent.type(headerValueInput, 'Bearer token');
 
-    uploadOptions = store.getState().connection.mediaUploadOptions;
+    uploadOptions = store.getState().settings.mediaUploadOptions;
     expect(uploadOptions.headers).toBeUndefined();
   });
 
   it('populates form fields with values from the store', () => {
     const preloadedState = {
-      connection: {
+      settings: {
         hostname: null,
+        path: null,
         password: null,
         ssl: true,
         filterBuffers: true,

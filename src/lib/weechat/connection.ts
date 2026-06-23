@@ -37,6 +37,7 @@ export default class WeechatConnection {
   constructor(
     private dispatch: AppDispatch,
     private hostname: string,
+    private path: string | null,
     private password: string,
     private ssl: boolean,
     private onSuccess: (conn: WeechatConnection) => void,
@@ -44,7 +45,9 @@ export default class WeechatConnection {
       reconnect: boolean,
       connectionError: ConnectionError | null
     ) => void
-  ) {}
+  ) {
+    this.path = path || '/weechat';
+  }
 
   connect(): void {
     if (this.state !== State.DISCONNECTED) return;
@@ -54,7 +57,7 @@ export default class WeechatConnection {
 
   private openSocket(): void {
     this.websocket = new WebSocket(
-      `${this.ssl ? 'wss' : 'ws'}://${this.hostname}/weechat`
+      `${this.ssl ? 'wss' : 'ws'}://${this.hostname}/${this.path}`
     );
 
     this.websocket.onopen = () => this.onopen();

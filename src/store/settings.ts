@@ -10,10 +10,11 @@ export type ConnectionOptions = {
   password: string | null;
   ssl: boolean;
   filterBuffers: boolean;
+  path: string | null;
 };
 
 export type MediaUploadOptions = {
-  url: string;
+  url?: string;
   fieldName?: string;
   regexp?: string;
   basicAuth: boolean;
@@ -22,17 +23,17 @@ export type MediaUploadOptions = {
   headers?: Record<string, string>;
 };
 
-export type ConnectionInfo = ConnectionOptions & {
+export type Settings = ConnectionOptions & {
   mediaUploadOptions: MediaUploadOptions;
 };
 
-const initialState: ConnectionInfo = {
+const initialState: Settings = {
   hostname: null,
   password: null,
   ssl: true,
   filterBuffers: true,
+  path: null,
   mediaUploadOptions: {
-    url: '',
     basicAuth: true
   }
 };
@@ -41,10 +42,7 @@ const connectionInfoReducer = createReducer(initialState, (builder) => {
   builder.addCase(setConnectionInfoAction, (state, action) => {
     return {
       ...state,
-      hostname: action.payload.hostname,
-      password: action.payload.password,
-      ssl: action.payload.ssl,
-      filterBuffers: action.payload.filterBuffers
+      ...action.payload
     };
   });
   builder.addCase(setMediaUploadOptionsAction, (state, action) => {

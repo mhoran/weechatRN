@@ -27,10 +27,16 @@ export default class RelayClient {
     this.connection.send('sync');
   };
 
-  connect = (hostname: string, password: string, ssl: boolean): void => {
+  connect = (
+    hostname: string,
+    path: string | null,
+    password: string,
+    ssl: boolean
+  ): void => {
     this.connection = new WeechatConnection(
       this.dispatch,
       hostname,
+      path,
       password,
       ssl,
       this.onSuccess,

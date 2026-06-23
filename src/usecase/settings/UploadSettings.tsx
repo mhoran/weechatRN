@@ -5,7 +5,7 @@ import { memo, useEffect, useEffectEvent, useReducer } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
-import type { MediaUploadOptions } from '../../store/connection-info';
+import type { MediaUploadOptions } from '../../store/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
@@ -33,7 +33,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
   const uploadOptions = useAppSelector(
-    (state) => state.connection.mediaUploadOptions
+    (state) => state.settings.mediaUploadOptions
   );
 
   const [state, setState] = useReducer(
@@ -61,6 +61,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
     dispatch(
       setMediaUploadOptionsAction({
         ...rest,
+        url: rest.url || undefined,
         username: rest.username || undefined,
         password: rest.password || undefined,
         fieldName: rest.fieldName || undefined,

@@ -32,9 +32,7 @@ const selectHotlist = createSelector(
 const BufferList: React.FC<Props> = ({ currentBufferId, onSelectBuffer }) => {
   const buffers = useAppSelector(selectBuffers);
   const hotlists = useAppSelector((state) => state.hotlists);
-  const filterBuffers = useAppSelector(
-    (state) => state.connection.filterBuffers
-  );
+  const filterBuffers = useAppSelector((state) => state.settings.filterBuffers);
 
   const renderListItem: ListRenderItem<WeechatBuffer> = useCallback(
     ({ item }) => {

@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { createSelector } from 'reselect';
 import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
-import type { ConnectionInfo } from '../../store/connection-info';
+import type { Settings } from '../../store/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
@@ -18,12 +18,13 @@ type NavigationProps = StackScreenProps<
   'Connection Settings'
 >;
 const selectConnectionState = createSelector(
-  [(state: StoreState) => state.connection],
-  (connectionState: ConnectionInfo) => ({
+  [(state: StoreState) => state.settings],
+  (connectionState: Settings) => ({
     hostname: connectionState.hostname || '',
     password: connectionState.password || '',
     ssl: connectionState.ssl,
-    filterBuffers: connectionState.filterBuffers
+    filterBuffers: connectionState.filterBuffers,
+    path: connectionState.path || ''
   })
 );
 
@@ -31,6 +32,7 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const connectionOptions = useAppSelector(selectConnectionState);
 
   const hostname = useNativeState(connectionOptions.hostname);
+  const path = useNativeState(connectionOptions.path);
   const password = useNativeState(connectionOptions.password);
   const [ssl, setSsl] = useState(connectionOptions.ssl);
   const [filterBuffers, setFilterBuffers] = useState(
@@ -42,8 +44,9 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   const onBeforeRemove = useEffectEvent(() => {
     dispatch(
       setConnectionInfoAction({
-        hostname: hostname.value,
-        password: password.value,
+        hostname: hostname.value || null,
+        path: path.value || null,
+        password: password.value || null,
         ssl: ssl,
         filterBuffers: filterBuffers
       })
@@ -66,7 +69,8 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
               supports the WebSocket connection method only. Configure your
               relay hostname and password below, then go back to the main screen
               and click the connect icon. Hostname will be prepended with the
-              appropriate scheme (http(s)://) and suffixed with /weechat.
+              appropriate scheme (ws(s)://) and suffixed with the configured
+              path (/weechat by default).
             </Text>
 
             <Section title="Relay Settings">
@@ -76,6 +80,14 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 placeholder="Hostname"
                 modifiers={[accessibilityLabel('Relay Hostname')]}
                 value={hostname}
+                autoCorrect={false}
+              />
+              <TextInput
+                keyboardType="url"
+                autoCapitalize="none"
+                placeholder="/weechat"
+                modifiers={[accessibilityLabel('Relay Path')]}
+                value={path}
                 autoCorrect={false}
               />
               <TextInput

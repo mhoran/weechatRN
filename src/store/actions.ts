@@ -1,6 +1,6 @@
 import { createAction, prepareAutoBatched } from '@reduxjs/toolkit';
 import type { BufferState } from './buffers';
-import type { ConnectionOptions, MediaUploadOptions } from './connection-info';
+import type { ConnectionOptions, MediaUploadOptions } from './settings';
 import type { HotListState } from './hotlists';
 
 export const disconnectAction = createAction('DISCONNECT');

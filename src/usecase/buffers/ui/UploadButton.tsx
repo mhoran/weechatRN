@@ -14,7 +14,7 @@ interface Props {
   onUpload: (url: string) => void;
   style?: StyleProp<ViewStyle>;
   uploadOptions: {
-    url: string;
+    url?: string;
     fieldName?: string;
     regexp?: string;
     basicAuth: boolean;
@@ -79,7 +79,7 @@ const UploadButton: React.FC<Props> = ({
       setShowSpinner(true);
       const file = new File(fileUri);
       const uploadUrl = await uploadImage(file);
-      const matches = uploadUrl.match(new RegExp(uploadOptionsRegexp));
+      const matches = uploadUrl?.match(new RegExp(uploadOptionsRegexp));
       if (!matches) return alert('Failed to extract URL from response');
       onUpload(matches[1] || matches[0]);
     } catch {
@@ -90,6 +90,8 @@ const UploadButton: React.FC<Props> = ({
   };
 
   const uploadImage = async (file: File) => {
+    if (!uploadOptions.url) return;
+
     const formData = new FormData();
     formData.append(uploadOptionsFieldName, file);
 

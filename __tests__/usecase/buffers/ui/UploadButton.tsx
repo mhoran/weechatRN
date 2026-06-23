@@ -84,9 +84,8 @@ describe('UploadButton', () => {
     expect(onUpload).toHaveBeenCalledWith('https://example.com/image.jpg');
   });
 
-  it('hides the button when the url is empty', () => {
+  it('hides the button when the url is undefined', () => {
     const uploadOptions = {
-      url: '',
       basicAuth: false
     };
     render(<UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />);

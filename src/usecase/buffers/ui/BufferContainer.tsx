@@ -37,7 +37,7 @@ const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
   lines: state.lines[bufferId] ?? [],
   nicklist: state.nicklists[bufferId] ?? [],
   buffer: state.buffers[bufferId],
-  mediaUploadOptions: state.connection.mediaUploadOptions,
+  mediaUploadOptions: state.settings.mediaUploadOptions,
   notification:
     bufferId === state.app.notification?.bufferId &&
     state.app.currentBufferLinesFetched

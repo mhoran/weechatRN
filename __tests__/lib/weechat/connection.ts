@@ -30,6 +30,7 @@ describe(WeechatConnection, () => {
     const connection = new WeechatConnection(
       jest.fn(),
       'example.com',
+      null,
       'changeme',
       true,
       onSuccess,
@@ -70,6 +71,7 @@ describe(WeechatConnection, () => {
     const connection = new WeechatConnection(
       dispatch,
       'example.com',
+      null,
       'changeme',
       true,
       onSuccess,
@@ -106,6 +108,7 @@ describe(WeechatConnection, () => {
       const connection = new WeechatConnection(
         dispatch,
         'example.com',
+        null,
         'changeme',
         true,
         jest.fn(),
@@ -136,6 +139,7 @@ describe(WeechatConnection, () => {
       const connection = new WeechatConnection(
         dispatch,
         'example.com',
+        null,
         'changeme',
         true,
         jest.fn(),
@@ -175,6 +179,7 @@ describe(WeechatConnection, () => {
       const connection = new WeechatConnection(
         dispatch,
         'example.com',
+        null,
         'changeme',
         true,
         jest.fn(),

@@ -3,28 +3,71 @@ import { combineReducers } from 'redux';
 
 import { app } from './app';
 import buffers from './buffers';
-import connection from './connection-info';
 import hotlists from './hotlists';
 import lines from './lines';
 import nicklists from './nicklists';
 import { persistMiddleware, persistReducer } from './persist';
+import type { MediaUploadOptions } from './settings';
+import settings from './settings';
 
 export type StoreState = ReturnType<typeof reducer>;
 
 export type AppDispatch = typeof store.dispatch;
 
-const migrations: Record<number, (state: unknown) => StoreState> = {
+const migrations: Record<number, (state: unknown) => unknown> = {
   0: (state) => {
     return {
-      ...(state as object),
       connection: {
-        ...(state as { connection: object }).connection,
+        ...(
+          state as {
+            connection: {
+              hostname: string | null;
+              password: string | null;
+              ssl: boolean;
+              filterBuffers: boolean;
+            };
+          }
+        ).connection,
         mediaUploadOptions: {
           url: '',
           basicAuth: true
         }
       }
-    } as StoreState;
+    };
+  },
+  1: (state): Partial<StoreState> => {
+    const {
+      connection: { hostname, password, mediaUploadOptions, ...connection }
+    } = state as {
+      connection: {
+        hostname: string | null;
+        password: string | null;
+        ssl: boolean;
+        filterBuffers: boolean;
+        mediaUploadOptions: MediaUploadOptions;
+      };
+    };
+
+    let u;
+    try {
+      u = new URL(`ws://${hostname ?? ''}/`);
+      u.pathname = u.pathname === '/' ? '/weechat' : `${u.pathname}/weechat`;
+    } catch {
+      /* empty */
+    }
+
+    return {
+      settings: {
+        ...connection,
+        hostname: u?.host ?? null,
+        path: u?.pathname ?? null,
+        password: password || null,
+        mediaUploadOptions: {
+          ...mediaUploadOptions,
+          url: mediaUploadOptions.url || undefined
+        }
+      }
+    };
   }
 };
 
@@ -34,7 +77,7 @@ export const reducer = combineReducers({
   app,
   buffers,
   lines,
-  connection,
+  settings,
   hotlists,
   nicklists
 });
@@ -46,11 +89,15 @@ export const store = configureStore({
       listenerMiddleware.middleware,
       persistMiddleware<StoreState>({
         key: 'state',
-        allowlist: ['connection'],
-        version: 0,
-        migrate: (state: unknown, currentVersion: number): StoreState => {
-          if (currentVersion !== 0) {
-            return migrations[0](state);
+        allowlist: ['settings'],
+        version: 1,
+        migrate: (
+          currentState: unknown,
+          currentVersion: number
+        ): StoreState => {
+          let state = currentState;
+          for (let next = currentVersion + 1; next <= 1; next++) {
+            state = migrations[next](state);
           }
           return state as StoreState;
         }
