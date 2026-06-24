@@ -29,8 +29,7 @@ const renderItem: ListRenderItem<WeechatNicklist> = ({ item }) => (
   </View>
 );
 
-const keyExtractor = (item: WeechatNicklist) =>
-  item.pointers[item.pointers.length - 1];
+const keyExtractor = (item: WeechatNicklist) => item.id;
 
 const NicklistModal: React.FC<Props> = ({ ref, bufferId }) => {
   const [visible, setVisible] = useState(false);
