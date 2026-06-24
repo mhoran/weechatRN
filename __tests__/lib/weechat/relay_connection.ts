@@ -1,5 +1,5 @@
 import type { ConnectionError } from '../../../src/lib/weechat/connection';
-import WeechatConnection from '../../../src/lib/weechat/connection';
+import WeechatRelayConnection from '../../../src/lib/weechat/relay_connection';
 import {
   disconnectAction,
   fetchVersionAction
@@ -15,7 +15,7 @@ const mockWebSocket = jest.fn(function () {
   return this;
 });
 
-describe(WeechatConnection, () => {
+describe(WeechatRelayConnection, () => {
   let realWebSocket: typeof WebSocket;
 
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe(WeechatConnection, () => {
   it('calls onError when authentication fails', () => {
     const onSuccess = jest.fn();
     const onError = jest.fn();
-    const connection = new WeechatConnection(
+    const connection = new WeechatRelayConnection(
       jest.fn(),
       'example.com',
       null,
@@ -54,7 +54,7 @@ describe(WeechatConnection, () => {
       '(version) info version\n'
     );
 
-    mockWebSocket.mock.instances[0].onclose();
+    mockWebSocket.mock.instances[0].onclose({ code: 1001 });
 
     expect(onError).toHaveBeenCalledWith(
       false,
@@ -72,7 +72,7 @@ describe(WeechatConnection, () => {
     const dispatch = jest.fn();
     const onSuccess = jest.fn();
     const onError = jest.fn();
-    const connection = new WeechatConnection(
+    const connection = new WeechatRelayConnection(
       dispatch,
       'example.com',
       null,
@@ -109,7 +109,7 @@ describe(WeechatConnection, () => {
   describe('disconnect', () => {
     it('closes the WebSocket', () => {
       const dispatch = jest.fn();
-      const connection = new WeechatConnection(
+      const connection = new WeechatRelayConnection(
         dispatch,
         'example.com',
         null,
@@ -140,7 +140,7 @@ describe(WeechatConnection, () => {
     it('reconnects on error', () => {
       const dispatch = jest.fn();
       const onError = jest.fn();
-      const connection = new WeechatConnection(
+      const connection = new WeechatRelayConnection(
         dispatch,
         'example.com',
         null,
@@ -159,8 +159,7 @@ describe(WeechatConnection, () => {
           '\x00\x00\x00\x27\x00\x00\x00\x00\x07\x76\x65\x72\x73\x69\x6f\x6e\x69\x6e\x66\x00\x00\x00\x07\x76\x65\x72\x73\x69\x6f\x6e\x00\x00\x00\x05\x34\x2e\x31\x2e\x32'
         )
       });
-      mockWebSocket.mock.instances[0].onerror();
-      mockWebSocket.mock.instances[0].close();
+      mockWebSocket.mock.instances[0].onclose({ code: 1006 });
 
       expect(onError).toHaveBeenCalledWith(
         true,
@@ -180,7 +179,7 @@ describe(WeechatConnection, () => {
   describe('send', () => {
     it('does not send the message when disconnected', () => {
       const dispatch = jest.fn();
-      const connection = new WeechatConnection(
+      const connection = new WeechatRelayConnection(
         dispatch,
         'example.com',
         null,

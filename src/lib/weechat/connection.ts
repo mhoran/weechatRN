@@ -1,9 +1,5 @@
 import type { AppDispatch } from '../../store';
 import { disconnectAction } from '../../store/actions';
-import { transformToReduxAction } from './action_transformer';
-import { WeeChatProtocol } from './parser';
-
-const protocol = new WeeChatProtocol();
 
 export interface ConnectionError {
   message: () => string;
@@ -15,42 +11,38 @@ class SocketError implements ConnectionError {
   };
 }
 
-class AuthenticationError implements ConnectionError {
+export class AuthenticationError implements ConnectionError {
   message = () => {
     return 'Failed to authenticate with weechat relay. Check password.';
   };
 }
 
-enum State {
+export enum State {
   CONNECTING = 1,
   AUTHENTICATING,
   CONNECTED,
   DISCONNECTED
 }
 
-export default class WeechatConnection {
-  private compressed = false;
-  private websocket?: WebSocket;
-  private reconnect = false;
-  private state = State.DISCONNECTED;
-  private url: URL;
+export default abstract class WeechatConnection {
+  protected websocket?: WebSocket;
+  protected state = State.DISCONNECTED;
+  protected url: URL;
 
   constructor(
-    private dispatch: AppDispatch,
-    private hostname: string,
-    path: string | null,
-    private password: string,
-    private ssl: boolean,
-    private onSuccess: (conn: WeechatConnection) => void,
-    private onError: (
+    protected dispatch: AppDispatch,
+    protected onError: (
       reconnect: boolean,
       connectionError: ConnectionError | null
-    ) => void
+    ) => void,
+    hostname: string,
+    path: string | null,
+    ssl: boolean
   ) {
     try {
       this.url = new URL(
         path || '/weechat',
-        `${this.ssl ? 'wss' : 'ws'}://${this.hostname}`
+        `${ssl ? 'wss' : 'ws'}://${hostname}`
       );
     } catch (e) {
       throw Error('Failed to construct a valid URL from hostname and path', {
@@ -65,46 +57,24 @@ export default class WeechatConnection {
     this.openSocket();
   }
 
-  private openSocket(): void {
-    this.websocket = new WebSocket(this.url.toString());
+  protected abstract openSocket(): void;
 
-    this.websocket.onopen = () => this.onopen();
-    this.websocket.onmessage = (event) => this.onmessage(event);
-    this.websocket.onerror = (event) => this.handleError(event);
-    this.websocket.onclose = () => this.handleClose();
-  }
+  protected abstract onopen(): void;
 
-  private onopen(): void {
-    this.state = State.AUTHENTICATING;
-
-    this.send(
-      `init password=${this.password},compression=${
-        this.compressed ? 'zlib' : 'off'
-      }\n`
-    );
-    this.send('(version) info version');
-  }
-
-  private handleError(event: Event): void {
-    console.log(event);
-    this.reconnect = this.state === State.CONNECTED;
-    this.onError(this.reconnect, new SocketError());
-  }
-
-  private handleClose(): void {
-    if (this.state === State.AUTHENTICATING) {
-      this.state = State.DISCONNECTED;
-      this.onError(false, new AuthenticationError());
-      return;
-    }
-
+  protected handleClose(event: CloseEvent): void {
     if (this.state === State.DISCONNECTED) return;
+
+    let reconnect = false;
+
+    if (event.code === 1006) {
+      reconnect = this.state === State.CONNECTED;
+      this.onError(reconnect, new SocketError());
+    }
 
     this.state = State.DISCONNECTED;
     this.dispatch(disconnectAction());
 
-    if (this.reconnect) {
-      this.reconnect = false;
+    if (reconnect) {
       this.connect();
     }
   }
@@ -117,24 +87,7 @@ export default class WeechatConnection {
     this.dispatch(disconnectAction());
   }
 
-  private onmessage(event: WebSocketMessageEvent): void {
-    const parsed = protocol.parse(event.data as ArrayBuffer);
-
-    if (parsed.id === 'version') {
-      this.state = State.CONNECTED;
-      this.onSuccess(this);
-    }
-
-    console.log('Parsed data:', parsed);
-    try {
-      const action = transformToReduxAction(parsed);
-      if (action) {
-        this.dispatch(action);
-      }
-    } catch (e) {
-      console.log(e, parsed);
-    }
-  }
+  protected abstract onmessage(event: WebSocketMessageEvent): void;
 
   send(data: string): void {
     if (this.websocket?.readyState !== WebSocket.OPEN) return;

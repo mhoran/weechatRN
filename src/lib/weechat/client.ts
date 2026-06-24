@@ -1,7 +1,8 @@
 import type { AppDispatch } from '../../store';
 import Buffer from '../../usecase/buffers/ui/Buffer';
+import type WeechatConnection from './connection';
 import type { ConnectionError } from './connection';
-import WeechatConnection from './connection';
+import WeechatRelayConnection from './relay_connection';
 
 export default class RelayClient {
   private connection?: WeechatConnection;
@@ -33,7 +34,7 @@ export default class RelayClient {
     password: string,
     ssl: boolean
   ): void => {
-    this.connection = new WeechatConnection(
+    this.connection = new WeechatRelayConnection(
       this.dispatch,
       hostname,
       path,
