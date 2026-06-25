@@ -176,7 +176,7 @@ export default class WeechatNative extends React.Component<null, State> {
           <PersistGate onBeforeLift={this.onBeforeLift}>
             <GestureHandlerRootView>
               <NavigationContainer>
-                <Stack.Navigator detachInactiveScreens={false}>
+                <Stack.Navigator>
                   <Stack.Screen
                     name="App"
                     options={{ headerShown: false, gestureEnabled: false }}
