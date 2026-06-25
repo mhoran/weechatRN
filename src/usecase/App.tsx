@@ -1,4 +1,4 @@
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import type { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
@@ -289,7 +289,11 @@ class App extends React.PureComponent<Props, State> {
                         style={styles.topbarButton}
                         onPress={this.toggleShowNicklistModal}
                       >
-                        <Feather name="users" size={22} color="white" />
+                        <MaterialIcons
+                          name="people-alt"
+                          size={22}
+                          color="white"
+                        />
                       </TouchableOpacity>
                     )}
                     <TouchableOpacity
