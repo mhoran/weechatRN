@@ -531,14 +531,8 @@ describe('transformToReduxAction', () => {
         buffers: {
           '83a41cd80': {
             local_variables: {
-              server: 'local',
-              test: 'value',
-              plugin: 'irc',
-              type: 'channel',
-              channel: '#weechat',
-              nick: 'test',
-              name: 'libera.#weechat'
-            } as Localvariables
+              type: 'channel'
+            }
           } as WeechatBuffer
         }
       };

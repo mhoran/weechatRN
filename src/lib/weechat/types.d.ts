@@ -21,7 +21,6 @@ interface WeechatBuffer {
   _id: string;
   pointers: string[];
   local_variables: Localvariables;
-  notify: number;
   number: number;
   full_name: string;
   short_name: string;
@@ -58,20 +57,7 @@ interface Hotlist {
 }
 
 interface Localvariables {
-  plugin: string;
-  name: string;
-  server?: string;
   type?: string;
-  charset_modifier?: string;
-  channel?: string;
-  nick?: string;
-  script_input_cb?: string;
-  script_name?: string;
-  iset_filter?: string;
-  iset_search_mode?: string;
-  iset_search_value?: string;
-  script_close_cb?: string;
-  no_log?: string;
 }
 
 interface Header {
@@ -82,18 +68,13 @@ interface Header {
 interface WeechatLine {
   id: number;
   pointers: string[];
-  prefix_length: number;
   prefix: string;
   displayed: number;
   message: string;
-  refresh_needed: number;
-  str_time: string;
   date: string;
-  tags_count: number;
   date_printed: string;
   tags_array: string[];
   buffer: string;
   highlight: number;
-  y: number;
   notify_level?: number;
 }

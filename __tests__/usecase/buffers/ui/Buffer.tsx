@@ -206,7 +206,7 @@ describe(Buffer, () => {
           pointers: ['86c417600', '8580eeec0', '8580dcf80', '86c2fefd0'],
           prefix: 'user',
           tags_array: ['irc_privmsg', 'notify_message']
-        } as WeechatLine
+        }
       ];
 
       screen.rerender(

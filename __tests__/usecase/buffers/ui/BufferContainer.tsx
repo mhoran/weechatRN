@@ -87,7 +87,7 @@ describe('BufferContainer', () => {
             pointers: ['86c417600', '8580eeec0', '8580dcc40', '86c2ff040'],
             prefix: 'user',
             tags_array: ['irc_privmsg', 'notify_message']
-          } as WeechatLine
+          }
         ])
       );
     });
@@ -173,7 +173,7 @@ describe('BufferContainer', () => {
             pointers: ['86c417600', '8580eeec0', '8580dcc40', '86c2ff040'],
             prefix: 'user',
             tags_array: ['irc_privmsg', 'notify_message']
-          } as WeechatLine
+          }
         ])
       );
     });

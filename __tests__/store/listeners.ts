@@ -101,12 +101,8 @@ describe(PendingBufferNotificationListener, () => {
           hidden: 0,
           id: '83a41cd80',
           local_variables: {
-            channel: '#weechat',
-            name: 'libera.#weechat',
-            plugin: 'irc',
             type: 'channel'
           },
-          notify: 3,
           number: 2,
           pointers: ['83a41cd80'],
           short_name: '#weechat',
