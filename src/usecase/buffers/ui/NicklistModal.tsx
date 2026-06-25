@@ -24,7 +24,10 @@ type Props = {
 const renderItem: ListRenderItem<WeechatNicklist> = ({ item }) => (
   <View style={styles.listItem}>
     <View style={styles.row}>
-      <Text style={styles.listItemText}>{item.name}</Text>
+      <Text style={styles.listItemText}>
+        {item.prefix}
+        {item.name}
+      </Text>
     </View>
   </View>
 );
