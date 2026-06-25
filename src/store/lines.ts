@@ -4,7 +4,7 @@ import {
   bufferClosedAction,
   bufferLineAddedAction,
   bufferLineDataChangedAction,
-  fetchBuffersRemovedAction,
+  fetchBuffersAction,
   fetchLinesAction
 } from './actions';
 
@@ -50,11 +50,9 @@ const linesReducer = createReducer(initialState, (builder) => {
       [action.payload.buffer]: lines.toSpliced(lineIndex, 1, action.payload)
     };
   });
-  builder.addCase(fetchBuffersRemovedAction, (state, action) => {
+  builder.addCase(fetchBuffersAction, (state, action) => {
     return Object.fromEntries(
-      Object.entries(state).filter(
-        ([bufferId]) => !action.payload.includes(bufferId)
-      )
+      Object.entries(state).filter(([bufferId]) => bufferId in action.payload)
     );
   });
 });

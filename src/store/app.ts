@@ -1,13 +1,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  disconnectAction,
-  fetchVersionAction,
-  changeCurrentBufferAction,
   bufferClosedAction,
-  fetchBuffersRemovedAction,
   bufferNotificationAction,
+  changeCurrentBufferAction,
   clearBufferNotificationAction,
-  fetchLinesAction
+  disconnectAction,
+  fetchBuffersAction,
+  fetchLinesAction,
+  fetchVersionAction
 } from './actions';
 
 export type AppState = {
@@ -76,13 +76,13 @@ export const app = createReducer(initialState, (builder) => {
         action.payload === state.currentBufferId ? null : state.currentBufferId
     };
   });
-  builder.addCase(fetchBuffersRemovedAction, (state, action) => {
+  builder.addCase(fetchBuffersAction, (state, action) => {
     return {
       ...state,
       currentBufferId:
-        state.currentBufferId && action.payload.includes(state.currentBufferId)
-          ? null
-          : state.currentBufferId
+        state.currentBufferId && state.currentBufferId in action.payload
+          ? state.currentBufferId
+          : null
     };
   });
 });

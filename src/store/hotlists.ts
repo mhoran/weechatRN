@@ -1,12 +1,12 @@
-import { getHotlistForBufferId } from './selectors';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   bufferClosedAction,
   bufferLineAddedAction,
   changeCurrentBufferAction,
-  fetchBuffersRemovedAction,
+  fetchBuffersAction,
   fetchHotlistsAction
 } from './actions';
-import { createReducer } from '@reduxjs/toolkit';
+import { getHotlistForBufferId } from './selectors';
 
 export type HotListState = { [key: string]: Hotlist };
 
@@ -59,11 +59,9 @@ const hotlistsReducer = createReducer(initialState, (builder) => {
     const { [action.payload]: _, ...rest } = state;
     return rest;
   });
-  builder.addCase(fetchBuffersRemovedAction, (state, action) => {
+  builder.addCase(fetchBuffersAction, (state, action) => {
     return Object.fromEntries(
-      Object.entries(state).filter(
-        ([bufferId]) => !action.payload.includes(bufferId)
-      )
+      Object.entries(state).filter(([bufferId]) => bufferId in action.payload)
     );
   });
 });

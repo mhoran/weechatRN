@@ -53,10 +53,6 @@ export const bufferClosedAction = createAction(
   'BUFFER_CLOSED',
   prepareAutoBatched<string>()
 );
-export const fetchBuffersRemovedAction = createAction(
-  'FETCH_BUFFERS_REMOVED',
-  prepareAutoBatched<string[]>()
-);
 export const bufferLocalvarUpdateAction = createAction(
   'BUFFER_LOCALVAR_UPDATE',
   prepareAutoBatched<WeechatBuffer>()

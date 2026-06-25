@@ -1,10 +1,10 @@
+import { createReducer } from '@reduxjs/toolkit';
 import {
   bufferClosedAction,
-  fetchBuffersRemovedAction,
+  fetchBuffersAction,
   fetchNicklistAction,
   nicklistUpdatedAction
 } from './actions';
-import { createReducer } from '@reduxjs/toolkit';
 
 export type NicklistState = { [key: string]: WeechatNicklist[] };
 
@@ -31,11 +31,9 @@ const nicklistsReducer = createReducer(initialState, (builder) => {
     const { [action.payload]: _, ...rest } = state;
     return rest;
   });
-  builder.addCase(fetchBuffersRemovedAction, (state, action) => {
+  builder.addCase(fetchBuffersAction, (state, action) => {
     return Object.fromEntries(
-      Object.entries(state).filter(
-        ([bufferId]) => !action.payload.includes(bufferId)
-      )
+      Object.entries(state).filter(([bufferId]) => bufferId in action.payload)
     );
   });
 });

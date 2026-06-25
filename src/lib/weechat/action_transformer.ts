@@ -217,30 +217,20 @@ export const transformToReduxAction = (
     case 'buffers': {
       const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
 
-      return (
-        dispatch: ThunkDispatch<StoreState, undefined, UnknownAction>,
-        getState: () => StoreState
-      ) => {
-        const { buffers } = getState();
-        const newBuffers = reduceToObjectByKey(
-          object.content,
-          (buffer) => buffer.pointers[0],
-          (buf) => ({
-            ...buf,
-            id: buf.pointers[0],
-            _id:
-              buf.id !== undefined
-                ? buf.id
-                : BigInt(`0x${buf.pointers[0]}`).toString()
-          })
-        );
-        const removed = Object.keys(buffers).filter((buffer) => {
-          return !(buffer in newBuffers);
-        });
+      const newBuffers = reduceToObjectByKey(
+        object.content,
+        (buffer) => buffer.pointers[0],
+        (buf) => ({
+          ...buf,
+          id: buf.pointers[0],
+          _id:
+            buf.id !== undefined
+              ? buf.id
+              : BigInt(`0x${buf.pointers[0]}`).toString()
+        })
+      );
 
-        dispatch(actions.fetchBuffersRemovedAction(removed));
-        dispatch(actions.fetchBuffersAction(newBuffers));
-      };
+      return actions.fetchBuffersAction(newBuffers);
     }
     case 'version': {
       const infolist = data.objects[0] as WeechatObject<WeechatInfoList>;
