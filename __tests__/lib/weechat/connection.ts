@@ -6,8 +6,12 @@ import {
 } from '../../../src/store/actions';
 
 const mockWebSocket = jest.fn(function () {
+  this.readyState = WebSocket.OPEN;
   this.send = jest.fn();
-  this.close = jest.fn(() => this.onclose());
+  this.close = jest.fn(() => {
+    this.readyState = WebSocket.CLOSED;
+    this.onclose({ code: 1000 });
+  });
   return this;
 });
 

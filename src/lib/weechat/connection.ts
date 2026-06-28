@@ -129,7 +129,7 @@ export default class WeechatConnection {
   }
 
   send(data: string): void {
-    if (this.state === State.DISCONNECTED) return;
+    if (this.websocket?.readyState !== WebSocket.OPEN) return;
     console.log('Sending data:', data);
     this.websocket?.send(data + '\n');
   }
