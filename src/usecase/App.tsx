@@ -58,6 +58,7 @@ type Props = PropsFromRedux &
     connect: () => void;
     disconnect: () => void;
     client: RelayClient;
+    connecting: boolean;
     connectionError: ConnectionError | null;
   };
 
@@ -204,6 +205,7 @@ class App extends React.PureComponent<Props, State> {
       connected,
       connect,
       disconnect,
+      connecting,
       connectionError
     } = this.props;
 
@@ -315,6 +317,21 @@ class App extends React.PureComponent<Props, State> {
                           name="lan-disconnect"
                           size={22}
                           color="white"
+                          accessibilityLabel="Connected"
+                          accessibilityHint="Disconnect"
+                        />
+                      </TouchableOpacity>
+                    ) : connecting ? (
+                      <TouchableOpacity
+                        style={styles.topbarButton}
+                        onPress={disconnect}
+                      >
+                        <MaterialCommunityIcons
+                          name="lan-pending"
+                          size={22}
+                          color="white"
+                          accessibilityLabel="Connecting"
+                          accessibilityHint="Stop connecting"
                         />
                       </TouchableOpacity>
                     ) : (
@@ -326,6 +343,8 @@ class App extends React.PureComponent<Props, State> {
                           name="lan-connect"
                           size={22}
                           color="white"
+                          acessibilityLabel="Disconnected"
+                          accessibilityHint="Connect"
                         />
                       </TouchableOpacity>
                     )}

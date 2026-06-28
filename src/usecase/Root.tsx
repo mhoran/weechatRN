@@ -168,7 +168,7 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   render() {
-    const { connectionError } = this.state;
+    const { connecting, connectionError } = this.state;
 
     return (
       <Provider store={store}>
@@ -187,6 +187,7 @@ export default class WeechatNative extends React.Component<null, State> {
                         connect={this.onConnect}
                         disconnect={this.disconnect}
                         client={this.client}
+                        connecting={connecting}
                         connectionError={connectionError}
                       />
                     )}

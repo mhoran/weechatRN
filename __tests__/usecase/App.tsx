@@ -58,6 +58,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={null}
         />,
         { store }
@@ -134,6 +135,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={null}
         />,
         {
@@ -222,6 +224,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={null}
         />,
         {
@@ -265,6 +268,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={{ message: () => 'There was an error connecting.' }}
         />
       );
@@ -290,6 +294,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={{ message: () => 'There was an error connecting.' }}
         />
       );
@@ -322,6 +327,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={{ message: () => 'There was an error connecting.' }}
         />,
         {
@@ -338,6 +344,7 @@ describe('App', () => {
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
+          connecting={false}
           connectionError={{
             message: () => 'There was a different error connecting.'
           }}
