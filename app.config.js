@@ -28,7 +28,10 @@ export default {
     }
   },
   android: {
-    package: IS_PROD ? 'com.matthoran.weechatrn' : 'com.matthoran.weechatrn.dev'
+    package: IS_PROD
+      ? 'com.matthoran.weechatrn'
+      : 'com.matthoran.weechatrn.dev',
+    softwareKeyboardLayoutMode: 'pan'
   },
   platforms: ['ios', 'android'],
   version: '1.7.0',
