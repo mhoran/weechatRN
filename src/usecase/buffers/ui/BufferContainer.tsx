@@ -4,7 +4,9 @@ import * as React from 'react';
 import type { TextInputSelectionChangeEvent } from 'react-native';
 import {
   ActionSheetIOS,
+  Alert,
   Linking,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -84,7 +86,27 @@ class BufferContainer extends React.PureComponent<Props, State> {
     void Linking.openURL(formatUrl(type, text));
   };
 
+  copyTextToClipboard = (text: string) => {
+    Alert.alert(
+      'Copy to clipboard',
+      undefined,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Copy',
+          onPress: () => void Clipboard.setStringAsync(text)
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
   handleLinkOnLongPress = (type: string, text: string) => {
+    if (Platform.OS !== 'ios') {
+      this.copyTextToClipboard(formatUrl(type, text));
+      return;
+    }
+
     ActionSheetIOS.showShareActionSheetWithOptions(
       {
         url: formatUrl(type, text)
@@ -195,18 +217,12 @@ class BufferContainer extends React.PureComponent<Props, State> {
     const message = renderWeechatFormat(line.message).map(
       (value) => value.children as string
     );
+    const encloseNick =
+      line.tags_array.includes('irc_privmsg') &&
+      !line.tags_array.includes('irc_action');
+    const formatted = `${encloseNick ? '<' : ''}${prefix.join('')}${encloseNick ? '>' : ''} ${message.join('')}`;
 
-    ActionSheetIOS.showActionSheetWithOptions(
-      { options: ['Copy', 'Cancel'], cancelButtonIndex: 2 },
-      () => {
-        const encloseNick =
-          line.tags_array.includes('irc_privmsg') &&
-          !line.tags_array.includes('irc_action');
-        void Clipboard.setStringAsync(
-          `${encloseNick ? '<' : ''}${prefix.join('')}${encloseNick ? '>' : ''} ${message.join('')}`
-        );
-      }
-    );
+    this.copyTextToClipboard(formatted);
   };
 
   clearNotification = () => {
