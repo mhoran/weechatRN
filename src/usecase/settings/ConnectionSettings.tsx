@@ -1,17 +1,25 @@
-import { Host, List, Switch, Text, TextInput, useNativeState } from '@expo/ui';
-import { Button, Section } from '@expo/ui/swift-ui';
+import {
+  Button,
+  FieldGroup,
+  Host,
+  Switch,
+  Text,
+  TextInput,
+  useNativeState
+} from '@expo/ui';
+import { clickable } from '@expo/ui/jetpack-compose/modifiers';
+import { accessibilityLabel, buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { useEffect, useEffectEvent, useState } from 'react';
-import { StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createSelector } from 'reselect';
 import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
-import type { Settings } from '../../store/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import type { Settings } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 
 type NavigationProps = StackScreenProps<
   RootStackParamList,
@@ -63,7 +71,7 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
         <StatusBar barStyle="dark-content" translucent={true} />
 
         <Host style={{ flex: 1 }}>
-          <List>
+          <FieldGroup>
             <Text>
               WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
               supports the WebSocket connection method only. Configure your
@@ -73,7 +81,7 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
               path (/weechat by default).
             </Text>
 
-            <Section title="Relay Settings">
+            <FieldGroup.Section title="Relay Settings">
               <TextInput
                 keyboardType="url"
                 autoCapitalize="none"
@@ -98,19 +106,38 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 value={password}
               />
               <Switch label="Use TLS" value={ssl} onValueChange={setSsl} />
-            </Section>
-            <Section title="Options">
+            </FieldGroup.Section>
+            <FieldGroup.Section title="Options">
               <Switch
                 label="Hide server buffers"
                 value={filterBuffers}
                 onValueChange={setFilterBuffers}
               />
-            </Section>
-            <Button
-              onPress={() => navigation.navigate('Media Upload Settings')}
-              label="Media Upload Settings"
-            />
-          </List>
+            </FieldGroup.Section>
+            {Platform.select({
+              ios: (
+                <Button
+                  modifiers={[buttonStyle('automatic')]}
+                  onPress={() => navigation.navigate('Media Upload Settings')}
+                  label="Media Upload Settings"
+                ></Button>
+              ),
+              android: (
+                <FieldGroup.Section
+                  modifiers={[
+                    clickable(
+                      () => navigation.navigate('Media Upload Settings'),
+                      {
+                        indication: true
+                      }
+                    )
+                  ]}
+                >
+                  <Text>Media Upload Settings</Text>
+                </FieldGroup.Section>
+              )
+            })}
+          </FieldGroup>
         </Host>
       </SafeAreaView>
     </View>

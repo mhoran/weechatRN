@@ -1,15 +1,14 @@
-import { Host, List, Switch, Text, TextInput } from '@expo/ui';
-import { Section } from '@expo/ui/swift-ui';
+import { FieldGroup, Host, Switch, Text, TextInput } from '@expo/ui';
+import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { memo, useEffect, useEffectEvent, useReducer } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
-import type { MediaUploadOptions } from '../../store/settings';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import type { MediaUploadOptions } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 
 type NavigationProps = StackScreenProps<
   RootStackParamList,
@@ -81,7 +80,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
       <StatusBar barStyle="dark-content" translucent={true} />
       <Host style={{ flex: 1 }}>
-        <List>
+        <FieldGroup>
           <Text>
             Use the form below to configure media upload settings. This allows
             for uploading media to hosting provider and will automatically paste
@@ -91,7 +90,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             elsewhere on your device. Press and hold the button to take a photo.
           </Text>
 
-          <Section title="Upload Service URL">
+          <FieldGroup.Section title="Upload Service URL">
             <TextInput
               keyboardType="url"
               autoCapitalize="none"
@@ -102,8 +101,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
               defaultValue={state.url}
               autoCorrect={false}
             />
-          </Section>
-          <Section title="Basic Auth">
+          </FieldGroup.Section>
+          <FieldGroup.Section title="Basic Auth">
             <Switch
               onValueChange={(basicAuth) => setState({ basicAuth })}
               value={state.basicAuth}
@@ -131,8 +130,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
                 />
               </>
             )}
-          </Section>
-          <Section title="Form Field Name">
+          </FieldGroup.Section>
+          <FieldGroup.Section title="Form Field Name">
             <TextInput
               autoCapitalize="none"
               placeholder="file"
@@ -141,8 +140,8 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
               onChangeText={(fieldName) => setState({ fieldName })}
               defaultValue={state.fieldName}
             />
-          </Section>
-          <Section title="Response Regexp">
+          </FieldGroup.Section>
+          <FieldGroup.Section title="Response Regexp">
             <TextInput
               autoCapitalize="none"
               placeholder="/^https://\S+/"
@@ -152,9 +151,9 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
               onChangeText={(regexp) => setState({ regexp })}
               defaultValue={state.regexp}
             />
-          </Section>
+          </FieldGroup.Section>
           {state.headers.map(([headerName, headerValue], index) => (
-            <Section key={index} title="Additional Headers">
+            <FieldGroup.Section key={index} title="Additional Headers">
               <>
                 <TextInput
                   autoCapitalize="none"
@@ -177,9 +176,9 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
                   }
                 />
               </>
-            </Section>
+            </FieldGroup.Section>
           ))}
-        </List>
+        </FieldGroup>
       </Host>
     </SafeAreaView>
   );

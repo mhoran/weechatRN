@@ -8,11 +8,17 @@ jest.mock('react-native-worklets', () =>
 jest.mock('@expo/ui', () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const RN = jest.requireActual<typeof import('react-native')>('react-native');
+
+  const FieldGroup = RN.ScrollView as typeof RN.ScrollView & {
+    Section: typeof RN.View;
+  };
+  FieldGroup.Section = RN.View;
+
   return {
     Host: RN.View,
-    List: RN.View,
     Switch: RN.Switch,
     TextInput: RN.TextInput,
-    Text: RN.Text
+    Text: RN.Text,
+    FieldGroup: FieldGroup
   };
 });
