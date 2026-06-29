@@ -1,6 +1,6 @@
 import { FieldGroup, Host, Switch, Text, TextInput } from '@expo/ui';
 import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
-import type { StackScreenProps } from '@react-navigation/stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useEffect, useEffectEvent, useReducer } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,7 +10,7 @@ import type { MediaUploadOptions } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
 
-type NavigationProps = StackScreenProps<
+type NavigationProps = NativeStackScreenProps<
   RootStackParamList,
   'Media Upload Settings'
 >;

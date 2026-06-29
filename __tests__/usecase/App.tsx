@@ -1,5 +1,5 @@
 import type { RouteProp } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { configureStore } from '@reduxjs/toolkit';
 import { View } from 'react-native';
 import RelayClient from '../../src/lib/weechat/client';
@@ -54,7 +54,9 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -131,7 +133,9 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -220,7 +224,9 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -264,7 +270,9 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -290,7 +298,9 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -323,7 +333,9 @@ describe('App', () => {
       render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}
@@ -340,7 +352,9 @@ describe('App', () => {
       screen.rerender(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
-          navigation={{} as StackNavigationProp<RootStackParamList, 'App'>}
+          navigation={
+            {} as NativeStackNavigationProp<RootStackParamList, 'App'>
+          }
           connect={jest.fn()}
           disconnect={jest.fn()}
           client={client}

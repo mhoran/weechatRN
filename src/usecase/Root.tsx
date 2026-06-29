@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { UnsubscribeListener } from '@reduxjs/toolkit';
 import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
@@ -29,7 +29,7 @@ export type RootStackParamList = {
   App: undefined;
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 interface State {
   connecting: boolean;

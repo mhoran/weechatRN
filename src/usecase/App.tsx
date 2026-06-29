@@ -1,6 +1,6 @@
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getDefaultHeaderHeight } from '@react-navigation/elements';
-import type { StackScreenProps } from '@react-navigation/stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
 import type { EmitterSubscription } from 'react-native';
 import {
@@ -51,7 +51,7 @@ const connector = connect((state: StoreState) => {
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type NavigationProps = StackScreenProps<RootStackParamList, 'App'>;
+type NavigationProps = NativeStackScreenProps<RootStackParamList, 'App'>;
 
 type Props = PropsFromRedux &
   NavigationProps & {

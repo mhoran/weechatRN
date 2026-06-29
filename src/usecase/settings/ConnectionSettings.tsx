@@ -12,7 +12,7 @@ import {
 } from '@expo/ui';
 import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 import { accessibilityLabel, buttonStyle } from '@expo/ui/swift-ui/modifiers';
-import type { StackScreenProps } from '@react-navigation/stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { Platform, StatusBar, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,7 +24,7 @@ import type { Settings } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
 
-type NavigationProps = StackScreenProps<
+type NavigationProps = NativeStackScreenProps<
   RootStackParamList,
   'Connection Settings'
 >;
