@@ -145,8 +145,13 @@ export default class WeechatNative extends React.Component<null, State> {
     const { hostname, path, password, ssl } = store.getState().settings;
     if (!hostname || !password) return;
 
+    try {
+      this.client.connect(hostname, path, password, ssl);
+    } catch {
+      return;
+    }
+
     this.setState({ connecting: true, connectionError: null });
-    this.client.connect(hostname, path, password, ssl);
   };
 
   onBeforeLift = (): void => {

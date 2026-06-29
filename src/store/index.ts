@@ -50,7 +50,7 @@ const migrations: Record<number, (state: unknown) => unknown> = {
 
     let u;
     try {
-      u = new URL(`ws://${hostname ?? ''}/`);
+      u = new URL(`ws://${hostname ?? ''}`);
       u.pathname = u.pathname === '/' ? '/weechat' : `${u.pathname}/weechat`;
     } catch {
       /* empty */

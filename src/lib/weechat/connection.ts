@@ -33,11 +33,12 @@ export default class WeechatConnection {
   private websocket?: WebSocket;
   private reconnect = false;
   private state = State.DISCONNECTED;
+  private url: URL;
 
   constructor(
     private dispatch: AppDispatch,
     private hostname: string,
-    private path: string | null,
+    path: string | null,
     private password: string,
     private ssl: boolean,
     private onSuccess: (conn: WeechatConnection) => void,
@@ -46,7 +47,16 @@ export default class WeechatConnection {
       connectionError: ConnectionError | null
     ) => void
   ) {
-    this.path = path || '/weechat';
+    try {
+      this.url = new URL(
+        path || '/weechat',
+        `${this.ssl ? 'wss' : 'ws'}://${this.hostname}`
+      );
+    } catch (e) {
+      throw Error('Failed to construct a valid URL from hostname and path', {
+        cause: e
+      });
+    }
   }
 
   connect(): void {
@@ -56,9 +66,7 @@ export default class WeechatConnection {
   }
 
   private openSocket(): void {
-    this.websocket = new WebSocket(
-      `${this.ssl ? 'wss' : 'ws'}://${this.hostname}/${this.path}`
-    );
+    this.websocket = new WebSocket(this.url.toString());
 
     this.websocket.onopen = () => this.onopen();
     this.websocket.onmessage = (event) => this.onmessage(event);
