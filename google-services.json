@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "26253036895",
+    "project_id": "weechatrn",
+    "storage_bucket": "weechatrn.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26253036895:android:e2ef7f2e0b8d93132e3aea",
+        "android_client_info": {
+          "package_name": "com.matthoran.weechatrn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwOuKiqMfcBjMlD66RKh0CgdyIT2ttmVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26253036895:android:e98a3e46ad48b7b92e3aea",
+        "android_client_info": {
+          "package_name": "com.matthoran.weechatrn.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwOuKiqMfcBjMlD66RKh0CgdyIT2ttmVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
