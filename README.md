@@ -1,4 +1,4 @@
-# WeechatRN
+# WeeChatRN
 
 A [WeeChat](https://github.com/weechat/weechat) [relay](https://weechat.org/files/doc/stable/weechat_user.en.html#relay) client built with [React Native](https://reactnative.dev/) using [Expo](https://expo.dev/). Heavily inspired by [weechat-android](https://github.com/ubergeek42/weechat-android).
 
@@ -13,7 +13,7 @@ Binary packages are distrubited via TestFlight for iOS users. Join the beta test
 
 ### Android
 
-Binary packages are not built for Android. However, the project can be built locally and easily installed on a device.
+Binary packages for Android are attached to GitHub [releases](https://github.com/mhoran/weechatRN/releases).
 
 ## Getting Started
 
@@ -81,7 +81,7 @@ http {
 
 Set the port as appropriate for the relay configuration in WeeChat. The above `location` directive is compatible with the WeeChat API protocol REST API, in addition to WebSockets.
 
-### WeechatRN configuration:
+### WeeChatRN configuration:
 
 Fill in the hostname and password fields with the appropriate values. Check the SSL box if weechat is fronted with a proxy that supports it or if a SSL relay is configured in weechat itself.
 
@@ -89,13 +89,13 @@ The default relay path is `/weechat`. The hostname may include a port number. Fo
 
 ## Push Notifications
 
-Push notifications can be sent to WeechatRN for private messages and highlights with the use of a helper script.
+Push notifications can be sent to WeeChatRN for private messages and highlights with the use of a helper script.
 
 To install the script, download [weechatrn.py](scripts/weechatrn.py?raw=1) to weechat's `python/autoload` directory. This directory may reside in `~/.weechat` or `~/.local/share/weechat`, depending on your setup.
 
 Once downloaded, load the script via `/python load weechatrn.py`.
 
-On (re)connect, WeechatRN will store a token in WeeChat, which will be used to send push notifications to the device.
+On (re)connect, WeeChatRN will store a token in WeeChat, which will be used to send push notifications to the device.
 
 By default, push notifications will be sent for all highlights and private messages. You can disable notifications for the current buffer with `/set plugins.var.python.WeechatRN.notify_current_buffer off`.
 
