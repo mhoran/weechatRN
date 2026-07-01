@@ -33,7 +33,7 @@ Select WeeChat in the relay protocol drop down in settings.
 ### API protocol
 
 ```
-/relay add weechat 9000
+/relay add api 9000
 /set relay.network.password <your secret password>
 ```
 
