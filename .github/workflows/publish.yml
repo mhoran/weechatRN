@@ -2,6 +2,15 @@ name: Build and publish
 
 on:
   workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS build profile
+        required: true
+        defualt: development
+        type: choice
+        options:
+          - development
+          - production
   push:
     tags:
       - '*'
@@ -26,7 +35,7 @@ jobs:
           eas-version: latest
           token: ${{secrets.EXPO_TOKEN}}
       - run: npm install
-      - run: eas build -p ios --non-interactive --local
+      - run: eas build -p ios ${{ format('--profile {0}', inputs.profile || 'production') }} --non-interactive --local
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
@@ -36,6 +45,7 @@ jobs:
 
   upload-ios-app:
     name: Upload iOS app
+    if: github.ref_type == 'tag'
     needs: [build-ios-app]
     runs-on: ubuntu-latest
     steps:
@@ -75,7 +85,7 @@ jobs:
           eas-version: latest
           token: ${{secrets.EXPO_TOKEN}}
       - run: npm install
-      - run: eas build -p android --non-interactive --local
+      - run: eas build -p android ${{ format('--profile {0}', inputs.profile || 'production') }} --non-interactive --local
         env:
           GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false
       - name: Upload build artifact
