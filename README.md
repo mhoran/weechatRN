@@ -1,6 +1,6 @@
 # WeechatRN
 
-A [weechat](https://github.com/weechat/weechat) [relay](https://weechat.org/files/doc/stable/weechat_user.en.html#relay) client built with [React Native](https://reactnative.dev/) using [Expo](https://expo.dev/). Heavily inspired by [weechat-android](https://github.com/ubergeek42/weechat-android).
+A [WeeChat](https://github.com/weechat/weechat) [relay](https://weechat.org/files/doc/stable/weechat_user.en.html#relay) client built with [React Native](https://reactnative.dev/) using [Expo](https://expo.dev/). Heavily inspired by [weechat-android](https://github.com/ubergeek42/weechat-android).
 
 <img src="https://github.com/mhoran/weechatRN/assets/5330/337589c6-a029-4d6a-bc13-1924e2174c0f" width="300">
 <img src="https://github.com/mhoran/weechatRN/assets/5330/510482bc-769e-4be2-bb97-ea4472e4e231" width="300">
@@ -19,14 +19,25 @@ Binary packages are not built for Android. However, the project can be built loc
 
 All examples below uses `example.com` as hostname, and `9001` as port number, but you should of course replace them with your own values as needed.
 
-### weechat configuration:
+### WeeChat configuration:
+
+#### WeeChat protocol
 
 ```
 /relay add weechat 9001
 /set relay.network.password <your secret password>
 ```
 
-Note that WeechatRN requires the relay to be configured with the "weechat" protocol, not the "irc" protocol.
+Select WeeChat in the relay protocol drop down in settings.
+
+### API protocol
+
+```
+/relay add weechat 9000
+/set relay.network.password <your secret password>
+```
+
+Select API in the relay protocol drop down in settings.
 
 ### Webserver configuration (recommended for TLS):
 
@@ -37,6 +48,11 @@ Example `nginx.conf` which exposes `/weechat` on `example.com` with TLS:
 ```
 http {
     # ...
+
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+      }
 
     server {
         listen       443 ssl http2;
@@ -52,24 +68,26 @@ http {
         ssl_prefer_server_ciphers  on;
 
         location /weechat {
-          proxy_pass http://localhost:9001/weechat;
-          proxy_http_version 1.1;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "Upgrade";
-          proxy_read_timeout 604800;
-          proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://localhost:9001/weechat;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_read_timeout 604800;
+            proxy_set_header X-Real-IP $remote_addr;
         }
-	}
+    }
 }
 ```
+
+Set the port as appropriate for the relay configuration in WeeChat. The above `location` directive is compatible with the WeeChat API protocol REST API, in addition to WebSockets.
 
 ### WeechatRN configuration:
 
 Fill in the hostname and password fields with the appropriate values. Check the SSL box if weechat is fronted with a proxy that supports it or if a SSL relay is configured in weechat itself.
 
-Note that `/weechat` will be appended to the configured hostname. The path suffix is not configurable. However, the hostname may also contain a path. For example, if you have exposed the weechat WebSocket at `https://example.com/~user/weechat`, simply enter `example.com/~user` as the hostname, and check the SSL box. Do not include the scheme (`https://`) in the hostname field.
+The default relay path is `/weechat`. The hostname may include a port number. For example, if you have exposed the WeeChat WebSocket at `https://example.com/~user/weechat`, enter `example.com` as the hostname, set the path to `/~user/weechat`, and check the SSL box. Do not include the scheme (`https://`) in the hostname field.
 
-## Push Notifications (Beta)
+## Push Notifications
 
 Push notifications can be sent to WeechatRN for private messages and highlights with the use of a helper script.
 
@@ -77,21 +95,21 @@ To install the script, download [weechatrn.py](scripts/weechatrn.py?raw=1) to we
 
 Once downloaded, load the script via `/python load weechatrn.py`.
 
-On (re)connect, WeechatRN will store a token in weechat, which will be used to send push notifications to the device.
+On (re)connect, WeechatRN will store a token in WeeChat, which will be used to send push notifications to the device.
 
 By default, push notifications will be sent for all highlights and private messages. You can disable notifications for the current buffer with `/set plugins.var.python.WeechatRN.notify_current_buffer off`.
 
 ## Development
 
-```bash
-# Install dependencies for project
+```sh
+# Install dependencies
 npm install
 
-# Launch Expo
+# LaStartunch Expo
 npm start
 ```
 
-On your device, scan the QR code with the Camera app (iOS) or the [Expo Client](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www) (Android).
+The app can then be run on a device or in a simulator with `npx expo run:ios` or `npx expo run:android`.
 
 ## License
 
