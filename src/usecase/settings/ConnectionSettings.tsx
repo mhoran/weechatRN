@@ -13,7 +13,7 @@ import {
 import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 import { accessibilityLabel, buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useEffect, useEffectEvent, useState } from 'react';
+import { memo, useEffect, useEffectEvent, useState } from 'react';
 import { Platform, StatusBar, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createSelector } from 'reselect';
@@ -156,4 +156,4 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   );
 };
 
-export default ConnectionSettings;
+export default memo(ConnectionSettings);
