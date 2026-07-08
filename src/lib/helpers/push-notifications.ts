@@ -18,12 +18,16 @@ export const registerForPushNotificationsAsync = async (): Promise<
     if (finalStatus !== Notifications.PermissionStatus.GRANTED) {
       return;
     }
-    token = (
-      await Notifications.getExpoPushTokenAsync({
-        projectId: (Constants.expoConfig?.extra?.eas as EASConfig | undefined)
-          ?.projectId
-      })
-    ).data;
+    try {
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId: (Constants.expoConfig?.extra?.eas as EASConfig | undefined)
+            ?.projectId
+        })
+      ).data;
+    } catch {
+      /* empty */
+    }
   }
 
   return token;
