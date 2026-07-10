@@ -69,7 +69,7 @@ export default {
   },
   ...(IS_PROD && {
     runtimeVersion: {
-      policy: 'nativeVersion'
+      policy: 'appVersion'
     }
   })
 };
