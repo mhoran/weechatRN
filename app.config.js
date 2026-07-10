@@ -43,10 +43,15 @@ export default {
       {
         backgroundColor: '#ffffff',
         image: './assets/splash.png',
-        imageWidth: 1242
+        imageWidth: 200
       }
     ],
-    'expo-notifications',
+    [
+      'expo-notifications',
+      {
+        icon: './assets/notification-icon.png'
+      }
+    ],
     'expo-image-picker',
     'expo-build-properties',
     'expo-font'
