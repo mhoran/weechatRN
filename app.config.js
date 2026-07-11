@@ -22,10 +22,7 @@ export default {
         }
       ]
     },
-    buildNumber: '1',
-    infoPlist: {
-      UIDesignRequiresCompatibility: true
-    }
+    buildNumber: '1'
   },
   android: {
     package: IS_PROD
@@ -54,7 +51,8 @@ export default {
     ],
     'expo-image-picker',
     'expo-build-properties',
-    'expo-font'
+    'expo-font',
+    './plugins/with-ios-scene-lifecycle.ts'
   ],
   updates: {
     fallbackToCacheTimeout: 0,

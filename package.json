@@ -55,6 +55,7 @@
     "@eslint/js": "^9.39.1",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
+    "@types/xcode": "^3.0.0",
     "babel-jest": "^29.5.0",
     "babel-preset-expo": "~57.0.0",
     "eslint": "^9.14.0",
@@ -68,7 +69,8 @@
     "prettier": "^3.2.5",
     "react-test-renderer": "19.2.3",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.60.0"
+    "typescript-eslint": "^8.60.0",
+    "xcode": "^3.0.1"
   },
   "overrides": {
     "@react-native/jest-preset": "^0.86.0"
