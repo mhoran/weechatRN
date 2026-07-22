@@ -1,4 +1,5 @@
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons/static';
+import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
@@ -338,7 +339,7 @@ class App extends React.PureComponent<Props, State> {
                           name="lan-connect"
                           size={22}
                           color="white"
-                          acessibilityLabel="Disconnected"
+                          accessibilityLabel="Disconnected"
                           accessibilityHint="Connect"
                         />
                       </TouchableOpacity>

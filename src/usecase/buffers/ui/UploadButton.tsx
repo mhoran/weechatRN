@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from "@react-native-vector-icons/material-icons/static";
 import { Buffer } from 'buffer';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
