@@ -14,10 +14,7 @@ import {
   View
 } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
-import {
-  SafeAreaInsetsContext,
-  SafeAreaView
-} from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import type { ConnectedProps } from 'react-redux';
 import { legacy_connect as connect } from 'react-redux';
 import type RelayClient from '../lib/weechat/client';
@@ -46,7 +43,8 @@ const connector = connect((state: StoreState) => {
     currentBuffer,
     hasHighlights: numHighlights > 0,
     notification: state.app.notification,
-    connected: state.app.connected
+    connected: state.app.connected,
+    configured: state.settings.hostname && state.settings.password
   };
 });
 
@@ -69,11 +67,16 @@ interface State {
   drawerOpen: boolean;
   connectionErrorDismissed: boolean;
   headerHeight: number;
+  settingsTooltipX?: number;
+  tooltipY?: number;
+  connectTooltipX?: number;
 }
 
 class App extends React.PureComponent<Props, State> {
   dimensionsListener: EmitterSubscription | undefined;
   nicklistRef = React.createRef<NicklistModalHandle>();
+  settingsRef = React.createRef<View>();
+  connectRef = React.createRef<View>();
 
   drawerWidth = () => {
     /*
@@ -241,7 +244,17 @@ class App extends React.PureComponent<Props, State> {
               drawerPosition={'left'}
               drawerType="slide"
             >
-              <SafeAreaView style={styles.container}>
+              <View
+                style={[
+                  styles.container,
+                  {
+                    paddingTop: insets?.top,
+                    paddingRight: insets?.right,
+                    paddingBottom: insets?.bottom,
+                    paddingLeft: insets?.left
+                  }
+                ]}
+              >
                 <StatusBar
                   barStyle="light-content"
                   backgroundColor="transparent"
@@ -299,16 +312,21 @@ class App extends React.PureComponent<Props, State> {
                         />
                       </TouchableOpacity>
                     )}
-                    <TouchableOpacity
-                      style={styles.topbarButton}
+                    <Thing
                       onPress={this.openSettings}
+                      callback={(x, y, width, height) => {
+                        this.setState({
+                          settingsTooltipX: x + width / 2,
+                          tooltipY: y + height
+                        });
+                      }}
                     >
                       <MaterialCommunityIcons
                         name="account-wrench"
                         size={22}
                         color="white"
                       />
-                    </TouchableOpacity>
+                    </Thing>
                     {connected ? (
                       <TouchableOpacity
                         style={styles.topbarButton}
@@ -331,9 +349,14 @@ class App extends React.PureComponent<Props, State> {
                         accessibilityLabel="Connecting"
                       />
                     ) : (
-                      <TouchableOpacity
-                        style={styles.topbarButton}
+                      <Thing
                         onPress={connect}
+                        callback={(x, y, width, height) => {
+                          this.setState({
+                            connectTooltipX: x + width / 2,
+                            tooltipY: y + height - (insets?.top ?? 0)
+                          });
+                        }}
                       >
                         <MaterialCommunityIcons
                           name="lan-connect"
@@ -342,9 +365,31 @@ class App extends React.PureComponent<Props, State> {
                           accessibilityLabel="Disconnected"
                           accessibilityHint="Connect"
                         />
-                      </TouchableOpacity>
+                      </Thing>
                     )}
                   </View>
+
+                  {this.props.configured
+                    ? !this.props.connecting &&
+                      !this.props.connected &&
+                      this.state.connectTooltipX !== undefined &&
+                      this.state.tooltipY !== undefined && (
+                        <Tooltip
+                          x={this.state.connectTooltipX}
+                          y={this.state.tooltipY}
+                        >
+                          Press to connect
+                        </Tooltip>
+                      )
+                    : this.state.settingsTooltipX !== undefined &&
+                      this.state.tooltipY !== undefined && (
+                        <Tooltip
+                          x={this.state.settingsTooltipX}
+                          y={this.state.tooltipY}
+                        >
+                          Press to configure
+                        </Tooltip>
+                      )}
                 </View>
 
                 <View style={{ flex: 1 }}>
@@ -363,7 +408,7 @@ class App extends React.PureComponent<Props, State> {
                     client={client}
                   />
                 </View>
-              </SafeAreaView>
+              </View>
             </Drawer>
           </View>
         )}
@@ -373,6 +418,75 @@ class App extends React.PureComponent<Props, State> {
 }
 
 export default connector(App);
+
+const Thing = ({
+  callback,
+  onPress,
+  children
+}: {
+  callback: (x: number, y: number, width: number, height: number) => void;
+  onPress: () => void;
+  children: unknown;
+}) => {
+  const ref = React.useRef<View>(null);
+
+  React.useLayoutEffect(() => {
+    ref.current?.measureInWindow((x, y, width, height) => {
+      callback(x, y, width, height);
+    });
+  });
+  return (
+    <TouchableOpacity style={styles.topbarButton} onPress={onPress} ref={ref}>
+      {children}
+    </TouchableOpacity>
+  );
+};
+
+const Tooltip = ({
+  x,
+  y,
+  children
+}: {
+  x: number;
+  y: number;
+  children: string;
+}) => {
+  const ref = React.useRef<View>(null);
+  const [width, setWidth] = React.useState(0);
+
+  React.useLayoutEffect(() => {
+    ref.current?.measureInWindow((x, y, width) => {
+      setWidth(width);
+    });
+  });
+
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        top: y,
+        left: x - width + 15,
+        zIndex: 1,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 4
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8
+      }}
+    >
+      <View
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}
+      >
+        <View style={styles.tooltipCaret} />
+        <View style={styles.tooltipBox} ref={ref}>
+          <Text style={styles.tooltipText}>{children}</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   topbar: {
@@ -419,5 +533,36 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 1,
     padding: 10
+  },
+  tooltipBox: {
+    backgroundColor: '#121212',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8
+  },
+  tooltipText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500'
+  },
+  tooltipCaret: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+
+    // Width and height of the triangle base and height
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderBottomWidth: 10,
+
+    // Make the side and top borders transparent
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+
+    // Set the base color to match your tooltip box
+    borderBottomColor: '#121212',
+
+    marginRight: 7
   }
 });
