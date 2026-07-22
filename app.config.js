@@ -52,6 +52,8 @@ export default {
     'expo-image-picker',
     'expo-build-properties',
     'expo-font',
+    '@react-native-vector-icons/material-icons',
+    '@react-native-vector-icons/material-design-icons',
     './plugins/with-ios-scene-lifecycle.ts'
   ],
   updates: {
