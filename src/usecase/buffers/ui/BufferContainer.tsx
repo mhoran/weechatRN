@@ -1,4 +1,4 @@
-import MaterialIcons from "@react-native-vector-icons/material-icons/static";
+import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
 import type { TextInputSelectionChangeEvent } from 'react-native';
