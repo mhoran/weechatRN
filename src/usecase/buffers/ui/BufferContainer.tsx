@@ -76,6 +76,8 @@ class BufferContainer extends React.PureComponent<Props, State> {
     }
   };
 
+  textInputRef = React.createRef<TextInput>();
+
   tabCompleteInProgress = false;
   tabCompleteMatches: WeechatNicklist[] = [];
   tabCompleteIndex = 0;
@@ -152,6 +154,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
       );
     });
     this.handleChangeText('');
+    this.textInputRef.current?.clear();
   };
 
   tabCompleteNick = () => {
@@ -276,6 +279,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
 
           <View style={styles.bottomBox}>
             <AnimatedTextInput
+              ref={this.textInputRef}
               layout={
                 needsAnimation
                   ? LinearTransition.withCallback(this.animationComplete)
