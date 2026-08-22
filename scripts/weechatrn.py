@@ -92,11 +92,19 @@ def priv_msg_cb(
     if line:
         line_data = weechat.hdata_pointer(weechat.hdata_get("line"), line, "data")
     if line_data:
-        line_id = (
-            weechat.hdata_integer(weechat.hdata_get("line_data"), line_data, "id")
-            if int(version) >= 0x04040000
-            else line_data
-        )
+        if int(version) >= 0x04040000:
+            line_id_type = weechat.hdata_get_var_type_string(
+                weechat.hdata_get("line_data"), "id"
+            )
+            line_id = (
+                weechat.hdata_longlong(weechat.hdata_get("line_data"), line_data, "id")
+                if line_id_type == "longlong"
+                else weechat.hdata_integer(
+                    weechat.hdata_get("line_data"), line_data, "id"
+                )
+            )
+        else:
+            line_id = line_data
 
     body = f"<{prefix}> {message}"
     is_pm = weechat.buffer_get_string(buffer, "localvar_type") == "private"
@@ -185,7 +193,7 @@ def main():
     if weechat.register(
         "WeechatRN",
         "mhoran",
-        "1.3.1",
+        "1.4.0",
         "MIT",
         "WeechatRN push notification plugin",
         "",
