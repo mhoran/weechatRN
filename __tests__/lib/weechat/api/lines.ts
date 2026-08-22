@@ -19,7 +19,6 @@ describe(LinesAction, () => {
         {
           id: 0,
           date: '2024-11-09T00:02:07.000Z',
-          date_printed: '2024-11-10T17:28:48.000Z',
           tags: ['irc_privmsg', 'notify_none'],
           highlight: false,
           displayed: true

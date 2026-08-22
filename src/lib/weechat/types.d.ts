@@ -72,7 +72,6 @@ interface WeechatLine {
   displayed: number;
   message: string;
   date: string;
-  date_printed: string;
   tags_array: string[];
   buffer: string;
   highlight: number;

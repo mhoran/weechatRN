@@ -30,7 +30,6 @@ describe(LineAction, () => {
         body: {
           id,
           date,
-          date_printed: date,
           tags: tags,
           notify_level,
           highlight: highlight || false,
@@ -194,7 +193,6 @@ describe(LineAction, () => {
         body: {
           id: 0,
           date: '2024-11-09T00:02:07.000Z',
-          date_printed: '2024-11-10T17:28:48.000Z',
           message: 'Beep boop'
         } as LineResponse['body']
       });

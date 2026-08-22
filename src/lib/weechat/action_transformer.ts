@@ -3,10 +3,10 @@ import type { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import type { StoreState } from '../../store';
 import * as actions from '../../store/actions';
 
-interface RelayLine extends Omit<WeechatLine, 'id' | 'date' | 'date_printed'> {
+interface RelayLine extends Omit<WeechatLine, 'id' | 'date'> {
   id: number;
   date: Date;
-  date_printed: Date;
+  date_printed?: Date;
 }
 
 type KeyFn<T> = (t: T) => string;
@@ -74,16 +74,16 @@ export const transformToReduxAction = (
         getState: () => StoreState
       ) => {
         const state: StoreState = getState();
-        const { id, pointers, date, date_printed } = line;
+        const { id, pointers, date, date_printed, ...rest } = line;
 
         dispatch(
           actions.bufferLineAddedAction({
             currentBufferId: state.app.currentBufferId,
             line: {
-              ...line,
+              ...rest,
               id: id ?? parseInt(pointers[pointers.length - 1], 16),
+              pointers,
               date: date.toISOString(),
-              date_printed: date_printed.toISOString(),
               ...(line.notify_level !== undefined && {
                 notify_level: new Int8Array([line.notify_level])[0]
               })
@@ -95,14 +95,14 @@ export const transformToReduxAction = (
     case '_buffer_line_data_changed': {
       const object = data.objects[0] as WeechatObject<RelayLine[]>;
       const line = object.content[0];
-      const { id, date, date_printed } = line;
+      const { id, date, date_printed, ...rest } = line;
 
       if (id === undefined) return;
 
       return actions.bufferLineDataChangedAction({
-        ...line,
-        date: date.toISOString(),
-        date_printed: date_printed.toISOString()
+        ...rest,
+        id,
+        date: date.toISOString()
       });
     }
     case '_buffer_closing': {
@@ -247,16 +247,16 @@ export const transformToReduxAction = (
         dispatch(
           actions.fetchLinesAction(
             object.content.map((line) => {
-              const { id, pointers, date, date_printed } = line;
+              const { id, pointers, date, date_printed, ...rest } = line;
 
               return {
-                ...line,
+                ...rest,
                 id:
                   parseVersion(getState().app.version) >= 0x04040000
                     ? id
                     : parseInt(pointers[pointers.length - 1], 16),
-                date: date.toISOString(),
-                date_printed: date_printed.toISOString()
+                pointers,
+                date: date.toISOString()
               };
             })
           )

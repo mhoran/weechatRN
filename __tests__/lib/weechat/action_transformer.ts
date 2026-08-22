@@ -208,7 +208,6 @@ describe('transformToReduxAction', () => {
               buffer: '83a41cd80',
               pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
               date: new Date('2024-11-09T00:02:07.000Z').toISOString(),
-              date_printed: new Date('2024-11-10T17:28:48.000Z').toISOString(),
               message: 'Beep boop'
             } as WeechatLine
           ]
@@ -893,6 +892,45 @@ describe('transformToReduxAction', () => {
       const lines = store.getState().lines['83a41cd80'];
       expect(lines[0].id).toEqual(parseInt('85d064440', 16));
     });
+
+    it('does not set deprecated properties', () => {
+      const preloadedState = {
+        app: {
+          version: '3.7.0'
+        } as AppState
+      };
+      const store = configureStore({
+        reducer,
+        preloadedState,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'lines',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                buffer: '83a41cd80',
+                pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                date_printed: new Date('2024-11-10T17:28:48.000Z')
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0]).not.toHaveProperty('date_printed');
+    });
   });
 
   describe('on _buffer_line_added', () => {
@@ -1094,6 +1132,29 @@ describe('transformToReduxAction', () => {
       expect(hotlist.sum).toEqual(2);
       expect(hotlist.highlight).toEqual(1);
     });
+
+    it('does not set deprecated properties', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '85d064440',
+        date: new Date('2024-11-09T00:02:07.000Z'),
+        tags: [],
+        notify_level: -1
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().lines).toHaveProperty('83a41cd80');
+      const lines = store.getState().lines['83a41cd80'];
+      expect(lines[0]).not.toHaveProperty('date_printed');
+    });
   });
 
   describe('on buffer_line_data_changed', () => {
@@ -1134,6 +1195,7 @@ describe('transformToReduxAction', () => {
       expect(store.getState().lines).toHaveProperty('83d204d80');
       const lines = store.getState().lines['83d204d80'];
       expect(lines[0].message).toEqual('Beep boop');
+      expect(lines[0]).not.toHaveProperty('date_printed');
     });
   });
 
