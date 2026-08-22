@@ -125,17 +125,15 @@ class BufferContainer extends React.PureComponent<Props, State> {
   );
 
   handleOnFocus = () => {
-    this.setState({
-      showTabButton: true,
-      needsAnimation: true
-    });
+    this.setState({ needsAnimation: true }, () =>
+      this.setState({ showTabButton: true })
+    );
   };
 
   handleOnBlur = () => {
-    this.setState({
-      showTabButton: false,
-      needsAnimation: true
-    });
+    this.setState({ needsAnimation: true }, () =>
+      this.setState({ showTabButton: false })
+    );
   };
 
   handleChangeText = (textValue: string) => {
