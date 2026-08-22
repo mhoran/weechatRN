@@ -4,7 +4,7 @@ import type { StoreState } from '../../store';
 import * as actions from '../../store/actions';
 
 interface RelayLine extends Omit<WeechatLine, 'id' | 'date'> {
-  id: number;
+  id?: string | number;
   date: Date;
   date_printed?: Date;
 }
@@ -81,7 +81,10 @@ export const transformToReduxAction = (
             currentBufferId: state.app.currentBufferId,
             line: {
               ...rest,
-              id: id ?? parseInt(pointers[pointers.length - 1], 16),
+              id:
+                id !== undefined
+                  ? Number(id)
+                  : parseInt(pointers[pointers.length - 1], 16),
               pointers,
               date: date.toISOString(),
               ...(line.notify_level !== undefined && {
@@ -101,7 +104,7 @@ export const transformToReduxAction = (
 
       return actions.bufferLineDataChangedAction({
         ...rest,
-        id,
+        id: Number(id),
         date: date.toISOString()
       });
     }
@@ -253,7 +256,7 @@ export const transformToReduxAction = (
                 ...rest,
                 id:
                   parseVersion(getState().app.version) >= 0x04040000
-                    ? id
+                    ? Number(id)
                     : parseInt(pointers[pointers.length - 1], 16),
                 pointers,
                 date: date.toISOString()
@@ -276,7 +279,7 @@ export const transformToReduxAction = (
           const { pointers, buffer } = line;
           const id =
             parseVersion(getState().app.version) >= 0x04040000
-              ? line.id
+              ? Number(line.id)
               : parseInt(pointers[pointers.length - 1], 16);
 
           return { id, buffer };
