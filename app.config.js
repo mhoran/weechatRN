@@ -32,7 +32,7 @@ export default {
     softwareKeyboardLayoutMode: 'pan'
   },
   platforms: ['ios', 'android'],
-  version: '1.7.2',
+  version: '1.7.3',
   icon: './assets/icon.png',
   plugins: [
     [
