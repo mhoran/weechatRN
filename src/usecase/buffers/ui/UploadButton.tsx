@@ -1,13 +1,14 @@
+import type { MenuAction, NativeActionEvent } from '@expo/ui/community/menu';
+import { MenuView } from '@expo/ui/community/menu';
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { Buffer } from 'buffer';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { fetch } from 'expo/fetch';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import UploadSpinner from './UploadSpinner';
 
 interface Props {
@@ -23,6 +24,20 @@ interface Props {
     headers?: Record<string, string>;
   };
 }
+
+const actions: MenuAction[] = [
+  {
+    id: 'library',
+    title: 'Upload from library',
+    image: 'photo.on.rectangle'
+  },
+  {
+    id: 'files',
+    title: 'Upload from files',
+    image: 'folder'
+  },
+  { id: 'camera', title: 'Open camera', image: 'camera' }
+];
 
 const UploadButton: React.FC<Props> = ({
   onUpload,
@@ -42,7 +57,7 @@ const UploadButton: React.FC<Props> = ({
     if (!permission.granted) return;
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ['images', 'videos'],
       allowsMultipleSelection: false
     });
 
@@ -53,7 +68,7 @@ const UploadButton: React.FC<Props> = ({
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ['images', 'videos'],
       allowsMultipleSelection: false,
       quality: 1
     });
@@ -65,8 +80,7 @@ const UploadButton: React.FC<Props> = ({
 
   const pickDocument = async () => {
     const result = await DocumentPicker.getDocumentAsync({
-      multiple: false,
-      type: 'image/*'
+      multiple: false
     });
 
     if (result.canceled) return;
@@ -114,19 +128,16 @@ const UploadButton: React.FC<Props> = ({
     else throw Error('Upload failed');
   };
 
-  const singleTap = Gesture.Tap()
-    .onStart(() => void pickImage())
-    .runOnJS(true)
-    .withTestId('uploadButtonSingleTap');
-
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onStart(() => void pickDocument())
-    .runOnJS(true);
-
-  const longPress = Gesture.LongPress()
-    .onStart(() => void takePhoto())
-    .runOnJS(true);
+  const handleOnPressAction = (e: NativeActionEvent) => {
+    switch (e.nativeEvent.event) {
+      case 'library':
+        return pickImage();
+      case 'files':
+        return pickDocument();
+      case 'camera':
+        return takePhoto();
+    }
+  };
 
   if (
     !uploadOptions.url ||
@@ -145,14 +156,12 @@ const UploadButton: React.FC<Props> = ({
   }
 
   return (
-    <GestureDetector
-      gesture={Gesture.Exclusive(doubleTap, singleTap, longPress)}
-    >
+    <MenuView actions={actions} onPressAction={handleOnPressAction}>
       <View style={style} accessibilityLabel="Upload Image">
-        <MaterialIcons name="photo-library" size={27} color="white" />
+        <MaterialIcons name="attach-file" size={27} color="white" />
       </View>
-    </GestureDetector>
+    </MenuView>
   );
 };
 
-export default UploadButton;
+export default memo(UploadButton);

@@ -1,19 +1,15 @@
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import * as ImagePicker from 'expo-image-picker';
 import type { FetchResponse } from 'expo/build/winter/fetch/FetchResponse';
 import { fetch } from 'expo/fetch';
 import * as fs from 'fs';
 import path from 'path';
-import type { TapGesture } from 'react-native-gesture-handler';
-import {
-  fireGestureHandler,
-  getByGestureTestId
-} from 'react-native-gesture-handler/jest-utils';
 import UploadButton from '../../../../src/usecase/buffers/ui/UploadButton';
 
 const mockFile = new Blob([
   new Uint8Array(fs.readFileSync(path.join(__dirname, 'test.jpg')))
 ]);
+
 jest.mock('expo-file-system', () => {
   return {
     File: jest.fn().mockImplementation(() => mockFile)
@@ -49,7 +45,8 @@ describe('UploadButton', () => {
     };
     render(<UploadButton onUpload={onUpload} uploadOptions={uploadOptions} />);
 
-    fireGestureHandler<TapGesture>(getByGestureTestId('uploadButtonSingleTap'));
+    const button = screen.getByLabelText('Upload Image');
+    fireEvent(button, 'pressAction', { nativeEvent: { event: 'library' } });
 
     await screen.findByLabelText('Image Uploading');
 
@@ -61,7 +58,7 @@ describe('UploadButton', () => {
     await screen.findByLabelText('Upload Image');
 
     expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalledWith({
-      mediaTypes: ['images'],
+      mediaTypes: ['images', 'videos'],
       allowsMultipleSelection: false,
       quality: 1
     });
@@ -127,9 +124,8 @@ describe('UploadButton', () => {
         <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
       );
 
-      fireGestureHandler<TapGesture>(
-        getByGestureTestId('uploadButtonSingleTap')
-      );
+      const button = screen.getByLabelText('Upload Image');
+      fireEvent(button, 'pressAction', { nativeEvent: { event: 'library' } });
 
       await screen.findByLabelText('Image Uploading');
 

@@ -85,9 +85,7 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
             Use the form below to configure media upload settings. This allows
             for uploading media to hosting provider and will automatically paste
             the link in the input box. When configured, an upload button will
-            appear next to the input box. Press the button once to upload media
-            from the camera roll. Press the button twice to upload media from
-            elsewhere on your device. Press and hold the button to take a photo.
+            appear next to the input box.
           </Text>
 
           <FieldGroup.Section title="Upload Service URL">
