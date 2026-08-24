@@ -13,6 +13,7 @@ import {
   useState
 } from 'react';
 import type {
+  LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
   TextInput
@@ -99,6 +100,7 @@ const Buffer = ({
   const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
   const [showJumpToUnread, setShowJumpToUnread] = useState(false);
   const [unreadButtonHeight, setUnreadButtonHeight] = useState(0);
+  const [listHeight, setListHeight] = useState(0);
 
   useLayoutEffect(() => {
     nickWidthMeasurer.current?.measure((x, y, width) => setNickWidth(width));
@@ -210,6 +212,10 @@ const Buffer = ({
     [lastReadLine]
   );
 
+  const handleOnLayout = useCallback((event: LayoutChangeEvent) => {
+    setListHeight(event.nativeEvent.layout.height);
+  }, []);
+
   if (!nickWidth) {
     return (
       <View style={{ flex: 1, opacity: 0 }} aria-hidden>
@@ -232,8 +238,9 @@ const Buffer = ({
         data={lines}
         inverted
         key={bufferId}
+        onLayout={handleOnLayout}
         maintainVisibleContentPosition={{
-          disabled: true
+          autoscrollToTopThreshold: listHeight * 0.2
         }}
         scrollsToTop={false}
         keyboardDismissMode="interactive"
