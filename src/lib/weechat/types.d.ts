@@ -28,6 +28,7 @@ interface WeechatBuffer {
   hidden: number;
   type: number;
   last_read_line?: number;
+  input_multiline?: boolean;
 }
 
 interface WeechatHotlist {

@@ -146,12 +146,16 @@ class BufferContainer extends React.PureComponent<Props, State> {
     if (!this.props.connected) return;
 
     const { textValue } = this.state;
-    textValue.split('\n').forEach((line) => {
-      this.props.client.sendMessageToBuffer(
-        { bufferId: this.props.buffer.id },
-        line
-      );
-    });
+    [textValue]
+      .flatMap((v) => {
+        return this.props.buffer.input_multiline ? v : v.split('\n');
+      })
+      .forEach((line) => {
+        this.props.client.sendMessageToBuffer(
+          { bufferId: this.props.buffer.id },
+          line
+        );
+      });
     this.handleChangeText('');
     this.textInputRef.current?.clear();
   };

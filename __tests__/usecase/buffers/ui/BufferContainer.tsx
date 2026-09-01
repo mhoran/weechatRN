@@ -229,4 +229,108 @@ describe('BufferContainer', () => {
     expect(client.sendMessageToBuffer).not.toHaveBeenCalled();
     expect(textInput.props.value).toEqual('Hello, world!');
   });
+
+  it('preserves newlines when input_multiline is true', () => {
+    const bufferId = '86c417600';
+    const store = configureStore({
+      reducer,
+      preloadedState: {
+        buffers: {
+          [bufferId]: {
+            _id: '1730555173010842',
+            full_name: 'irc.libera.#weechat',
+            hidden: 0,
+            id: bufferId,
+            local_variables: {
+              channel: '#weechat',
+              name: 'libera.#weechat',
+              plugin: 'irc',
+              type: 'channel'
+            },
+            notify: 3,
+            number: 2,
+            pointers: [bufferId],
+            short_name: '#weechat',
+            title: '',
+            type: 0,
+            input_multiline: true
+          }
+        },
+        app: { connected: true, currentBufferId: bufferId } as AppState
+      },
+      enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers({ autoBatch: false })
+    });
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+    client.sendMessageToBuffer = jest.fn();
+
+    render(
+      <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
+      { store }
+    );
+
+    const textInput = screen.getByLabelText('Buffer text field');
+
+    fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
+    fireEvent(textInput, 'submitEditing');
+
+    expect(client.sendMessageToBuffer).toHaveBeenCalledWith(
+      { bufferId },
+      'Hello,\nworld!'
+    );
+  });
+
+  it('splits on newlines when input_multiline is false', () => {
+    const bufferId = '86c417600';
+    const store = configureStore({
+      reducer,
+      preloadedState: {
+        buffers: {
+          [bufferId]: {
+            _id: '1730555173010842',
+            full_name: 'irc.libera.#weechat',
+            hidden: 0,
+            id: bufferId,
+            local_variables: {
+              channel: '#weechat',
+              name: 'libera.#weechat',
+              plugin: 'irc',
+              type: 'channel'
+            },
+            notify: 3,
+            number: 2,
+            pointers: [bufferId],
+            short_name: '#weechat',
+            title: '',
+            type: 0,
+            input_multiline: false
+          }
+        },
+        app: { connected: true, currentBufferId: bufferId } as AppState
+      },
+      enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers({ autoBatch: false })
+    });
+    const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+    client.sendMessageToBuffer = jest.fn();
+
+    render(
+      <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
+      { store }
+    );
+
+    const textInput = screen.getByLabelText('Buffer text field');
+
+    fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
+    fireEvent(textInput, 'submitEditing');
+
+    expect(client.sendMessageToBuffer).toHaveBeenCalledWith(
+      { bufferId },
+      'Hello,'
+    );
+    expect(client.sendMessageToBuffer).toHaveBeenCalledWith(
+      { bufferId },
+      'world!'
+    );
+  });
 });
