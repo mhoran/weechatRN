@@ -71,5 +71,10 @@ export default {
     runtimeVersion: {
       policy: 'appVersion'
     }
-  })
+  }),
+  experiments: {
+    inlineModules: {
+      watchedDirectories: ['src/native']
+    }
+  }
 };

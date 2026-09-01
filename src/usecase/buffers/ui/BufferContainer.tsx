@@ -27,6 +27,7 @@ import { getParseArgs } from '../../../lib/helpers/parse-text-args';
 import { formatUrl } from '../../../lib/helpers/url-formatter';
 import type RelayClient from '../../../lib/weechat/client';
 import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
+import { KeyCommandView } from '../../../native/KeyCommandView';
 import type { StoreState } from '../../../store';
 import * as actions from '../../../store/actions';
 import Buffer from './Buffer';
@@ -229,6 +230,11 @@ class BufferContainer extends React.PureComponent<Props, State> {
     this.copyTextToClipboard(formatted);
   };
 
+  handleShiftEnter = () =>
+    this.setState((state) => ({
+      textValue: `${state.textValue}\n`
+    }));
+
   clearNotification = () => {
     this.props.dispatch(actions.clearBufferNotificationAction());
   };
@@ -276,27 +282,33 @@ class BufferContainer extends React.PureComponent<Props, State> {
           />
 
           <View style={styles.bottomBox}>
-            <AnimatedTextInput
-              ref={this.textInputRef}
-              layout={
-                needsAnimation
-                  ? LinearTransition.withCallback(this.animationComplete)
-                  : undefined
-              }
-              style={styles.inputBox}
-              value={textValue}
-              onChangeText={this.handleChangeText}
-              onFocus={this.handleOnFocus}
-              onBlur={this.handleOnBlur}
-              onSelectionChange={this.handleSelectionChange}
-              returnKeyType="send"
-              submitBehavior="submit"
-              onSubmitEditing={this.handleSubmit}
-              enablesReturnKeyAutomatically={true}
-              multiline={true}
-              spellCheck={true}
-              accessibilityLabel="Buffer text field"
-            />
+            <KeyCommandView
+              style={{ flex: 1 }}
+              onShiftEnter={this.handleShiftEnter}
+              onTab={this.tabCompleteNick}
+            >
+              <AnimatedTextInput
+                ref={this.textInputRef}
+                layout={
+                  needsAnimation
+                    ? LinearTransition.withCallback(this.animationComplete)
+                    : undefined
+                }
+                style={styles.inputBox}
+                value={textValue}
+                onChangeText={this.handleChangeText}
+                onFocus={this.handleOnFocus}
+                onBlur={this.handleOnBlur}
+                onSelectionChange={this.handleSelectionChange}
+                returnKeyType="send"
+                submitBehavior="submit"
+                onSubmitEditing={this.handleSubmit}
+                enablesReturnKeyAutomatically={true}
+                multiline={true}
+                spellCheck={true}
+                accessibilityLabel="Buffer text field"
+              />
+            </KeyCommandView>
             <Animated.View
               layout={needsAnimation ? LinearTransition : undefined}
             >
@@ -355,12 +367,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#333'
   },
   inputBox: {
-    maxHeight: 60.5,
+    maxHeight: 60.3,
     padding: 5,
     justifyContent: 'center',
     borderColor: 'gray',
-    backgroundColor: '#fff',
-    flex: 1
+    backgroundColor: '#fff'
   },
   uploadButton: {
     paddingLeft: 10
