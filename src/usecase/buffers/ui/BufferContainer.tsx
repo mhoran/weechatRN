@@ -157,6 +157,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
         );
       });
     this.handleChangeText('');
+    this.setState({ selection: { start: 0, end: 0 } });
     this.textInputRef.current?.clear();
   };
 
