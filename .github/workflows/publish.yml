@@ -47,27 +47,36 @@ jobs:
     name: Upload iOS app
     if: github.ref_type == 'tag'
     needs: [build-ios-app]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-      - name: Set up Expo
-        uses: expo/expo-github-action@v9
-        with:
-          eas-version: latest
-          token: ${{secrets.EXPO_TOKEN}}
-      - run: npm install
+
       - name: Download build artifact
         uses: actions/download-artifact@v8
         with:
           pattern: 'build-*.ipa'
-      - run: eas submit -p ios --path build-*.ipa --profile production --non-interactive
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0'
+          bundler-cache: true
+
+      - name: Upload to TestFlight
         env:
-          EXPO_APPLE_PASSWORD: ${{secrets.EXPO_APPLE_PASSWORD}}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          bundle exec fastlane pilot upload \
+            --ipa build-*.ipa \
+            --api_key "{
+              \"key\": \"$APP_STORE_CONNECT_API_KEY\",
+              \"key_id\": \"$APP_STORE_CONNECT_API_KEY_ID\",
+              \"issuer_id\": \"$APP_STORE_CONNECT_API_KEY_ISSUER_ID\",
+              \"is_key_content_base64\": true
+            }" \
+            --skip_waiting_for_build_processing true
 
   build-android-app:
     name: Build Android app
