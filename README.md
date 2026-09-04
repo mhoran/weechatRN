@@ -85,7 +85,7 @@ Set the port as appropriate for the relay configuration in WeeChat. The above `l
 
 Fill in the hostname and password fields with the appropriate values. Check the SSL box if weechat is fronted with a proxy that supports it or if a SSL relay is configured in weechat itself.
 
-The default relay path is `/weechat`. The hostname may include a port number. For example, if you have exposed the WeeChat WebSocket at `https://example.com/~user/weechat`, enter `example.com` as the hostname, set the path to `/~user/weechat`, and check the SSL box. Do not include the scheme (`https://`) in the hostname field.
+The default relay path is `/weechat` for the WeeChat protocol and `/api` for the API protocol. The hostname may include a port number. For example, if you have exposed the WeeChat WebSocket at `https://example.com/~user/weechat`, enter `example.com` as the hostname, set the path to `/~user/weechat`, and check the SSL box. Do not include the scheme (`https://`) in the hostname field.
 
 ## Push Notifications
 
