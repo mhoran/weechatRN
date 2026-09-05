@@ -81,9 +81,7 @@ export default abstract class WeechatConnection {
 
   disconnect(): void {
     this.state = State.DISCONNECTED;
-    if (this.websocket?.readyState === WebSocket.OPEN) {
-      this.websocket.close();
-    }
+    this.websocket?.close();
     this.dispatch(disconnectAction());
   }
 

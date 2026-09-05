@@ -167,6 +167,7 @@ export default class WeechatNative extends React.Component<null, State> {
   disconnect = (): void => {
     this.connectOnResume = false;
     this.client.disconnect();
+    this.setState({ connecting: false });
   };
 
   onResume = (): void => {

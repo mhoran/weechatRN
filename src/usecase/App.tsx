@@ -323,13 +323,18 @@ class App extends React.PureComponent<Props, State> {
                         />
                       </TouchableOpacity>
                     ) : connecting ? (
-                      <MaterialCommunityIcons
+                      <TouchableOpacity
                         style={styles.topbarButton}
-                        name="lan-pending"
-                        size={22}
-                        color="white"
-                        accessibilityLabel="Connecting"
-                      />
+                        onPress={disconnect}
+                      >
+                        <MaterialCommunityIcons
+                          name="lan-pending"
+                          size={22}
+                          color="white"
+                          accessibilityLabel="Connecting"
+                          accessibilityHint="Disconnect"
+                        />
+                      </TouchableOpacity>
                     ) : (
                       <TouchableOpacity
                         style={styles.topbarButton}
