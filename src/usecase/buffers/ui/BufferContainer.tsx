@@ -80,10 +80,10 @@ class BufferContainer extends React.PureComponent<Props, State> {
   textInputRef = React.createRef<TextInput>();
 
   tabCompleteInProgress = false;
-  tabCompleteMatches: WeechatNicklist[] = [];
+  tabCompleteMatches: string[] = [];
   tabCompleteIndex = 0;
   tabCompleteWordStart = 0;
-  tabCompleteWordEnd = 0;
+  tabCompleteAddSpace = false;
 
   handleLinkOnPress = (type: string, text: string) => {
     void Linking.openURL(formatUrl(type, text));
@@ -161,48 +161,48 @@ class BufferContainer extends React.PureComponent<Props, State> {
     this.textInputRef.current?.clear();
   };
 
-  tabCompleteNick = () => {
+  tabCompleteNick = async () => {
     const { textValue, selection } = this.state;
-    const { nicklist } = this.props;
 
     if (!this.tabCompleteInProgress) {
-      this.tabCompleteWordEnd = selection.start;
+      if (textValue === '') return;
 
-      this.tabCompleteWordStart =
-        textValue.lastIndexOf(' ', this.tabCompleteWordEnd - 1) + 1;
+      const prefix = textValue.substring(0, selection.start);
+      const position = [...prefix].length;
 
-      if (this.tabCompleteWordStart === this.tabCompleteWordEnd) return;
-
-      const prefix = textValue
-        .substring(this.tabCompleteWordStart, this.tabCompleteWordEnd)
-        .toLowerCase();
-
-      this.tabCompleteMatches = nicklist.filter((nick) =>
-        nick.name.toLowerCase().startsWith(prefix)
+      const result = await this.props.client.completion(
+        this.props.bufferId,
+        textValue,
+        position
       );
-      if (this.tabCompleteMatches.length === 0) {
+
+      if (!result || result.list.length === 0) {
         return;
       }
 
+      this.tabCompleteMatches = result.list;
+      this.tabCompleteWordStart = selection.start - result.base_word.length;
       this.tabCompleteIndex = 0;
+      this.tabCompleteAddSpace =
+        result.add_space && textValue[selection.start] !== ' ';
     } else {
       this.tabCompleteIndex =
         (this.tabCompleteIndex + 1) % this.tabCompleteMatches.length;
     }
 
-    let nick = this.tabCompleteMatches[this.tabCompleteIndex].name;
-    if (this.tabCompleteWordStart === 0) {
-      nick += ': ';
-    }
+    const nick =
+      this.tabCompleteMatches[this.tabCompleteIndex] +
+      (this.tabCompleteAddSpace ? ' ' : '');
 
+    const next = this.tabCompleteWordStart + nick.length;
     this.setState({
       textValue:
         textValue.substring(0, this.tabCompleteWordStart) +
         nick +
-        textValue.substring(this.tabCompleteWordEnd)
+        textValue.substring(selection.start),
+      selection: { start: next, end: next }
     });
-    this.tabCompleteWordEnd = this.tabCompleteWordStart + nick.length;
-    this.tabCompleteInProgress = true;
+    this.tabCompleteInProgress = this.tabCompleteMatches.length > 1;
   };
 
   handleOnUpload = (url: string) => {
@@ -261,7 +261,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
       mediaUploadOptions,
       notification
     } = this.props;
-    const { textValue, showTabButton, needsAnimation } = this.state;
+    const { textValue, selection, showTabButton, needsAnimation } = this.state;
 
     return (
       <>
@@ -305,6 +305,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
                 onFocus={this.handleOnFocus}
                 onBlur={this.handleOnBlur}
                 onSelectionChange={this.handleSelectionChange}
+                selection={selection}
                 returnKeyType="send"
                 submitBehavior="submit"
                 onSubmitEditing={this.handleSubmit}
