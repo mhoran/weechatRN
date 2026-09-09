@@ -19,7 +19,8 @@ export default class WeechatRelayConnection extends WeechatConnection {
     protected onError: (
       reconnect: boolean,
       connectionError: ConnectionError | null
-    ) => void
+    ) => void,
+    protected onMessage?: (object: unknown) => void
   ) {
     super(dispatch, onError, hostname, path || '/weechat', ssl);
   }
@@ -60,6 +61,8 @@ export default class WeechatRelayConnection extends WeechatConnection {
       this.state = State.CONNECTED;
       this.onSuccess(this);
     }
+
+    this.onMessage?.(parsed);
 
     console.log('Parsed data:', parsed);
     try {
