@@ -50,11 +50,11 @@ export default {
       }
     ],
     'expo-image-picker',
-    'expo-build-properties',
+    './plugins/withSceneDelegate.ts',
+    ['expo-build-properties', { ios: { enableSceneSupport: true } }],
     'expo-font',
     '@react-native-vector-icons/material-icons',
-    '@react-native-vector-icons/material-design-icons',
-    './plugins/with-ios-scene-lifecycle.ts'
+    '@react-native-vector-icons/material-design-icons'
   ],
   updates: {
     fallbackToCacheTimeout: 0,
