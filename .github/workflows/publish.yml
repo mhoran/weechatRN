@@ -96,7 +96,7 @@ jobs:
       - run: npm install
       - run: eas build -p android ${{ format('--profile {0}', inputs.profile || 'production') }} --non-interactive --local
         env:
-          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" -Dorg.gradle.daemon=false
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
