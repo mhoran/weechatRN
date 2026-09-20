@@ -34,6 +34,7 @@ export default {
   platforms: ['ios', 'android'],
   version: '1.7.5',
   icon: './assets/icon.png',
+  userInterfaceStyle: 'automatic',
   plugins: [
     [
       'expo-splash-screen',

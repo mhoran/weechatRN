@@ -14,7 +14,7 @@ import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 import { accessibilityLabel, buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useEffect, useEffectEvent, useState } from 'react';
-import { Platform, StatusBar, View } from 'react-native';
+import { Platform, StatusBar, useColorScheme, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createSelector } from 'reselect';
 import type { StoreState } from '../../store';
@@ -41,6 +41,8 @@ const selectConnectionState = createSelector(
 );
 
 const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
+  const theme = useColorScheme();
+
   const connectionOptions = useAppSelector(selectConnectionState);
 
   const hostname = useNativeState(connectionOptions.hostname);
@@ -74,7 +76,10 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1 }}>
-        <StatusBar barStyle="dark-content" translucent={true} />
+        <StatusBar
+          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
+          translucent={true}
+        />
 
         <Host style={{ flex: 1 }}>
           <FieldGroup>

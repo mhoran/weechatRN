@@ -1,11 +1,16 @@
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { UnsubscribeListener } from '@reduxjs/toolkit';
 import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { AppState } from 'react-native';
+import type { ColorSchemeName, NativeEventSubscription } from 'react-native';
+import { Appearance, AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
@@ -34,12 +39,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 interface State {
   connecting: boolean;
   connectionError: ConnectionError | null;
+  theme: ColorSchemeName | null | undefined;
 }
 
 export default class WeechatNative extends React.Component<null, State> {
   state: State = {
     connecting: false,
-    connectionError: null
+    connectionError: null,
+    theme: Appearance.getColorScheme()
   };
 
   connectOnResume = true;
@@ -74,6 +81,7 @@ export default class WeechatNative extends React.Component<null, State> {
   unsubscribeUpgradeListener: UnsubscribeListener;
   unsubscribeFetchScriptsListener: UnsubscribeListener;
   unsubscribePendingBufferNotificationListener: UnsubscribeListener;
+  appearanceSubscription: NativeEventSubscription;
 
   constructor(props: null) {
     super(props);
@@ -103,6 +111,12 @@ export default class WeechatNative extends React.Component<null, State> {
 
     const pendingNotification = Notifications.getLastNotificationResponse();
     if (pendingNotification) this.notificationHandler(pendingNotification);
+
+    this.appearanceSubscription = Appearance.addChangeListener(
+      ({ colorScheme }) => {
+        this.setState({ theme: colorScheme });
+      }
+    );
   }
 
   componentWillUnmount(): void {
@@ -112,6 +126,7 @@ export default class WeechatNative extends React.Component<null, State> {
     this.unsubscribeFetchScriptsListener();
     this.responseListener.remove();
     this.unsubscribePendingBufferNotificationListener();
+    this.appearanceSubscription.remove();
   }
 
   setNotificationToken = async (): Promise<void> => {
@@ -178,14 +193,16 @@ export default class WeechatNative extends React.Component<null, State> {
   };
 
   render() {
-    const { connecting, connectionError } = this.state;
+    const { connecting, connectionError, theme } = this.state;
 
     return (
       <Provider store={store}>
         <SafeAreaProvider>
           <PersistGate onBeforeLift={this.onBeforeLift}>
             <GestureHandlerRootView>
-              <NavigationContainer>
+              <NavigationContainer
+                theme={theme === 'dark' ? DarkTheme : DefaultTheme}
+              >
                 <Stack.Navigator>
                   <Stack.Screen
                     name="App"
