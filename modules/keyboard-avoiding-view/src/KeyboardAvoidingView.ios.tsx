@@ -1,10 +1,17 @@
 import { requireNativeViewManager } from 'expo-modules-core';
 import type * as React from 'react';
+import type { ViewProps } from 'react-native';
 
 import type { KeyboardAvoidingViewProps } from './KeyboardAvoidingView.types';
 
 const NativeView: React.ComponentType<KeyboardAvoidingViewProps> =
   requireNativeViewManager('KeyboardAvoidingView');
+
+const NativeContentView: React.ComponentType<ViewProps> =
+  requireNativeViewManager(
+    'KeyboardAvoidingView',
+    'KeyboardAvoidingContentView'
+  );
 
 export default function KeyboardAvoidingView({
   children,
@@ -13,7 +20,7 @@ export default function KeyboardAvoidingView({
 }: KeyboardAvoidingViewProps) {
   return (
     <NativeView {...props} style={style}>
-      {children}
+      <NativeContentView collapsable={false}>{children}</NativeContentView>
     </NativeView>
   );
 }

@@ -1,11 +1,9 @@
 import ExpoModulesCore
 
-// This view will be used as a native component. Make sure to inherit from `ExpoView`
-// to apply the proper styling (e.g. border radius and shadows).
 class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   private let measurer = BoundsObservableView()
-  private let container = UIView()
-  private var scrollViewComponent: ScrollViewComponentWrapper?
+  private weak var contentView: KeyboardAvoidingContentView?
+  private var contentHeight: CGFloat?
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -17,36 +15,20 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
     measurer.delegate = self
     addSubview(measurer)
 
-    container.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(container)
-
     NSLayoutConstraint.activate([
       measurer.leadingAnchor.constraint(equalTo: leadingAnchor),
       measurer.trailingAnchor.constraint(equalTo: trailingAnchor),
       measurer.bottomAnchor.constraint(equalTo: bottomAnchor),
     ])
 
-    NSLayoutConstraint.activate([
-      container.heightAnchor.constraint(equalTo: heightAnchor),
-      container.leadingAnchor.constraint(equalTo: leadingAnchor),
-      container.trailingAnchor.constraint(equalTo: trailingAnchor),
-    ])
-
     let measurerTopToKeyboard = measurer.topAnchor.constraint(
       equalTo: keyboardLayoutGuide.topAnchor)
     measurerTopToKeyboard.identifier = "measurerTopToKeyboard"
-    let containerBottomToKeyboard = container.bottomAnchor.constraint(
-      equalTo: keyboardLayoutGuide.topAnchor)
-    containerBottomToKeyboard.identifier = "containerBottomToKeyboard"
-    keyboardLayoutGuide.setConstraints(
-      [measurerTopToKeyboard, containerBottomToKeyboard], activeWhenNearEdge: .bottom)
+    keyboardLayoutGuide.setConstraints([measurerTopToKeyboard], activeWhenNearEdge: .bottom)
 
     let measurerTopToBottom = measurer.topAnchor.constraint(equalTo: bottomAnchor)
-    measurerTopToBottom.identifier = "measurerTopToKeyboard"
-    let containerBottomToBottom = container.bottomAnchor.constraint(equalTo: bottomAnchor)
-    containerBottomToBottom.identifier = "containerBottomToKeyboard"
-    keyboardLayoutGuide.setConstraints(
-      [measurerTopToBottom, containerBottomToBottom], activeWhenAwayFrom: .bottom)
+    measurerTopToBottom.identifier = "measurerTopToBottom"
+    keyboardLayoutGuide.setConstraints([measurerTopToBottom], activeWhenAwayFrom: .bottom)
 
     keyboardLayoutGuide.followsUndockedKeyboard = true
 
@@ -56,33 +38,44 @@ class KeyboardAvoidingView: ExpoView, ViewBoundsObserving {
   }
 
   func boundsDidChange(_ view: BoundsObservableView, from previousBounds: CGRect) {
-    self.scrollViewComponent?.setInsetsFromKeyboardHeight(view.bounds.height, updateOffset: false)
+    updateContentHeight()
   }
 
-  private func findScrollViewComponent(view: UIView) -> ScrollViewComponentWrapper? {
-    if let scrollViewComponent = ScrollViewComponentWrapper(view: view) {
-      return scrollViewComponent
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    updateContentHeight()
+  }
+
+  private func updateContentHeight() {
+    guard let contentView, bounds.height > 0 else {
+      return
     }
 
-    for subview in view.subviews {
-      if let view = findScrollViewComponent(view: subview) {
-        return view
-      }
+    let height = max(0, bounds.height - max(0, measurer.bounds.height))
+    if height == contentHeight {
+      return
     }
+    contentHeight = height
 
-    return nil
+    contentView.setStyleSize(nil, height: NSNumber(value: Float(height)))
   }
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if let scrollView = findScrollViewComponent(view: childComponentView) {
-      scrollViewComponent = scrollView
-      scrollViewComponent?.setInsetsFromKeyboardHeight(measurer.bounds.height, updateOffset: true)
+    if let childComponentView = childComponentView as? KeyboardAvoidingContentView {
+      contentView = childComponentView
+      contentHeight = nil
+      setNeedsLayout()
     }
 
-    container.insertSubview(childComponentView, at: index)
+    insertSubview(childComponentView, at: index)
   }
 
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
+    if childComponentView === contentView {
+      contentView = nil
+      contentHeight = nil
+    }
+
     childComponentView.removeFromSuperview()
   }
 }

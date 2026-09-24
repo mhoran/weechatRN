@@ -52,7 +52,15 @@ export default {
     ],
     'expo-image-picker',
     './plugins/withSceneDelegate.ts',
-    ['expo-build-properties', { ios: { enableSceneSupport: true } }],
+    [
+      'expo-build-properties',
+      {
+        ios: {
+          enableSceneSupport: true,
+          usePrecompiledModules: false
+        }
+      }
+    ],
     'expo-font',
     '@react-native-vector-icons/material-icons',
     '@react-native-vector-icons/material-design-icons'
