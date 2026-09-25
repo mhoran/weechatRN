@@ -62,7 +62,8 @@ export default {
     ],
     'expo-font',
     '@react-native-vector-icons/material-icons',
-    '@react-native-vector-icons/material-design-icons'
+    '@react-native-vector-icons/material-design-icons',
+    'expo-system-ui'
   ],
   updates: {
     fallbackToCacheTimeout: 0,
