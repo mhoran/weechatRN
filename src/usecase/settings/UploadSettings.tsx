@@ -2,13 +2,14 @@ import { FieldGroup, Host, Switch, Text, TextInput } from '@expo/ui';
 import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useEffect, useEffectEvent, useReducer } from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import { Platform, StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { MediaUploadOptions } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
+import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 
 type NavigationProps = NativeStackScreenProps<
   RootStackParamList,
@@ -84,105 +85,110 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
         barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
         translucent={true}
       />
-      <Host style={{ flex: 1 }}>
-        <FieldGroup>
-          <Text>
-            Use the form below to configure media upload settings. This allows
-            for uploading media to hosting provider and will automatically paste
-            the link in the input box. When configured, an upload button will
-            appear next to the input box.
-          </Text>
+      <KeyboardAvoidingView
+        enabled={Platform.OS === 'android'}
+        style={{ flex: 1 }}
+      >
+        <Host style={{ flex: 1 }}>
+          <FieldGroup>
+            <Text>
+              Use the form below to configure media upload settings. This allows
+              for uploading media to hosting provider and will automatically
+              paste the link in the input box. When configured, an upload button
+              will appear next to the input box.
+            </Text>
 
-          <FieldGroup.Section title="Upload Service URL">
-            <TextInput
-              keyboardType="url"
-              autoCapitalize="none"
-              placeholder="Required"
-              modifiers={[accessibilityLabel('Upload Service URL')]}
-              testID="upload-settings-upload-service-url"
-              onChangeText={(url) => setState({ url })}
-              defaultValue={state.url}
-              autoCorrect={false}
-            />
-          </FieldGroup.Section>
-          <FieldGroup.Section title="Basic Auth">
-            <Switch
-              onValueChange={(basicAuth) => setState({ basicAuth })}
-              value={state.basicAuth}
-              label="Use Basic Auth"
-              testID="upload-settings-use-basic-auth"
-            />
-            {state.basicAuth && (
-              <>
-                <TextInput
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  placeholder="Username"
-                  modifiers={[accessibilityLabel('Upload Service Username')]}
-                  onChangeText={(username) => setState({ username })}
-                  defaultValue={state.username}
-                  autoCorrect={false}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  placeholder="Password"
-                  modifiers={[accessibilityLabel('Upload Service Password')]}
-                  secureTextEntry
-                  onChangeText={(password) => setState({ password })}
-                  defaultValue={state.password}
-                />
-              </>
-            )}
-          </FieldGroup.Section>
-          <FieldGroup.Section title="Form Field Name">
-            <TextInput
-              autoCapitalize="none"
-              placeholder="file"
-              modifiers={[accessibilityLabel('Form Field Name')]}
-              autoCorrect={false}
-              onChangeText={(fieldName) => setState({ fieldName })}
-              defaultValue={state.fieldName}
-            />
-          </FieldGroup.Section>
-          <FieldGroup.Section title="Response Regexp">
-            <TextInput
-              autoCapitalize="none"
-              placeholder="/^https://\S+/"
-              modifiers={[accessibilityLabel('Response Regexp')]}
-              autoCorrect={false}
-              keyboardType="ascii-capable"
-              onChangeText={(regexp) => setState({ regexp })}
-              defaultValue={state.regexp}
-            />
-          </FieldGroup.Section>
-          {state.headers.map(([headerName, headerValue], index) => (
-            <FieldGroup.Section key={index} title="Additional Headers">
-              <>
-                <TextInput
-                  autoCapitalize="none"
-                  placeholder="Name"
-                  modifiers={[accessibilityLabel('Header Name')]}
-                  autoCorrect={false}
-                  defaultValue={headerName}
-                  onChangeText={(text) =>
-                    setUploadOptionsHeaderName(index, text)
-                  }
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  placeholder="Value"
-                  modifiers={[accessibilityLabel('Header Value')]}
-                  autoCorrect={false}
-                  defaultValue={headerValue}
-                  onChangeText={(text) =>
-                    setUploadOptionsHeaderValue(index, text)
-                  }
-                />
-              </>
+            <FieldGroup.Section title="Upload Service URL">
+              <TextInput
+                keyboardType="url"
+                autoCapitalize="none"
+                placeholder="Required"
+                modifiers={[accessibilityLabel('Upload Service URL')]}
+                testID="upload-settings-upload-service-url"
+                onChangeText={(url) => setState({ url })}
+                defaultValue={state.url}
+                autoCorrect={false}
+              />
             </FieldGroup.Section>
-          ))}
-        </FieldGroup>
-      </Host>
+            <FieldGroup.Section title="Basic Auth">
+              <Switch
+                onValueChange={(basicAuth) => setState({ basicAuth })}
+                value={state.basicAuth}
+                label="Use Basic Auth"
+                testID="upload-settings-use-basic-auth"
+              />
+              {state.basicAuth && (
+                <>
+                  <TextInput
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholder="Username"
+                    modifiers={[accessibilityLabel('Upload Service Username')]}
+                    onChangeText={(username) => setState({ username })}
+                    defaultValue={state.username}
+                    autoCorrect={false}
+                  />
+                  <TextInput
+                    autoCapitalize="none"
+                    placeholder="Password"
+                    modifiers={[accessibilityLabel('Upload Service Password')]}
+                    secureTextEntry
+                    onChangeText={(password) => setState({ password })}
+                    defaultValue={state.password}
+                  />
+                </>
+              )}
+            </FieldGroup.Section>
+            <FieldGroup.Section title="Form Field Name">
+              <TextInput
+                autoCapitalize="none"
+                placeholder="file"
+                modifiers={[accessibilityLabel('Form Field Name')]}
+                autoCorrect={false}
+                onChangeText={(fieldName) => setState({ fieldName })}
+                defaultValue={state.fieldName}
+              />
+            </FieldGroup.Section>
+            <FieldGroup.Section title="Response Regexp">
+              <TextInput
+                autoCapitalize="none"
+                placeholder="/^https://\S+/"
+                modifiers={[accessibilityLabel('Response Regexp')]}
+                autoCorrect={false}
+                keyboardType="ascii-capable"
+                onChangeText={(regexp) => setState({ regexp })}
+                defaultValue={state.regexp}
+              />
+            </FieldGroup.Section>
+            {state.headers.map(([headerName, headerValue], index) => (
+              <FieldGroup.Section key={index} title="Additional Headers">
+                <>
+                  <TextInput
+                    autoCapitalize="none"
+                    placeholder="Name"
+                    modifiers={[accessibilityLabel('Header Name')]}
+                    autoCorrect={false}
+                    defaultValue={headerName}
+                    onChangeText={(text) =>
+                      setUploadOptionsHeaderName(index, text)
+                    }
+                  />
+                  <TextInput
+                    autoCapitalize="none"
+                    placeholder="Value"
+                    modifiers={[accessibilityLabel('Header Value')]}
+                    autoCorrect={false}
+                    defaultValue={headerValue}
+                    onChangeText={(text) =>
+                      setUploadOptionsHeaderValue(index, text)
+                    }
+                  />
+                </>
+              </FieldGroup.Section>
+            ))}
+          </FieldGroup>
+        </Host>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

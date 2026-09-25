@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { Settings } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
+import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 
 type NavigationProps = NativeStackScreenProps<
   RootStackParamList,
@@ -81,81 +82,86 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
           translucent={true}
         />
 
-        <Host style={{ flex: 1 }}>
-          <FieldGroup>
-            <Text>
-              WeechatRN is a relay client for the WeeChat IRC client. WeechatRN
-              supports the relay and API protocols over WebSockets. Configure
-              your relay hostname and password below, then go back to the main
-              screen and click the connect icon.
-            </Text>
+        <KeyboardAvoidingView
+          enabled={Platform.OS === 'android'}
+          style={{ flex: 1 }}
+        >
+          <Host style={{ flex: 1 }}>
+            <FieldGroup>
+              <Text>
+                WeechatRN is a relay client for the WeeChat IRC client.
+                WeechatRN supports the relay and API protocols over WebSockets.
+                Configure your relay hostname and password below, then go back
+                to the main screen and click the connect icon.
+              </Text>
 
-            <FieldGroup.Section title="Relay Settings">
-              <TextInput
-                keyboardType="url"
-                autoCapitalize="none"
-                placeholder="Hostname"
-                modifiers={[accessibilityLabel('Relay Hostname')]}
-                value={hostname}
-                autoCorrect={false}
-              />
-              <TextInput
-                keyboardType="url"
-                autoCapitalize="none"
-                placeholder={protocol === 'api' ? '/api' : '/weechat'}
-                modifiers={[accessibilityLabel('Relay Path')]}
-                value={path}
-                autoCorrect={false}
-              />
-              <TextInput
-                autoCapitalize="none"
-                placeholder="Password"
-                modifiers={[accessibilityLabel('Relay Password')]}
-                secureTextEntry
-                value={password}
-              />
-              <Switch label="Use TLS" value={ssl} onValueChange={setSsl} />
-              <Row alignment="center">
-                <Text>Relay Protocol</Text>
-                <Spacer flexible />
-                <Picker selectedValue={protocol} onValueChange={setProtocol}>
-                  <Picker.Item label={'WeeChat'} value={'weechat'} />
-                  <Picker.Item label={'API'} value={'api'} />
-                </Picker>
-              </Row>
-            </FieldGroup.Section>
-            <FieldGroup.Section title="Options">
-              <Switch
-                label="Hide server buffers"
-                value={filterBuffers}
-                onValueChange={setFilterBuffers}
-              />
-            </FieldGroup.Section>
-            {Platform.select({
-              ios: (
-                <Button
-                  modifiers={[buttonStyle('automatic')]}
-                  onPress={() => navigation.navigate('Media Upload Settings')}
-                  label="Media Upload Settings"
-                ></Button>
-              ),
-              android: (
-                <FieldGroup.Section
-                  modifiers={[
-                    clickable(
-                      () => navigation.navigate('Media Upload Settings'),
-                      {
-                        indication: true
-                      }
-                    )
-                  ]}
-                >
-                  <Text>Media Upload Settings</Text>
-                </FieldGroup.Section>
-              )
-            })}
-          </FieldGroup>
-        </Host>
+              <FieldGroup.Section title="Relay Settings">
+                <TextInput
+                  keyboardType="url"
+                  autoCapitalize="none"
+                  placeholder="Hostname"
+                  modifiers={[accessibilityLabel('Relay Hostname')]}
+                  value={hostname}
+                  autoCorrect={false}
+                />
+                <TextInput
+                  keyboardType="url"
+                  autoCapitalize="none"
+                  placeholder={protocol === 'api' ? '/api' : '/weechat'}
+                  modifiers={[accessibilityLabel('Relay Path')]}
+                  value={path}
+                  autoCorrect={false}
+                />
+                <TextInput
+                  autoCapitalize="none"
+                  placeholder="Password"
+                  modifiers={[accessibilityLabel('Relay Password')]}
+                  secureTextEntry
+                  value={password}
+                />
+                <Switch label="Use TLS" value={ssl} onValueChange={setSsl} />
+                <Row alignment="center">
+                  <Text>Relay Protocol</Text>
+                  <Spacer flexible />
+                  <Picker selectedValue={protocol} onValueChange={setProtocol}>
+                    <Picker.Item label={'WeeChat'} value={'weechat'} />
+                    <Picker.Item label={'API'} value={'api'} />
+                  </Picker>
+                </Row>
+              </FieldGroup.Section>
+              <FieldGroup.Section title="Options">
+                <Switch
+                  label="Hide server buffers"
+                  value={filterBuffers}
+                  onValueChange={setFilterBuffers}
+                />
+              </FieldGroup.Section>
+              {Platform.select({
+                ios: (
+                  <Button
+                    modifiers={[buttonStyle('automatic')]}
+                    onPress={() => navigation.navigate('Media Upload Settings')}
+                    label="Media Upload Settings"
+                  ></Button>
+                ),
+                android: (
+                  <FieldGroup.Section
+                    modifiers={[
+                      clickable(
+                        () => navigation.navigate('Media Upload Settings'),
+                        {
+                          indication: true
+                        }
+                      )
+                    ]}
+                  >
+                    <Text>Media Upload Settings</Text>
+                  </FieldGroup.Section>
+                )
+              })}
+            </FieldGroup>
+          </Host>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );

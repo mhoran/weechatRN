@@ -28,8 +28,7 @@ export default {
     package: IS_PROD
       ? 'com.matthoran.weechatrn'
       : 'com.matthoran.weechatrn.dev',
-    googleServicesFile: './google-services.json',
-    softwareKeyboardLayoutMode: 'pan'
+    googleServicesFile: './google-services.json'
   },
   platforms: ['ios', 'android'],
   version: '1.7.6',
