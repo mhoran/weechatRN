@@ -15,6 +15,7 @@ interface ProtocolBridge {
   ) => void;
   fetchBufferInfo: (bufferId: string) => void;
   fetchBufferLines: (bufferId: string, numLines: number) => void;
+  completion: (bufferId: string, command: string, position: number) => void;
 }
 
 class ApiProtocolBridge implements ProtocolBridge {
@@ -61,6 +62,17 @@ class ApiProtocolBridge implements ProtocolBridge {
       request: `GET /api/buffers/${bufferId}/lines?lines=-${numLines}&colors=weechat`
     });
   };
+
+  completion = (bufferId: string, command: string, position: number) =>
+    this.connection?.send({
+      request: 'POST /api/completion',
+      request_id: 'completion',
+      body: {
+        buffer_id: Number(bufferId),
+        command,
+        position
+      }
+    });
 }
 
 class WeechatProtocolBridge implements ProtocolBridge {
@@ -98,6 +110,11 @@ class WeechatProtocolBridge implements ProtocolBridge {
       `(lines) hdata buffer:0x${bufferId}/own_lines/last_line(-${numLines})/data`
     );
   };
+
+  completion = (bufferId: string, command: string, position: number) =>
+    this.connection?.send(
+      `(completion) completion 0x${bufferId} ${position} ${command}`
+    );
 }
 
 export default class RelayClient {
@@ -134,7 +151,8 @@ export default class RelayClient {
       password,
       ssl,
       this.onSuccess,
-      this.onConnectionError
+      this.onConnectionError,
+      this.onMessage
     );
 
     this.protocolBridge =
@@ -169,6 +187,42 @@ export default class RelayClient {
     message: string
   ): void => {
     this.protocolBridge?.input(bufferId, bufferName, message);
+  };
+
+  waiters: Record<string, (object: unknown) => void> = {};
+
+  onMessage = (object: unknown) => {
+    if (object.request_id in this.waiters) {
+      const waiter = this.waiters[object.request_id];
+      delete this.waiters[object.request_id];
+      waiter(object);
+      return true;
+    }
+    return false;
+  };
+
+  completion = async (
+    bufferId: string,
+    command: string,
+    position: number
+  ): Promise<
+    | {
+        list: string[];
+        add_space: boolean;
+        base_word: string;
+      }
+    | undefined
+  > => {
+    if (!this.protocolBridge) return;
+
+    this.protocolBridge.completion(bufferId, command, position);
+
+    const response = await new Promise((resolve) => {
+      this.waiters['completion'] = (object) => {
+        resolve(object.body);
+      };
+    });
+    return response;
   };
 
   fetchBufferInfo = (bufferId: string): void => {
