@@ -237,7 +237,10 @@ class BufferContainer extends React.PureComponent<Props, State> {
 
   handleShiftEnter = () =>
     this.setState((state) => ({
-      textValue: `${state.textValue}\n`
+      textValue:
+        state.textValue.slice(0, state.selection.start) +
+        '\n' +
+        state.textValue.slice(state.selection.start)
     }));
 
   clearNotification = () => {
