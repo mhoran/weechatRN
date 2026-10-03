@@ -9,6 +9,10 @@ interface RelayLine extends Omit<WeechatLine, 'id' | 'date'> {
   date_printed?: Date;
 }
 
+interface RelayBuffer extends Omit<WeechatBuffer, 'notify'> {
+  notify: number;
+}
+
 type KeyFn<T> = (t: T) => string;
 type MapFn<A, B> = (a: A) => A | B;
 
@@ -21,6 +25,19 @@ export const reduceToObjectByKey = <T, U>(
 const parseVersion = (version: string) => {
   const parts = version.split('.').map((part) => parseInt(part) || 0);
   return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
+};
+
+const notifyLevelName = (notify: number) => {
+  switch (notify) {
+    case 0:
+      return 'none';
+    case 1:
+      return 'highlight';
+    case 2:
+      return 'message';
+    default:
+      return 'all';
+  }
 };
 
 export const transformToReduxAction = (
@@ -60,7 +77,7 @@ export const transformToReduxAction = (
       return actions.nicklistUpdatedAction({ added, removed, bufferId });
     }
     case '_buffer_cleared': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
 
       return actions.bufferClearedAction(buffer.pointers[0]);
@@ -74,17 +91,19 @@ export const transformToReduxAction = (
         getState: () => StoreState
       ) => {
         const state: StoreState = getState();
-        const { id, pointers, date, date_printed, ...rest } = line;
+        const { id, buffer, pointers, date, date_printed, ...rest } = line;
 
         dispatch(
           actions.bufferLineAddedAction({
             currentBufferId: state.app.currentBufferId,
+            bufferNotifyLevel: state.buffers[buffer]?.notify,
             line: {
               ...rest,
               id:
                 id !== undefined
                   ? Number(id)
                   : parseInt(pointers[pointers.length - 1], 16),
+              buffer,
               pointers,
               date: date.toISOString(),
               ...(line.notify_level !== undefined && {
@@ -109,13 +128,13 @@ export const transformToReduxAction = (
       });
     }
     case '_buffer_closing': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
 
       return actions.bufferClosedAction(buffer.pointers[0]);
     }
     case '_buffer_opened': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer._id =
         buffer.id !== undefined
@@ -123,10 +142,13 @@ export const transformToReduxAction = (
           : BigInt(`0x${buffer.pointers[0]}`).toString();
       buffer.id = buffer.pointers[0];
 
-      return actions.bufferOpenedAction(buffer);
+      return actions.bufferOpenedAction({
+        ...buffer,
+        notify: notifyLevelName(buffer.notify)
+      });
     }
     case '_buffer_renamed': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
@@ -135,21 +157,21 @@ export const transformToReduxAction = (
     case '_buffer_moved':
     case '_buffer_merged':
     case '_buffer_unmerged': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
       return actions.bufferMovedAction(buffer);
     }
     case '_buffer_hidden': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
       return actions.bufferHiddenAction(buffer);
     }
     case '_buffer_unhidden': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
@@ -158,14 +180,14 @@ export const transformToReduxAction = (
     case '_buffer_localvar_removed':
     case '_buffer_localvar_changed':
     case '_buffer_localvar_added': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
       return actions.bufferLocalvarUpdateAction(buffer);
     }
     case '_buffer_title_changed': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
       const buffer = object.content[0];
       buffer.id = buffer.pointers[0];
 
@@ -218,7 +240,7 @@ export const transformToReduxAction = (
       });
     }
     case 'buffers': {
-      const object = data.objects[0] as WeechatObject<WeechatBuffer[]>;
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
 
       const newBuffers = reduceToObjectByKey(
         object.content,
@@ -229,7 +251,8 @@ export const transformToReduxAction = (
           _id:
             buf.id !== undefined
               ? buf.id
-              : BigInt(`0x${buf.pointers[0]}`).toString()
+              : BigInt(`0x${buf.pointers[0]}`).toString(),
+          notify: notifyLevelName(buf.notify)
         })
       );
 

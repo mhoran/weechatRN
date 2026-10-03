@@ -29,6 +29,7 @@ interface WeechatBuffer {
   type: number;
   last_read_line?: number;
   input_multiline?: boolean;
+  notify: 'none' | 'highlight' | 'message' | 'all';
 }
 
 interface WeechatHotlist {
@@ -59,6 +60,7 @@ interface Hotlist {
 
 interface Localvariables {
   type?: string;
+  [x: string]: unknown;
 }
 
 interface Header {

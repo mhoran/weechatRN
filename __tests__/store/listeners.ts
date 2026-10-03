@@ -29,7 +29,7 @@ describe(PendingBufferNotificationListener, () => {
               plugin: 'irc',
               type: 'channel'
             },
-            notify: 3,
+            notify: 'all',
             number: 2,
             pointers: ['83a41cd80'],
             short_name: '#weechat',
@@ -103,6 +103,7 @@ describe(PendingBufferNotificationListener, () => {
           local_variables: {
             type: 'channel'
           },
+          notify: 'all',
           number: 2,
           pointers: ['83a41cd80'],
           short_name: '#weechat',

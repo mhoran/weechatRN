@@ -27,7 +27,7 @@ const hotlistsReducer = createReducer(initialState, (builder) => {
     return rest;
   });
   builder.addCase(bufferLineAddedAction, (state, action) => {
-    const { line, currentBufferId } = action.payload;
+    const { line, currentBufferId, bufferNotifyLevel } = action.payload;
 
     if (line.buffer === currentBufferId) {
       return state;
@@ -38,11 +38,14 @@ const hotlistsReducer = createReducer(initialState, (builder) => {
     };
 
     const shouldNotify =
-      line.notify_level !== undefined
-        ? line.notify_level > 0
+      bufferNotifyLevel !== 'none' &&
+      (line.notify_level !== undefined
+        ? bufferNotifyLevel === 'highlight'
+          ? line.notify_level === 3
+          : line.notify_level > 0
         : line.tags_array.every(
             (tag) => tag !== 'irc_smart_filter' && tag !== 'notify_none'
-          );
+          ));
     if (shouldNotify) {
       if (line.highlight !== 0) {
         hotlist.highlight++;

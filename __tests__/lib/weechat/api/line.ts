@@ -171,6 +171,64 @@ describe(LineAction, () => {
       expect(hotlist.sum).toEqual(2);
       expect(hotlist.highlight).toEqual(1);
     });
+
+    it('respects buffer notify level', () => {
+      const preloadedState = {
+        buffers: {
+          '1709932823238637': { notify: 'none' } as WeechatBuffer,
+          '1791032500383667': { notify: 'highlight' } as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      let action = createBufferLineAddedAction({
+        id: 0,
+        buffer_id: 1709932823238637,
+        date: '2024-12-08T17:15:36.000Z',
+        tags: [],
+        notify_level: 0,
+        highlight: false
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        id: 1,
+        buffer_id: 1791032500383667,
+        date: '2024-12-08T17:15:36.000Z',
+        tags: [],
+        notify_level: 1,
+        highlight: false
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        id: 2,
+        buffer_id: 1791032500383667,
+        date: '2024-12-08T17:15:36.000Z',
+        tags: [],
+        notify_level: 3,
+        highlight: true
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      expect(store.getState().hotlists).toHaveProperty('1709932823238637');
+      let hotlist = store.getState().hotlists['1709932823238637'];
+      expect(hotlist.sum).toEqual(0);
+      expect(hotlist.highlight).toEqual(0);
+
+      expect(store.getState().hotlists).toHaveProperty('1791032500383667');
+      hotlist = store.getState().hotlists['1791032500383667'];
+      expect(hotlist.sum).toEqual(1);
+      expect(hotlist.highlight).toEqual(1);
+    });
   });
 
   describe('on buffer_line_data_changed', () => {

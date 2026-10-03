@@ -30,6 +30,7 @@ export default function LineAction(response: LineResponse) {
         dispatch(
           actions.bufferLineAddedAction({
             currentBufferId: state.app.currentBufferId,
+            bufferNotifyLevel: state.buffers[response.buffer_id]?.notify,
             line: {
               ...line,
               tags_array: tags,

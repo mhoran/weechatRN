@@ -32,7 +32,7 @@ describe('BufferContainer', () => {
               plugin: 'irc',
               type: 'channel'
             },
-            notify: 3,
+            notify: 'all',
             number: 2,
             pointers: [bufferId],
             short_name: '#weechat',
@@ -123,7 +123,7 @@ describe('BufferContainer', () => {
               plugin: 'irc',
               type: 'channel'
             },
-            notify: 3,
+            notify: 'all',
             number: 2,
             pointers: [bufferId],
             short_name: '#weechat',
@@ -200,7 +200,7 @@ describe('BufferContainer', () => {
               plugin: 'irc',
               type: 'channel'
             },
-            notify: 3,
+            notify: 'all',
             number: 2,
             pointers: [bufferId],
             short_name: '#weechat',
@@ -247,7 +247,7 @@ describe('BufferContainer', () => {
               plugin: 'irc',
               type: 'channel'
             },
-            notify: 3,
+            notify: 'all',
             number: 2,
             pointers: [bufferId],
             short_name: '#weechat',
@@ -297,7 +297,7 @@ describe('BufferContainer', () => {
               plugin: 'irc',
               type: 'channel'
             },
-            notify: 3,
+            notify: 'all',
             number: 2,
             pointers: [bufferId],
             short_name: '#weechat',

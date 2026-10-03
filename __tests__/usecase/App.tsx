@@ -36,7 +36,7 @@ describe('App', () => {
                 plugin: 'irc',
                 type: 'channel'
               },
-              notify: 3,
+              notify: 'all',
               number: 2,
               pointers: [bufferId],
               short_name: '#weechat',
@@ -97,7 +97,7 @@ describe('App', () => {
                 plugin: 'irc',
                 type: 'channel'
               },
-              notify: 3,
+              notify: 'all',
               number: 2,
               pointers: [notificationBufferId],
               short_name: '#weechat',
@@ -115,7 +115,7 @@ describe('App', () => {
                 plugin: 'irc',
                 type: 'channel'
               },
-              notify: 3,
+              notify: 'all',
               number: 4,
               pointers: [currentBufferId],
               short_name: '#weechat-android',
@@ -188,7 +188,7 @@ describe('App', () => {
                 plugin: 'irc',
                 type: 'channel'
               },
-              notify: 3,
+              notify: 'all',
               number: 2,
               pointers: [selectedBufferId],
               short_name: '#weechat',
@@ -206,7 +206,7 @@ describe('App', () => {
                 plugin: 'irc',
                 type: 'channel'
               },
-              notify: 3,
+              notify: 'all',
               number: 4,
               pointers: [currentBufferId],
               short_name: '#weechat-android',

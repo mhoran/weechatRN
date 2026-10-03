@@ -139,6 +139,34 @@ describe('transformToReduxAction', () => {
       const buffer = store.getState().buffers['83a41cd80'];
       expect(buffer._id).toEqual(BigInt('0x83a41cd80').toString());
     });
+
+    it('sets notify to the expected value', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'buffers',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              { id: '1730555173010842', pointers: ['83a41cd80'], notify: 3 }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.notify).toEqual('all');
+    });
   });
 
   describe('on _buffer_opened', () => {
@@ -192,6 +220,34 @@ describe('transformToReduxAction', () => {
       expect(store.getState().buffers).toHaveProperty('83a41cd80');
       const buffer = store.getState().buffers['83a41cd80'];
       expect(buffer._id).toEqual(BigInt('0x83a41cd80').toString());
+    });
+
+    it('sets notify to the expected value', () => {
+      const store = configureStore({
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_opened',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              { id: '1730555173010842', pointers: ['83a41cd80'], notify: 3 }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.notify).toEqual('all');
     });
   });
 
@@ -1154,6 +1210,64 @@ describe('transformToReduxAction', () => {
       expect(store.getState().lines).toHaveProperty('83a41cd80');
       const lines = store.getState().lines['83a41cd80'];
       expect(lines[0]).not.toHaveProperty('date_printed');
+    });
+
+    it('respects buffer notify level', () => {
+      const preloadedState = {
+        buffers: {
+          '8578d9c00': { notify: 'none' } as WeechatBuffer,
+          '83a41cd80': { notify: 'highlight' } as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      let action = createBufferLineAddedAction({
+        buffer: '8578d9c00',
+        pointer: '84dc05eb0',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        notify_level: 1,
+        highlight: 0
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dcbf0e0',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        notify_level: 1,
+        highlight: 0
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      action = createBufferLineAddedAction({
+        buffer: '83a41cd80',
+        pointer: '84dcbf150',
+        date: new Date('2024-12-08T17:15:36.000Z'),
+        tags: [],
+        notify_level: 3,
+        highlight: 1
+      });
+      expect(action).toBeDefined();
+      store.dispatch(action!);
+
+      expect(store.getState().hotlists).toHaveProperty('8578d9c00');
+      let hotlist = store.getState().hotlists['8578d9c00'];
+      expect(hotlist.sum).toEqual(0);
+      expect(hotlist.highlight).toEqual(0);
+
+      expect(store.getState().hotlists).toHaveProperty('83a41cd80');
+      hotlist = store.getState().hotlists['83a41cd80'];
+      expect(hotlist.sum).toEqual(1);
+      expect(hotlist.highlight).toEqual(1);
     });
   });
 

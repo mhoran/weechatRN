@@ -94,7 +94,11 @@ export const fetchLinesAction = createAction(
 );
 export const bufferLineAddedAction = createAction(
   'BUFFER_LINE_ADDED',
-  prepareAutoBatched<{ line: WeechatLine; currentBufferId: string | null }>()
+  prepareAutoBatched<{
+    line: WeechatLine;
+    currentBufferId: string | null;
+    bufferNotifyLevel?: WeechatBuffer['notify'];
+  }>()
 );
 export const bufferLineDataChangedAction = createAction(
   'BUFFER_LINE_DATA_CHANGED',
