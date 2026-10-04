@@ -77,6 +77,10 @@ export const bufferUnhiddenAction = createAction(
   'BUFFER_UNHIDDEN',
   prepareAutoBatched<Pick<WeechatBuffer, 'id'>>()
 );
+export const bufferNotifyChangedAction = createAction(
+  'BUFFER_NOTIFY_CHANGED',
+  prepareAutoBatched<Pick<WeechatBuffer, 'id' | 'notify'>>()
+);
 
 export const fetchScriptsAction = createAction(
   'FETCH_SCRIPTS',

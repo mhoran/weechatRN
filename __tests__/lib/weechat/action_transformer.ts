@@ -635,6 +635,48 @@ describe('transformToReduxAction', () => {
     });
   });
 
+  describe('on _buffer_notify_changed', () => {
+    it('updates the buffer notify level', () => {
+      const preloadedState = {
+        buffers: {
+          '83a41cd80': {
+            notify: 'all'
+          } as WeechatBuffer
+        }
+      };
+      const store = configureStore({
+        preloadedState,
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: '_buffer_notify_changed',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                id: '1730555173010842',
+                pointers: ['83a41cd80'],
+                notify: 0
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      expect(store.getState().buffers).toHaveProperty('83a41cd80');
+      const buffer = store.getState().buffers['83a41cd80'];
+      expect(buffer.notify).toEqual('none');
+    });
+  });
+
   describe('on hotlist', () => {
     it('updates hotlists for all buffers except the current buffer', () => {
       const preloadedState = {

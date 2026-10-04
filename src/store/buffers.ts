@@ -3,6 +3,7 @@ import {
   bufferHiddenAction,
   bufferLocalvarUpdateAction,
   bufferMovedAction,
+  bufferNotifyChangedAction,
   bufferOpenedAction,
   bufferRenamedAction,
   bufferTitleChangedAction,
@@ -96,6 +97,17 @@ const bufferReducer = createReducer(initialState, (builder) => {
       [action.payload.id]: {
         ...state[action.payload.id],
         hidden: 0
+      }
+    };
+  });
+  builder.addCase(bufferNotifyChangedAction, (state, action) => {
+    if (state[action.payload.id] === undefined) return;
+
+    return {
+      ...state,
+      [action.payload.id]: {
+        ...state[action.payload.id],
+        notify: action.payload.notify
       }
     };
   });

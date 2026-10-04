@@ -80,6 +80,12 @@ export default function BufferAction(response: BufferResponse) {
         title: response.body.title
       });
     }
+    case 'buffer_notify_changed': {
+      return actions.bufferNotifyChangedAction({
+        id: String(response.buffer_id),
+        notify: response.body.notify
+      });
+    }
   }
 }
 

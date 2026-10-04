@@ -193,6 +193,16 @@ export const transformToReduxAction = (
 
       return actions.bufferTitleChangedAction(buffer);
     }
+    case '_buffer_notify_changed': {
+      const object = data.objects[0] as WeechatObject<RelayBuffer[]>;
+      const buffer = object.content[0];
+      buffer.id = buffer.pointers[0];
+
+      return actions.bufferNotifyChangedAction({
+        ...buffer,
+        notify: notifyLevelName(buffer.notify)
+      });
+    }
     case '_upgrade': {
       return actions.upgradeAction();
     }
