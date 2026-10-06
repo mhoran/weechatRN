@@ -15,7 +15,8 @@ export default class WeechatApiConnection extends WeechatConnection {
     protected onError: (
       reconnect: boolean,
       connectionError: ConnectionError | null
-    ) => void
+    ) => void,
+    private onMessage?: (object: unknown) => void
   ) {
     super(dispatch, onError, hostname, path || '/api', ssl);
   }
@@ -52,6 +53,8 @@ export default class WeechatApiConnection extends WeechatConnection {
       this.state = State.CONNECTED;
       this.onSuccess(this);
     }
+
+    this.onMessage?.(parsed);
 
     try {
       const action = actionFromResponse(parsed);
