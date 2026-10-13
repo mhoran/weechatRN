@@ -1,7 +1,10 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
-import type { TextInputSelectionChangeEvent } from 'react-native';
+import type {
+  TextInputSelectionChangeEvent,
+  TextInputSubmitEditingEvent
+} from 'react-native';
 import {
   ActionSheetIOS,
   Alert,
@@ -142,8 +145,9 @@ class BufferContainer extends React.PureComponent<Props, State> {
     this.setState({ textValue });
   };
 
-  handleSubmit = () => {
+  handleSubmit = (event: TextInputSubmitEditingEvent) => {
     if (!this.props.connected) return;
+    if (event.nativeEvent.text === '') return;
 
     const { textValue } = this.state;
     [textValue]

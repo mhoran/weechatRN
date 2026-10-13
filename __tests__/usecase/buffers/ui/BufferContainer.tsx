@@ -224,7 +224,9 @@ describe('BufferContainer', () => {
     const textInput = screen.getByLabelText('Buffer text field');
 
     fireEvent(textInput, 'onChangeText', 'Hello, world!');
-    fireEvent(textInput, 'submitEditing');
+    fireEvent(textInput, 'submitEditing', {
+      nativeEvent: { text: 'Hello,\nworld!' }
+    });
 
     expect(client.sendMessageToBuffer).not.toHaveBeenCalled();
     expect(textInput.props.value).toEqual('Hello, world!');
@@ -272,7 +274,9 @@ describe('BufferContainer', () => {
     const textInput = screen.getByLabelText('Buffer text field');
 
     fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
-    fireEvent(textInput, 'submitEditing');
+    fireEvent(textInput, 'submitEditing', {
+      nativeEvent: { text: 'Hello,\nworld!' }
+    });
 
     expect(client.sendMessageToBuffer).toHaveBeenCalledWith(
       { bufferId },
@@ -322,7 +326,9 @@ describe('BufferContainer', () => {
     const textInput = screen.getByLabelText('Buffer text field');
 
     fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
-    fireEvent(textInput, 'submitEditing');
+    fireEvent(textInput, 'submitEditing', {
+      nativeEvent: { text: 'Hello,\nworld!' }
+    });
 
     expect(client.sendMessageToBuffer).toHaveBeenCalledWith(
       { bufferId },
