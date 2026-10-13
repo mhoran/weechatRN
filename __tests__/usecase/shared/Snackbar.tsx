@@ -20,9 +20,9 @@ jest.useFakeTimers();
 
 describe('Snackbar', () => {
   describe('on pan', () => {
-    it('sets translateX to the X position of the pan gesture', () => {
+    it('sets translateX to the X position of the pan gesture', async () => {
       const onDismiss = jest.fn();
-      render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(<Snackbar message="" onDismiss={onDismiss} />);
 
       fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
@@ -40,9 +40,9 @@ describe('Snackbar', () => {
       );
     });
 
-    it('resets translateX to 0 if not panned beyond the threshold', () => {
+    it('resets translateX to 0 if not panned beyond the threshold', async () => {
       const onDismiss = jest.fn();
-      render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(<Snackbar message="" onDismiss={onDismiss} />);
 
       fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
@@ -68,9 +68,9 @@ describe('Snackbar', () => {
       );
     });
 
-    it('calls onDismiss when panned to the width of the window', () => {
+    it('calls onDismiss when panned to the width of the window', async () => {
       const onDismiss = jest.fn();
-      render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(<Snackbar message="" onDismiss={onDismiss} />);
 
       fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
@@ -84,9 +84,9 @@ describe('Snackbar', () => {
       expect(onDismiss).toHaveBeenCalled();
     });
 
-    it('positions the view offscreen panned to the width of the window', () => {
+    it('positions the view offscreen panned to the width of the window', async () => {
       const onDismiss = jest.fn();
-      render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(<Snackbar message="" onDismiss={onDismiss} />);
 
       fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },

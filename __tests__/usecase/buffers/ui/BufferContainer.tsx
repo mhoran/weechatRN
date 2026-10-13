@@ -15,7 +15,7 @@ describe('BufferContainer', () => {
     jest.mocked(Buffer).mockReset();
   });
 
-  it('defers notification until buffer change and line fetch', () => {
+  it('defers notification until buffer change and line fetch', async () => {
     const bufferId = '86c417600';
     const store = configureStore({
       reducer,
@@ -46,34 +46,40 @@ describe('BufferContainer', () => {
     });
     const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-    render(
+    await render(
       <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
-    const bufferContainer = screen.UNSAFE_getByType(
-      BufferContainer.WrappedComponent
-    );
-
-    act(() => {
+    await act(() => {
       store.dispatch(
         actions.bufferNotificationAction({
           bufferId,
-          lineId: 0,
+          lineId: 1730555173010842,
           identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
         })
       );
     });
 
-    expect(bufferContainer.props.notification).toBeNull();
+    expect(Buffer).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        notificationLineId: undefined
+      }),
+      undefined
+    );
 
-    act(() => {
+    await act(() => {
       store.dispatch(actions.changeCurrentBufferAction(bufferId));
     });
 
-    expect(bufferContainer.props.notification).toBeNull();
+    expect(Buffer).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        notificationLineId: undefined
+      }),
+      undefined
+    );
 
-    act(() => {
+    await act(() => {
       store.dispatch(
         actions.fetchLinesAction([
           {
@@ -91,14 +97,15 @@ describe('BufferContainer', () => {
       );
     });
 
-    expect(bufferContainer.props.notification).toEqual({
-      bufferId,
-      lineId: 0,
-      identifier: '1fb4fc1d-530b-466f-85be-de27772de0a9'
-    });
+    expect(Buffer).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        notificationLineId: 1730555173010842
+      }),
+      undefined
+    );
   });
 
-  it('clears notification after being handled by the buffer component', () => {
+  it('clears notification after being handled by the buffer component', async () => {
     const ActualBuffer = jest.requireActual<
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
       typeof import('../../../../src/usecase/buffers/ui/Buffer')
@@ -137,12 +144,12 @@ describe('BufferContainer', () => {
     });
     const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-    render(
+    await render(
       <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
-    act(() => {
+    await act(() => {
       store.dispatch(
         actions.bufferNotificationAction({
           bufferId,
@@ -154,11 +161,11 @@ describe('BufferContainer', () => {
 
     expect(store.getState().app.notification).not.toBeNull();
 
-    act(() => {
+    await act(() => {
       store.dispatch(actions.changeCurrentBufferAction(bufferId));
     });
 
-    act(() => {
+    await act(() => {
       store.dispatch(
         actions.fetchLinesAction([
           {
@@ -183,7 +190,7 @@ describe('BufferContainer', () => {
     expect(store.getState().app.notification).toBeNull();
   });
 
-  it('prevents sending message when disconnected', () => {
+  it('prevents sending message when disconnected', async () => {
     const bufferId = '86c417600';
     const store = configureStore({
       reducer,
@@ -216,15 +223,15 @@ describe('BufferContainer', () => {
     const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
     client.sendMessageToBuffer = jest.fn();
 
-    render(
+    await render(
       <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
     const textInput = screen.getByLabelText('Buffer text field');
 
-    fireEvent(textInput, 'onChangeText', 'Hello, world!');
-    fireEvent(textInput, 'submitEditing', {
+    await fireEvent(textInput, 'onChangeText', 'Hello, world!');
+    await fireEvent(textInput, 'submitEditing', {
       nativeEvent: { text: 'Hello,\nworld!' }
     });
 
@@ -232,7 +239,7 @@ describe('BufferContainer', () => {
     expect(textInput.props.value).toEqual('Hello, world!');
   });
 
-  it('preserves newlines when input_multiline is true', () => {
+  it('preserves newlines when input_multiline is true', async () => {
     const bufferId = '86c417600';
     const store = configureStore({
       reducer,
@@ -266,15 +273,15 @@ describe('BufferContainer', () => {
     const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
     client.sendMessageToBuffer = jest.fn();
 
-    render(
+    await render(
       <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
     const textInput = screen.getByLabelText('Buffer text field');
 
-    fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
-    fireEvent(textInput, 'submitEditing', {
+    await fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
+    await fireEvent(textInput, 'submitEditing', {
       nativeEvent: { text: 'Hello,\nworld!' }
     });
 
@@ -284,7 +291,7 @@ describe('BufferContainer', () => {
     );
   });
 
-  it('splits on newlines when input_multiline is false', () => {
+  it('splits on newlines when input_multiline is false', async () => {
     const bufferId = '86c417600';
     const store = configureStore({
       reducer,
@@ -318,15 +325,15 @@ describe('BufferContainer', () => {
     const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
     client.sendMessageToBuffer = jest.fn();
 
-    render(
+    await render(
       <BufferContainer bufferId={bufferId} showTopic={false} client={client} />,
       { store }
     );
 
     const textInput = screen.getByLabelText('Buffer text field');
 
-    fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
-    fireEvent(textInput, 'submitEditing', {
+    await fireEvent(textInput, 'onChangeText', 'Hello,\nworld!');
+    await fireEvent(textInput, 'submitEditing', {
       nativeEvent: { text: 'Hello,\nworld!' }
     });
 

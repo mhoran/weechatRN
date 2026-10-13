@@ -43,10 +43,14 @@ describe('UploadButton', () => {
       username: 'test',
       password: 'changeme'
     };
-    render(<UploadButton onUpload={onUpload} uploadOptions={uploadOptions} />);
+    await render(
+      <UploadButton onUpload={onUpload} uploadOptions={uploadOptions} />
+    );
 
     const button = screen.getByLabelText('Upload Image');
-    fireEvent(button, 'pressAction', { nativeEvent: { event: 'library' } });
+    await fireEvent(button, 'pressAction', {
+      nativeEvent: { event: 'library' }
+    });
 
     await screen.findByLabelText('Image Uploading');
 
@@ -81,33 +85,37 @@ describe('UploadButton', () => {
     expect(onUpload).toHaveBeenCalledWith('https://example.com/image.jpg');
   });
 
-  it('hides the button when the url is undefined', () => {
+  it('hides the button when the url is undefined', async () => {
     const uploadOptions = {
       basicAuth: false
     };
-    render(<UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />);
+    await render(
+      <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
+    );
 
     expect(screen.queryByLabelText('Upload Image')).toBeNull();
   });
 
-  it('hides the button when the field name is empty', () => {
+  it('hides the button when the field name is empty', async () => {
     const uploadOptions = {
       url: 'https://example.com',
       fieldName: '',
       basicAuth: false
     };
-    render(<UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />);
+    await render(
+      <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
+    );
 
     expect(screen.queryByLabelText('Upload Image')).toBeNull();
   });
 
   describe('basic auth disabled', () => {
-    it('shows the button when the url is not empty', () => {
+    it('shows the button when the url is not empty', async () => {
       const uploadOptions = {
         url: 'https://example.com',
         basicAuth: false
       };
-      render(
+      await render(
         <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
       );
 
@@ -120,12 +128,14 @@ describe('UploadButton', () => {
         basicAuth: false,
         headers: { Authorization: 'Bearer token' }
       };
-      render(
+      await render(
         <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
       );
 
       const button = screen.getByLabelText('Upload Image');
-      fireEvent(button, 'pressAction', { nativeEvent: { event: 'library' } });
+      await fireEvent(button, 'pressAction', {
+        nativeEvent: { event: 'library' }
+      });
 
       await screen.findByLabelText('Image Uploading');
 
@@ -147,20 +157,20 @@ describe('UploadButton', () => {
   });
 
   describe('basic auth enabled', () => {
-    it('hides the button when the username or password is empty', () => {
+    it('hides the button when the username or password is empty', async () => {
       const uploadOptions = {
         url: 'https://example.com',
         basicAuth: true,
         username: '',
         password: ''
       };
-      const { rerender } = render(
+      await render(
         <UploadButton onUpload={jest.fn()} uploadOptions={uploadOptions} />
       );
 
       expect(screen.queryByLabelText('Upload Image')).toBeNull();
 
-      rerender(
+      await screen.rerender(
         <UploadButton
           onUpload={jest.fn()}
           uploadOptions={{ ...uploadOptions, username: 'test', password: '' }}
@@ -169,7 +179,7 @@ describe('UploadButton', () => {
 
       expect(screen.queryByLabelText('Upload Image')).toBeNull();
 
-      rerender(
+      await screen.rerender(
         <UploadButton
           onUpload={jest.fn()}
           uploadOptions={{

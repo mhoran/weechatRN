@@ -18,7 +18,7 @@ describe('UploadSettings', () => {
   it('stores the configured settings', async () => {
     const store = configureStore({ reducer });
     const listeners: (() => void)[] = [];
-    render(
+    await render(
       <HeaderHeightContext.Provider value={0}>
         <UploadSettings
           route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
@@ -49,7 +49,7 @@ describe('UploadSettings', () => {
     const passwordInput = screen.getByPlaceholderText('Password');
     await userEvent.type(passwordInput, 'changeme');
 
-    act(() => listeners.forEach((listener) => listener()));
+    await act(() => listeners.forEach((listener) => listener()));
 
     const uploadOptions = store.getState().settings.mediaUploadOptions;
 
@@ -65,7 +65,7 @@ describe('UploadSettings', () => {
   it('allows configuring additional headers', async () => {
     const store = configureStore({ reducer });
     const listeners: (() => void)[] = [];
-    render(
+    await render(
       <HeaderHeightContext.Provider value={0}>
         <UploadSettings
           route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
@@ -93,7 +93,7 @@ describe('UploadSettings', () => {
     const basicAuthSwitch = screen.getByTestId(
       'upload-settings-use-basic-auth'
     );
-    fireEvent(basicAuthSwitch, 'onValueChange', false);
+    await fireEvent(basicAuthSwitch, 'onValueChange', false);
 
     const headerNameInput = screen.getByPlaceholderText('Name');
     await userEvent.type(headerNameInput, 'Authorization');
@@ -101,7 +101,7 @@ describe('UploadSettings', () => {
     const headerValueInput = screen.getByPlaceholderText('Value');
     await userEvent.type(headerValueInput, 'Bearer token');
 
-    act(() => listeners.forEach((listener) => listener()));
+    await act(() => listeners.forEach((listener) => listener()));
 
     const uploadOptions = store.getState().settings.mediaUploadOptions;
 
@@ -117,7 +117,7 @@ describe('UploadSettings', () => {
   it('does not store incomplete headers', async () => {
     const store = configureStore({ reducer });
     const listeners: (() => void)[] = [];
-    render(
+    await render(
       <HeaderHeightContext.Provider value={0}>
         <UploadSettings
           route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}
@@ -142,7 +142,7 @@ describe('UploadSettings', () => {
     const headerNameInput = screen.getByPlaceholderText('Name');
     await userEvent.type(headerNameInput, 'Authorization');
 
-    act(() => listeners.forEach((listener) => listener()));
+    await act(() => listeners.forEach((listener) => listener()));
 
     let uploadOptions = store.getState().settings.mediaUploadOptions;
 
@@ -157,7 +157,7 @@ describe('UploadSettings', () => {
     expect(uploadOptions.headers).toBeUndefined();
   });
 
-  it('populates form fields with values from the store', () => {
+  it('populates form fields with values from the store', async () => {
     const preloadedState = {
       settings: {
         hostname: null,
@@ -174,7 +174,7 @@ describe('UploadSettings', () => {
       } as Settings
     };
     const store = configureStore({ reducer, preloadedState });
-    render(
+    await render(
       <HeaderHeightContext.Provider value={0}>
         <UploadSettings
           route={{} as RouteProp<RootStackParamList, 'Media Upload Settings'>}

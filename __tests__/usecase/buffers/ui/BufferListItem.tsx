@@ -3,7 +3,7 @@ import BufferListItem from '../../../../src/usecase/buffers/ui/BufferListItem';
 
 describe(BufferListItem, () => {
   describe('for the current buffer', () => {
-    it('always shows the buffer in the buffer list', () => {
+    it('always shows the buffer in the buffer list', async () => {
       const buffer = {
         hidden: 1,
         short_name: '#general',
@@ -14,7 +14,7 @@ describe(BufferListItem, () => {
         sum: 0
       } as Hotlist;
 
-      render(
+      await render(
         <BufferListItem
           buffer={buffer}
           hotlist={hotlist}
@@ -29,7 +29,7 @@ describe(BufferListItem, () => {
   });
 
   describe('for other buffers', () => {
-    it('hides the buffer if it is hidden', () => {
+    it('hides the buffer if it is hidden', async () => {
       const buffer = {
         hidden: 1,
         short_name: '#general',
@@ -40,7 +40,7 @@ describe(BufferListItem, () => {
         sum: 0
       } as Hotlist;
 
-      render(
+      await render(
         <BufferListItem
           buffer={buffer}
           hotlist={hotlist}
@@ -53,7 +53,7 @@ describe(BufferListItem, () => {
       expect(screen.queryByText('#general')).toBeNull();
     });
 
-    it('hides the core buffer if filterBuffers is true', () => {
+    it('hides the core buffer if filterBuffers is true', async () => {
       const buffer = {
         hidden: 0,
         short_name: 'weechat',
@@ -64,7 +64,7 @@ describe(BufferListItem, () => {
         sum: 0
       } as Hotlist;
 
-      render(
+      await render(
         <BufferListItem
           buffer={buffer}
           hotlist={hotlist}
@@ -77,7 +77,7 @@ describe(BufferListItem, () => {
       expect(screen.queryByText('weechat')).toBeNull();
     });
 
-    it('shows the core buffer if filterBuffers is false', () => {
+    it('shows the core buffer if filterBuffers is false', async () => {
       const buffer = {
         hidden: 0,
         short_name: 'weechat',
@@ -88,7 +88,7 @@ describe(BufferListItem, () => {
         sum: 0
       } as Hotlist;
 
-      render(
+      await render(
         <BufferListItem
           buffer={buffer}
           hotlist={hotlist}

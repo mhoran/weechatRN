@@ -19,7 +19,7 @@ describe('App', () => {
   });
 
   describe('when connected', () => {
-    it('fetches buffer info and clears hotlist for current buffer', () => {
+    it('fetches buffer info and clears hotlist for current buffer', async () => {
       const bufferId = '86c417600';
       const store = configureStore({
         reducer,
@@ -51,7 +51,7 @@ describe('App', () => {
       const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
       const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(
+      await render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={
@@ -66,7 +66,7 @@ describe('App', () => {
         { store }
       );
 
-      act(() => {
+      await act(() => {
         store.dispatch(actions.fetchVersionAction('4.4.4'));
       });
 
@@ -79,7 +79,7 @@ describe('App', () => {
   });
 
   describe('on notification', () => {
-    it('changes the current buffer to the notification buffer', () => {
+    it('changes the current buffer to the notification buffer', async () => {
       const currentBufferId = '83fd7ac00';
       const notificationBufferId = '86c417600';
       const store = configureStore({
@@ -130,7 +130,7 @@ describe('App', () => {
       const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
       const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(
+      await render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={
@@ -147,7 +147,7 @@ describe('App', () => {
         }
       );
 
-      act(() => {
+      await act(() => {
         store.dispatch(
           actions.bufferNotificationAction({
             bufferId: notificationBufferId,
@@ -170,7 +170,7 @@ describe('App', () => {
   });
 
   describe('on buffer selection', () => {
-    it('sets the selected buffer as the current buffer', () => {
+    it('sets the selected buffer as the current buffer', async () => {
       const currentBufferId = '83fd7ac00';
       const selectedBufferId = '86c417600';
       const store = configureStore({
@@ -221,7 +221,7 @@ describe('App', () => {
       const fetchBufferInfo = (client.fetchBufferInfo = jest.fn());
       const clearHotlistForBuffer = (client.clearHotlistForBuffer = jest.fn());
 
-      render(
+      await render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={
@@ -239,10 +239,10 @@ describe('App', () => {
       );
 
       const button = screen.getByLabelText('Open buffer list');
-      fireEvent(button, 'press');
+      await fireEvent(button, 'press');
 
       const bufferListItem = screen.getByText('#weechat');
-      fireEvent(bufferListItem, 'press');
+      await fireEvent(bufferListItem, 'press');
 
       expect(store.getState().app.currentBufferId).toEqual(selectedBufferId);
       expect(clearHotlistForBuffer).toHaveBeenNthCalledWith(1, currentBufferId);
@@ -264,10 +264,10 @@ describe('App', () => {
         .mockImplementation(() => <View accessible role="alert" />);
     });
 
-    it('displays the error', () => {
+    it('displays the error', async () => {
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={
@@ -292,10 +292,10 @@ describe('App', () => {
       expect(snackbar).toBeOnTheScreen();
     });
 
-    it('does not display the error after being dismissed', () => {
+    it('does not display the error after being dismissed', async () => {
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={
@@ -319,18 +319,18 @@ describe('App', () => {
       );
       const snackbar = screen.getByRole('alert');
 
-      act(() => jest.mocked(Snackbar).mock.calls[0][0].onDismiss());
+      await act(() => jest.mocked(Snackbar).mock.calls[0][0].onDismiss());
 
       expect(snackbar).not.toBeOnTheScreen();
     });
 
-    it('displays a subsequent error after a previous error was dismissed', () => {
+    it('displays a subsequent error after a previous error was dismissed', async () => {
       const store = configureStore({
         reducer
       });
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={
@@ -347,9 +347,9 @@ describe('App', () => {
         }
       );
 
-      act(() => jest.mocked(Snackbar).mock.calls[0][0].onDismiss());
+      await act(() => jest.mocked(Snackbar).mock.calls[0][0].onDismiss());
 
-      screen.rerender(
+      await screen.rerender(
         <App
           route={{} as RouteProp<RootStackParamList, 'App'>}
           navigation={

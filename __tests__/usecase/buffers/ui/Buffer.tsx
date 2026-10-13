@@ -40,7 +40,7 @@ describe(Buffer, () => {
   });
 
   describe('when notificationLineId is provided', () => {
-    it('scrolls to the corresponding line', () => {
+    it('scrolls to the corresponding line', async () => {
       const lines = [
         {
           id: 1,
@@ -69,7 +69,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={[]}
           onLongPress={() => {}}
@@ -80,7 +80,7 @@ describe(Buffer, () => {
         />
       );
 
-      screen.rerender(
+      await screen.rerender(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -92,7 +92,7 @@ describe(Buffer, () => {
         />
       );
 
-      act(() => jest.runAllTimers());
+      await act(() => jest.runAllTimers());
 
       expect(ScrollView.prototype.scrollTo).toHaveBeenLastCalledWith({
         animated: true,
@@ -109,7 +109,7 @@ describe(Buffer, () => {
       Buffer.DEFAULT_LINE_INCREMENT = default_line_increment;
     });
 
-    it('only renders when there are more lines to load', () => {
+    it('only renders when there are more lines to load', async () => {
       Buffer.DEFAULT_LINE_INCREMENT = 1;
 
       const lines = [
@@ -128,7 +128,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={[]}
           onLongPress={() => {}}
@@ -143,7 +143,7 @@ describe(Buffer, () => {
 
       expect(screen.queryByText('Load more lines')).toBeNull();
 
-      screen.rerender(
+      await screen.rerender(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -157,7 +157,7 @@ describe(Buffer, () => {
       expect(screen.queryByText('Load more lines')).not.toBeNull();
     });
 
-    it('indicates that lines are loading', () => {
+    it('indicates that lines are loading', async () => {
       Buffer.DEFAULT_LINE_INCREMENT = 1;
 
       let lines = [
@@ -176,7 +176,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -189,7 +189,7 @@ describe(Buffer, () => {
 
       const button = screen.getByText('Load more lines');
 
-      fireEvent(button, 'press');
+      await fireEvent(button, 'press');
 
       expect(button).toHaveTextContent('Loading...');
 
@@ -208,7 +208,7 @@ describe(Buffer, () => {
         }
       ];
 
-      screen.rerender(
+      await screen.rerender(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -222,7 +222,7 @@ describe(Buffer, () => {
       expect(button).toHaveTextContent('Load more lines');
     });
 
-    it('fetches more lines', () => {
+    it('fetches more lines', async () => {
       Buffer.DEFAULT_LINE_INCREMENT = 1;
 
       const lines = [
@@ -242,7 +242,7 @@ describe(Buffer, () => {
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
       client.fetchBufferLines = jest.fn();
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -255,14 +255,14 @@ describe(Buffer, () => {
 
       const button = screen.getByText('Load more lines');
 
-      fireEvent(button, 'press');
+      await fireEvent(button, 'press');
 
       expect(client.fetchBufferLines).toHaveBeenCalledWith('86c417600', 2);
     });
   });
 
   describe('scroll to end button', () => {
-    it('scrolls to end', () => {
+    it('scrolls to end', async () => {
       const lines = [
         {
           id: 1,
@@ -291,7 +291,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -303,7 +303,7 @@ describe(Buffer, () => {
       );
 
       const scrollView = screen.getByLabelText('Message list');
-      fireEvent(scrollView, 'layout', {
+      await fireEvent(scrollView, 'layout', {
         nativeEvent: {
           layout: { height: 26.5, width: 1024, x: 0, y: 0 }
         }
@@ -311,7 +311,7 @@ describe(Buffer, () => {
 
       expect(screen.queryByLabelText('Scroll to end')).toBeNull();
 
-      fireEvent(scrollView, 'scroll', {
+      await fireEvent(scrollView, 'scroll', {
         nativeEvent: {
           contentOffset: { y: 26.5 },
           contentSize: { height: 26.5 * 2 },
@@ -322,7 +322,7 @@ describe(Buffer, () => {
       expect(screen.queryByLabelText('Scroll to end')).not.toBeNull();
     });
 
-    it('hides on buffer change', () => {
+    it('hides on buffer change', async () => {
       const lines = [
         {
           id: 1,
@@ -351,7 +351,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -363,13 +363,13 @@ describe(Buffer, () => {
       );
 
       const scrollView = screen.getByLabelText('Message list');
-      fireEvent(scrollView, 'layout', {
+      await fireEvent(scrollView, 'layout', {
         nativeEvent: {
           layout: { height: 26.5, width: 1024, x: 0, y: 0 }
         }
       });
 
-      fireEvent(scrollView, 'scroll', {
+      await fireEvent(scrollView, 'scroll', {
         nativeEvent: {
           contentOffset: { y: 26.5 },
           contentSize: { height: 26.5 * 2 },
@@ -379,7 +379,7 @@ describe(Buffer, () => {
 
       expect(screen.queryByLabelText('Scroll to end')).not.toBeNull();
 
-      screen.rerender(
+      await screen.rerender(
         <Buffer
           lines={[]}
           onLongPress={() => {}}
@@ -395,7 +395,7 @@ describe(Buffer, () => {
   });
 
   describe('unread message notification', () => {
-    it('scrolls to the last unread message', () => {
+    it('scrolls to the last unread message', async () => {
       const lines = [
         {
           id: 1,
@@ -424,7 +424,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -437,17 +437,17 @@ describe(Buffer, () => {
       );
 
       const scrollView = screen.getByLabelText('Message list');
-      fireEvent(scrollView, 'layout', {
+      await fireEvent(scrollView, 'layout', {
         nativeEvent: {
           layout: { height: 26.5, width: 1024, x: 0, y: 0 }
         }
       });
 
-      act(() => jest.runAllTimers());
+      await act(() => jest.runAllTimers());
 
       const button = screen.getByLabelText('Scroll to unread');
 
-      fireEvent(button, 'press');
+      await fireEvent(button, 'press');
 
       expect(ScrollView.prototype.scrollTo).toHaveBeenLastCalledWith({
         animated: true,
@@ -456,7 +456,7 @@ describe(Buffer, () => {
       });
     });
 
-    it('is not displayed for viewed messages', () => {
+    it('is not displayed for viewed messages', async () => {
       const lines = [
         {
           id: 1,
@@ -485,7 +485,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -498,17 +498,17 @@ describe(Buffer, () => {
       );
 
       const scrollView = screen.getByLabelText('Message list');
-      fireEvent(scrollView, 'layout', {
+      await fireEvent(scrollView, 'layout', {
         nativeEvent: {
           layout: { height: 26.5, width: 1024, x: 0, y: 0 }
         }
       });
 
-      act(() => jest.runAllTimers());
+      await act(() => jest.runAllTimers());
 
       expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
 
-      fireEvent(scrollView, 'scroll', {
+      await fireEvent(scrollView, 'scroll', {
         nativeEvent: {
           contentOffset: { y: 26.5 },
           contentSize: { height: 26.5 * 2 },
@@ -516,12 +516,12 @@ describe(Buffer, () => {
         }
       });
 
-      act(() => jest.runAllTimers());
+      await act(() => jest.runAllTimers());
 
       expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
     });
 
-    it('scrolls to the end if the message is not loaded', () => {
+    it('scrolls to the end if the message is not loaded', async () => {
       const lines = [
         {
           id: 1,
@@ -550,7 +550,7 @@ describe(Buffer, () => {
       ];
       const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
 
-      render(
+      await render(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
@@ -563,17 +563,17 @@ describe(Buffer, () => {
       );
 
       const scrollView = screen.getByLabelText('Message list');
-      fireEvent(scrollView, 'layout', {
+      await fireEvent(scrollView, 'layout', {
         nativeEvent: {
           layout: { height: 26.5, width: 1024, x: 0, y: 0 }
         }
       });
 
-      act(() => jest.runAllTimers());
+      await act(() => jest.runAllTimers());
 
       const button = screen.getByLabelText('Scroll to unread');
 
-      fireEvent(button, 'press');
+      await fireEvent(button, 'press');
 
       expect(ScrollView.prototype.scrollTo).toHaveBeenLastCalledWith({
         animated: true,
