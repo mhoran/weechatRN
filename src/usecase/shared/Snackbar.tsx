@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -19,33 +18,30 @@ export const Snackbar: React.FC<SnackbarProps> = ({ message, onDismiss }) => {
   const panning = useSharedValue(false);
   const { width: windowWidth } = useWindowDimensions();
 
-  const panGesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .onBegin(() => {
-          panning.set(true);
-        })
-        .onChange((event) => {
-          translateX.set(event.translationX);
-        })
-        .onFinalize(() => {
-          const shouldDismiss = Math.abs(translateX.value) > windowWidth * 0.3;
-          if (shouldDismiss) {
-            translateX.set(
-              withTiming(
-                translateX.value > 0 ? windowWidth : -windowWidth,
-                undefined,
-                () => scheduleOnRN(onDismiss)
-              )
-            );
-          } else {
-            translateX.set(withSpring(0));
-          }
-          panning.set(false);
-        })
-        .withTestId('snackbarPan'),
-    [panning, translateX, windowWidth, onDismiss]
-  );
+  const panGesture = usePanGesture({
+    onBegin: () => {
+      panning.set(true);
+    },
+    onUpdate: (event) => {
+      translateX.set(event.translationX);
+    },
+    onFinalize: () => {
+      const shouldDismiss = Math.abs(translateX.value) > windowWidth * 0.3;
+      if (shouldDismiss) {
+        translateX.set(
+          withTiming(
+            translateX.value > 0 ? windowWidth : -windowWidth,
+            undefined,
+            () => scheduleOnRN(onDismiss)
+          )
+        );
+      } else {
+        translateX.set(withSpring(0));
+      }
+      panning.set(false);
+    },
+    testID: 'snackbarPan'
+  });
 
   const transformStyle = useAnimatedStyle(() => ({
     transform: [

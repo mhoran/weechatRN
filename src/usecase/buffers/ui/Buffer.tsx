@@ -16,7 +16,8 @@ import type {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  TextInput
+  TextInputInstance,
+  ViewInstance
 } from 'react-native';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import type { ParseShape } from 'react-native-parsed-text';
@@ -91,9 +92,9 @@ const Buffer = ({
   notificationLineId,
   clearNotification
 }: Props) => {
-  const nickWidthMeasurer = useRef<TextInput>(null);
+  const nickWidthMeasurer = useRef<TextInputInstance>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
-  const jumpToUnreadButton = useRef<View>(null);
+  const jumpToUnreadButton = useRef<ViewInstance>(null);
   const seenLastLine = useRef(false);
 
   const [nickWidth, setNickWidth] = useState(0);

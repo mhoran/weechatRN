@@ -83,7 +83,6 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
       <StatusBar
         barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-        translucent={true}
       />
       <KeyboardAvoidingView
         enabled={Platform.OS === 'android'}

@@ -79,7 +79,6 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
       <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1 }}>
         <StatusBar
           barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-          translucent={true}
         />
 
         <KeyboardAvoidingView

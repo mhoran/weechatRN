@@ -34,6 +34,8 @@ const renderItem: ListRenderItem<WeechatNicklist> = ({ item }) => (
 
 const keyExtractor = (item: WeechatNicklist) => item.id;
 
+const EMPTY_ARRAY: [] = [];
+
 const NicklistModal: React.FC<Props> = ({ ref, bufferId }) => {
   const [visible, setVisible] = useState(false);
 
@@ -42,7 +44,7 @@ const NicklistModal: React.FC<Props> = ({ ref, bufferId }) => {
   });
 
   const nicklist = useAppSelector((state) =>
-    bufferId ? (state.nicklists[bufferId] ?? null) : null
+    bufferId ? (state.nicklists[bufferId] ?? EMPTY_ARRAY) : EMPTY_ARRAY
   );
 
   if (!bufferId) return;

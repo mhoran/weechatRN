@@ -3,7 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "strict": true,
-    "types": ["jest"]
+    "types": ["jest", "node"]
   },
   "extends": "expo/tsconfig.base"
 }

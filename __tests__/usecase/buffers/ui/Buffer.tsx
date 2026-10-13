@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { ScrollView, View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import RelayClient from '../../../../src/lib/weechat/client';
 import Buffer from '../../../../src/usecase/buffers/ui/Buffer';
 
@@ -35,7 +36,7 @@ jest.mock('@shopify/flash-list/dist/recyclerview/utils/measureLayout', () => {
 describe(Buffer, () => {
   beforeEach(() => {
     jest
-      .spyOn(View.prototype, 'measure')
+      .spyOn(View.prototype as ViewInstance, 'measure')
       .mockImplementationOnce((callback) => callback(0, 0, 68, 16.7, 0, 0));
   });
 

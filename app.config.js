@@ -55,7 +55,6 @@ export default {
       'expo-build-properties',
       {
         ios: {
-          enableSceneSupport: true,
           usePrecompiledModules: false
         }
       }

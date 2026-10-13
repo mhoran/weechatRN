@@ -2,6 +2,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
 import type {
+  TextInputInstance,
   TextInputSelectionChangeEvent,
   TextInputSubmitEditingEvent
 } from 'react-native';
@@ -80,7 +81,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
     }
   };
 
-  textInputRef = React.createRef<TextInput>();
+  textInputRef = React.createRef<TextInputInstance>();
 
   tabCompleteInProgress = false;
   tabCompleteMatches: WeechatNicklist[] = [];

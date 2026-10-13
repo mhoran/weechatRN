@@ -9,7 +9,7 @@ import { addListener } from '@reduxjs/toolkit';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import type { ColorSchemeName, NativeEventSubscription } from 'react-native';
+import type { ColorSchemeName, EventSubscription } from 'react-native';
 import { Appearance, AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -81,7 +81,7 @@ export default class WeechatNative extends React.Component<null, State> {
   unsubscribeUpgradeListener: UnsubscribeListener;
   unsubscribeFetchScriptsListener: UnsubscribeListener;
   unsubscribePendingBufferNotificationListener: UnsubscribeListener;
-  appearanceSubscription: NativeEventSubscription;
+  appearanceSubscription: EventSubscription;
 
   constructor(props: null) {
     super(props);

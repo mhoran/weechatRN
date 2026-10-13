@@ -3,7 +3,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
-import type { EmitterSubscription } from 'react-native';
+import type { EventSubscription } from 'react-native';
 import {
   Dimensions,
   Keyboard,
@@ -72,7 +72,7 @@ interface State {
 }
 
 class App extends React.PureComponent<Props, State> {
-  dimensionsListener: EmitterSubscription | undefined;
+  dimensionsListener: EventSubscription | undefined;
   nicklistRef = React.createRef<NicklistModalHandle>();
 
   drawerWidth = () => {
@@ -242,11 +242,7 @@ class App extends React.PureComponent<Props, State> {
               drawerType="slide"
             >
               <SafeAreaView style={styles.container}>
-                <StatusBar
-                  barStyle="light-content"
-                  backgroundColor="transparent"
-                  translucent={true}
-                />
+                <StatusBar barStyle="light-content" />
 
                 <NicklistModal
                   key={currentBufferId}

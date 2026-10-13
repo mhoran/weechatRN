@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
-import type { PanGesture } from 'react-native-gesture-handler';
-import { State } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, State } from 'react-native-gesture-handler';
 import {
   fireGestureHandler,
   getByGestureTestId
@@ -22,9 +21,13 @@ describe('Snackbar', () => {
   describe('on pan', () => {
     it('sets translateX to the X position of the pan gesture', async () => {
       const onDismiss = jest.fn();
-      await render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(
+        <GestureHandlerRootView>
+          <Snackbar message="" onDismiss={onDismiss} />
+        </GestureHandlerRootView>
+      );
 
-      fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
+      fireGestureHandler(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
         { state: State.ACTIVE, translationX: 10 },
         { translationX: 20 }
@@ -42,9 +45,13 @@ describe('Snackbar', () => {
 
     it('resets translateX to 0 if not panned beyond the threshold', async () => {
       const onDismiss = jest.fn();
-      await render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(
+        <GestureHandlerRootView>
+          <Snackbar message="" onDismiss={onDismiss} />
+        </GestureHandlerRootView>
+      );
 
-      fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
+      fireGestureHandler(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
         { state: State.ACTIVE, translationX: 10 },
         { translationX: 20 }
@@ -70,9 +77,13 @@ describe('Snackbar', () => {
 
     it('calls onDismiss when panned to the width of the window', async () => {
       const onDismiss = jest.fn();
-      await render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(
+        <GestureHandlerRootView>
+          <Snackbar message="" onDismiss={onDismiss} />
+        </GestureHandlerRootView>
+      );
 
-      fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
+      fireGestureHandler(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
         { state: State.ACTIVE, translationX: 10 },
         { translationX: 320 },
@@ -86,9 +97,13 @@ describe('Snackbar', () => {
 
     it('positions the view offscreen panned to the width of the window', async () => {
       const onDismiss = jest.fn();
-      await render(<Snackbar message="" onDismiss={onDismiss} />);
+      await render(
+        <GestureHandlerRootView>
+          <Snackbar message="" onDismiss={onDismiss} />
+        </GestureHandlerRootView>
+      );
 
-      fireGestureHandler<PanGesture>(getByGestureTestId('snackbarPan'), [
+      fireGestureHandler(getByGestureTestId('snackbarPan'), [
         { state: State.BEGAN, translationX: 0 },
         { state: State.ACTIVE, translationX: 10 },
         { translationX: 320 },
