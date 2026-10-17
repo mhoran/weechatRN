@@ -31,7 +31,7 @@ export default {
     googleServicesFile: './google-services.json'
   },
   platforms: ['ios', 'android'],
-  version: '1.7.7',
+  version: '1.8.0',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
   plugins: [
