@@ -10,6 +10,10 @@ import {
   Text,
   View
 } from 'react-native';
+import {
+  SafeAreaInsetsContext,
+  SafeAreaProvider
+} from 'react-native-safe-area-context';
 import { useAppSelector } from '../../../store/hooks';
 import { palette } from '../../shared/palette';
 
@@ -57,20 +61,45 @@ const NicklistModal: React.FC<Props> = ({ ref, bufferId }) => {
       transparent={true}
       animationType="slide"
     >
-      <View style={styles.modalWrapper}>
-        <Pressable
-          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
-          onPress={() => setVisible(false)}
-        />
-        <View style={styles.modalView}>
-          <FlatList
-            data={nicklist}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-          />
-          <Button title="Close" onPress={() => setVisible(false)} />
-        </View>
-      </View>
+      <SafeAreaProvider>
+        <SafeAreaInsetsContext.Consumer>
+          {(insets) => (
+            <>
+              <Pressable
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0
+                }}
+                onPress={() => setVisible(false)}
+              />
+
+              <View
+                style={[
+                  styles.modalWrapper,
+                  {
+                    paddingVertical: Math.max(
+                      insets?.top ?? 0,
+                      insets?.bottom ?? 0
+                    )
+                  }
+                ]}
+              >
+                <View style={styles.modalView}>
+                  <FlatList
+                    data={nicklist}
+                    renderItem={renderItem}
+                    keyExtractor={keyExtractor}
+                  />
+                  <Button title="Close" onPress={() => setVisible(false)} />
+                </View>
+              </View>
+            </>
+          )}
+        </SafeAreaInsetsContext.Consumer>
+      </SafeAreaProvider>
     </Modal>
   );
 };
@@ -96,8 +125,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width: 280,
-    marginTop: 48,
-    marginBottom: 48
+    flexShrink: 1
   },
   listItem: {
     flex: 1,
