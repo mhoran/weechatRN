@@ -21,6 +21,7 @@ import {
 import type { ConnectedProps } from 'react-redux';
 import { legacy_connect as connect } from 'react-redux';
 import type RelayClient from '../lib/weechat/client';
+import { cof } from '../lib/weechat/colors';
 import type { ConnectionError } from '../lib/weechat/connection';
 import type { StoreState } from '../store';
 import * as actions from '../store/actions';
@@ -29,6 +30,7 @@ import BufferList from './buffers/ui/BufferList';
 import type { NicklistModalHandle } from './buffers/ui/NicklistModal';
 import NicklistModal from './buffers/ui/NicklistModal';
 import type { RootStackParamList } from './Root';
+import { palette } from './shared/palette';
 import { Snackbar } from './shared/Snackbar';
 
 const connector = connect((state: StoreState) => {
@@ -230,7 +232,7 @@ class App extends React.PureComponent<Props, State> {
               keyboardDismissMode={'on-drag'}
               drawerStyle={{
                 width: drawerWidth + (insets?.left ?? 0),
-                backgroundColor: '#121212',
+                backgroundColor: palette.drawer,
                 paddingTop: insets?.top,
                 paddingBottom: insets?.bottom,
                 paddingLeft: insets?.left
@@ -261,7 +263,7 @@ class App extends React.PureComponent<Props, State> {
                         style={[
                           styles.channelsButtonText,
                           hasHighlights && {
-                            color: '#ffcf7f'
+                            color: cof.chat_highlight.color
                           }
                         ]}
                       >
@@ -291,7 +293,7 @@ class App extends React.PureComponent<Props, State> {
                         <MaterialIcons
                           name="people-alt"
                           size={22}
-                          color="white"
+                          color={palette.text}
                         />
                       </TouchableOpacity>
                     )}
@@ -302,7 +304,7 @@ class App extends React.PureComponent<Props, State> {
                       <MaterialCommunityIcons
                         name="account-wrench"
                         size={22}
-                        color="white"
+                        color={palette.text}
                       />
                     </TouchableOpacity>
                     {connected ? (
@@ -313,7 +315,7 @@ class App extends React.PureComponent<Props, State> {
                         <MaterialCommunityIcons
                           name="lan-disconnect"
                           size={22}
-                          color="white"
+                          color={palette.text}
                           accessibilityLabel="Connected"
                           accessibilityHint="Disconnect"
                         />
@@ -326,7 +328,7 @@ class App extends React.PureComponent<Props, State> {
                         <MaterialCommunityIcons
                           name="lan-pending"
                           size={22}
-                          color="white"
+                          color={palette.text}
                           accessibilityLabel="Connecting"
                           accessibilityHint="Disconnect"
                         />
@@ -339,7 +341,7 @@ class App extends React.PureComponent<Props, State> {
                         <MaterialCommunityIcons
                           name="lan-connect"
                           size={22}
-                          color="white"
+                          color={palette.text}
                           accessibilityLabel="Disconnected"
                           accessibilityHint="Connect"
                         />
@@ -378,7 +380,7 @@ export default connector(App);
 const styles = StyleSheet.create({
   topbar: {
     flexDirection: 'row',
-    backgroundColor: '#333',
+    backgroundColor: palette.surface,
     alignItems: 'center'
   },
   channelsButtonWrapper: {
@@ -392,7 +394,7 @@ const styles = StyleSheet.create({
   },
   channelsButtonText: {
     fontSize: 20,
-    color: '#eee',
+    color: palette.text,
     fontWeight: 'bold'
   },
   topbarTextWrapper: {
@@ -400,7 +402,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   topbarText: {
-    color: '#eee',
+    color: palette.text,
     fontWeight: 'bold',
     fontSize: 15
   },
@@ -412,7 +414,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#333'
+    backgroundColor: palette.surface
   },
   snackbar: {
     alignItems: 'center',

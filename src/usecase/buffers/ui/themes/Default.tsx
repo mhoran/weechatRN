@@ -10,6 +10,8 @@ import type { ParseShape } from 'react-native-parsed-text';
 import ParsedText from 'react-native-parsed-text';
 import { formatDate } from '../../../../lib/helpers/date-formatter';
 import { renderWeechatFormat } from '../../../../lib/weechat/color-formatter';
+import { cof } from '../../../../lib/weechat/colors';
+import { palette } from '../../../shared/palette';
 
 interface Props {
   line: WeechatLine;
@@ -69,7 +71,7 @@ export default BufferLine;
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#2e3440',
+    backgroundColor: palette.background,
     paddingVertical: 5,
     paddingHorizontal: 10,
     flexDirection: 'row'
@@ -79,11 +81,11 @@ export const styles = StyleSheet.create({
   },
   text: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    color: '#eee',
+    color: palette.text,
     fontSize: 14
   },
   highlight: {
-    backgroundColor: 'magenta',
-    color: 'yellow'
+    backgroundColor: cof.chat_highlight.backgroundColor,
+    color: cof.chat_highlight.color
   }
 });

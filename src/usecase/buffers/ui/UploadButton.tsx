@@ -9,6 +9,7 @@ import { fetch } from 'expo/fetch';
 import { memo, useState } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
+import { palette } from '../../shared/palette';
 import UploadSpinner from './UploadSpinner';
 
 interface Props {
@@ -156,9 +157,13 @@ const UploadButton: React.FC<Props> = ({
   }
 
   return (
-    <MenuView actions={actions} onPressAction={handleOnPressAction}>
+    <MenuView
+      actions={actions}
+      onPressAction={handleOnPressAction}
+      colorScheme="dark"
+    >
       <View style={style} accessibilityLabel="Upload Image">
-        <MaterialIcons name="attach-file" size={27} color="white" />
+        <MaterialIcons name="attach-file" size={27} color={palette.text} />
       </View>
     </MenuView>
   );

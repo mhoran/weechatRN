@@ -8,6 +8,7 @@ import { useAppSelector } from '../../../store/hooks';
 import type { HotListState } from '../../../store/hotlists';
 import { createEmptyHotlist } from '../../../store/selectors';
 import BufferListItem from './BufferListItem';
+import { palette } from '../../shared/palette';
 
 interface Props {
   currentBufferId: string | null;
@@ -67,6 +68,6 @@ export default BufferList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212'
+    backgroundColor: palette.drawer
   }
 });

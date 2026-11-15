@@ -33,6 +33,7 @@ import { renderWeechatFormat } from '../../../lib/weechat/color-formatter';
 import { KeyCommandView } from '../../../native/KeyCommandView';
 import type { StoreState } from '../../../store';
 import * as actions from '../../../store/actions';
+import { palette } from '../../shared/palette';
 import Buffer from './Buffer';
 import UploadButton from './UploadButton';
 
@@ -311,6 +312,10 @@ class BufferContainer extends React.PureComponent<Props, State> {
                 }
                 style={styles.inputBox}
                 value={textValue}
+                placeholder={`Message ${buffer.short_name}`}
+                placeholderTextColor={palette.dim}
+                selectionColor={palette.accent}
+                keyboardAppearance="dark"
                 onChangeText={this.handleChangeText}
                 onFocus={this.handleOnFocus}
                 onBlur={this.handleOnBlur}
@@ -329,21 +334,23 @@ class BufferContainer extends React.PureComponent<Props, State> {
             >
               <UploadButton
                 onUpload={this.handleOnUpload}
-                style={styles.uploadButton}
+                style={styles.bottomButton}
                 uploadOptions={mediaUploadOptions}
               />
             </Animated.View>
             {showTabButton && (
               <TouchableOpacity
-                style={styles.tabButton}
+                style={styles.bottomButton}
                 onPress={this.tabCompleteNick}
+                accessibilityRole="button"
+                accessibilityLabel="Complete nick"
               >
                 <AnimatedIcon
                   entering={FadeInRight}
                   exiting={FadeOutRight}
                   name="keyboard-tab"
                   size={27}
-                  color="white"
+                  color={palette.text}
                 />
               </TouchableOpacity>
             )}
@@ -358,41 +365,44 @@ export default connector(BufferContainer);
 
 const styles = StyleSheet.create({
   topic: {
-    backgroundColor: '#222'
+    backgroundColor: palette.surface,
+    paddingHorizontal: 10,
+    paddingVertical: 8
   },
   link: {
     textDecorationLine: 'underline'
   },
   text: {
-    color: '#eee'
+    color: palette.text
   },
   container: {
     flex: 1,
-    backgroundColor: '#333'
+    backgroundColor: palette.background
   },
   main: {
     paddingVertical: 20
   },
   bottomBox: {
     paddingHorizontal: 10,
-    paddingVertical: 7.5,
+    paddingVertical: 8,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#333'
+    alignItems: 'flex-end',
+    backgroundColor: palette.surface
   },
   inputBox: {
-    maxHeight: 60.3,
-    padding: 5,
+    maxHeight: 88.8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: palette.field,
+    color: palette.text,
+    fontSize: 14,
+    textAlignVertical: 'center'
+  },
+  bottomButton: {
+    alignItems: 'center',
     justifyContent: 'center',
-    borderColor: 'gray',
-    backgroundColor: '#fff'
-  },
-  uploadButton: {
-    paddingLeft: 10
-  },
-  tabButton: {
-    width: 40,
-    paddingLeft: 10
+    paddingLeft: 10,
+    paddingBottom: 6
   }
 });

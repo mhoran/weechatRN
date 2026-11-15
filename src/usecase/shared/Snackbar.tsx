@@ -7,6 +7,7 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
+import { palette } from './palette';
 
 interface SnackbarProps {
   message: string;
@@ -65,10 +66,10 @@ export const Snackbar: React.FC<SnackbarProps> = ({ message, onDismiss }) => {
 
 const styles = StyleSheet.create({
   snackView: {
-    backgroundColor: '#222',
+    backgroundColor: palette.surface,
     borderRadius: 10,
     padding: 10,
-    shadowColor: '#000',
+    shadowColor: palette.shadow,
     shadowOffset: {
       width: 0,
       height: 2
@@ -78,6 +79,6 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   text: {
-    color: '#eee'
+    color: palette.text
   }
 });

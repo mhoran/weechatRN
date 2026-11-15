@@ -9,6 +9,7 @@ import Animated, {
   withRepeat,
   withTiming
 } from 'react-native-reanimated';
+import { palette } from '../../shared/palette';
 
 const AnimatedIcon = Animated.createAnimatedComponent(MaterialCommunityIcons);
 
@@ -40,7 +41,7 @@ const UploadSpinner: React.FC = () => {
     <AnimatedIcon
       name="loading"
       size={27}
-      color="white"
+      color={palette.text}
       style={animatedStyles}
     />
   );
