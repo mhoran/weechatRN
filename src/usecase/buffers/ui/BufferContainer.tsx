@@ -3,8 +3,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
 import type {
   TextInputInstance,
-  TextInputSelectionChangeEvent,
-  TextInputSubmitEditingEvent
+  TextInputSelectionChangeEvent
 } from 'react-native';
 import {
   ActionSheetIOS,
@@ -141,14 +140,16 @@ class BufferContainer extends React.PureComponent<Props, State> {
     );
   };
 
+  typing = false;
+
   handleChangeText = (textValue: string) => {
     this.tabCompleteInProgress = false;
+    this.typing = true;
     this.setState({ textValue });
   };
 
-  handleSubmit = (event: TextInputSubmitEditingEvent) => {
-    if (!this.props.connected) return;
-    if (event.nativeEvent.text === '') return;
+  handleSubmit = () => {
+    if (!this.props.connected || !this.typing) return;
 
     const { textValue } = this.state;
     [textValue]
@@ -164,6 +165,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
     this.handleChangeText('');
     this.setState({ selection: { start: 0, end: 0 } });
     this.textInputRef.current?.clear();
+    this.typing = false;
   };
 
   tabCompleteNick = () => {
