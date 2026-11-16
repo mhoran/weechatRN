@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   topic: {
     backgroundColor: palette.surface,
     paddingHorizontal: 10,
-    paddingVertical: 8
+    paddingBottom: 8
   },
   link: {
     textDecorationLine: 'underline'
