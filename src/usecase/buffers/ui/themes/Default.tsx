@@ -86,6 +86,7 @@ export const styles = StyleSheet.create({
   },
   highlight: {
     backgroundColor: cof.chat_highlight.backgroundColor,
-    color: cof.chat_highlight.color
+    color: cof.chat_highlight.color,
+    fontWeight: 'bold'
   }
 });
