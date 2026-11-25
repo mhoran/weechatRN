@@ -35,6 +35,7 @@ interface Props {
   client: RelayClient;
   notificationLineId?: number;
   clearNotification: () => void;
+  currentBufferLinesFetched: boolean;
 }
 
 const keyExtractor = (line: WeechatLine) => String(line.id);
@@ -91,7 +92,8 @@ const Buffer = ({
   bufferId,
   client,
   notificationLineId,
-  clearNotification
+  clearNotification,
+  currentBufferLinesFetched
 }: Props) => {
   const nickWidthMeasurer = useRef<TextInputInstance>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
@@ -198,7 +200,12 @@ const Buffer = ({
     viewableItems: ViewToken<WeechatLine>[];
   }) => void = useCallback(
     ({ viewableItems }) => {
-      if (lastReadLine === undefined || seenLastLine.current) return;
+      if (
+        !currentBufferLinesFetched ||
+        lastReadLine === undefined ||
+        seenLastLine.current
+      )
+        return;
 
       const item = viewableItems.find(
         (token) => token.item.id === lastReadLine
@@ -211,7 +218,7 @@ const Buffer = ({
         setShowJumpToUnread(true);
       }
     },
-    [lastReadLine]
+    [currentBufferLinesFetched, lastReadLine]
   );
 
   const handleOnLayout = useCallback((event: LayoutChangeEvent) => {

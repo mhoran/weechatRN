@@ -50,7 +50,8 @@ const connector = connect((state: StoreState, { bufferId }: OwnProps) => ({
     state.app.currentBufferLinesFetched
       ? state.app.notification
       : null,
-  connected: state.app.connected
+  connected: state.app.connected,
+  currentBufferLinesFetched: state.app.currentBufferLinesFetched
 }));
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -270,7 +271,8 @@ class BufferContainer extends React.PureComponent<Props, State> {
       lines,
       client,
       mediaUploadOptions,
-      notification
+      notification,
+      currentBufferLinesFetched
     } = this.props;
     const { textValue, showTabButton, needsAnimation } = this.state;
 
@@ -295,6 +297,7 @@ class BufferContainer extends React.PureComponent<Props, State> {
             client={client}
             notificationLineId={notification?.lineId}
             clearNotification={this.clearNotification}
+            currentBufferLinesFetched={currentBufferLinesFetched}
           />
 
           <View style={styles.bottomBox}>

@@ -78,6 +78,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={false}
         />
       );
 
@@ -90,6 +91,7 @@ describe(Buffer, () => {
           client={client}
           clearNotification={() => {}}
           notificationLineId={0}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -137,6 +139,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -152,6 +155,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -185,6 +189,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -217,6 +222,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -251,6 +257,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -300,6 +307,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -360,6 +368,7 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -388,6 +397,7 @@ describe(Buffer, () => {
           bufferId={'83a41cd80'}
           client={client}
           clearNotification={() => {}}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -434,6 +444,7 @@ describe(Buffer, () => {
           client={client}
           clearNotification={() => {}}
           lastReadLine={0}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -457,7 +468,7 @@ describe(Buffer, () => {
       });
     });
 
-    it('is not displayed for viewed messages', async () => {
+    it('is hidden after scrolling a message into view', async () => {
       const lines = [
         {
           id: 1,
@@ -494,7 +505,8 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
-          lastReadLine={1}
+          lastReadLine={0}
+          currentBufferLinesFetched={true}
         />
       );
 
@@ -507,7 +519,7 @@ describe(Buffer, () => {
 
       await act(() => jest.runAllTimers());
 
-      expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
+      expect(screen.queryByLabelText('Scroll to unread')).not.toBeNull();
 
       await fireEvent(scrollView, 'scroll', {
         nativeEvent: {
@@ -522,7 +534,7 @@ describe(Buffer, () => {
       expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
     });
 
-    it('scrolls to the end if the message is not loaded', async () => {
+    it('is not displayed until lines have been fetched', async () => {
       const lines = [
         {
           id: 1,
@@ -559,7 +571,79 @@ describe(Buffer, () => {
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
+          lastReadLine={0}
+          currentBufferLinesFetched={true}
+        />
+      );
+
+      const scrollView = screen.getByLabelText('Message list');
+      await fireEvent(scrollView, 'layout', {
+        nativeEvent: {
+          layout: { height: 26.5, width: 1024, x: 0, y: 0 }
+        }
+      });
+
+      await act(() => jest.runAllTimers());
+
+      expect(screen.queryByLabelText('Scroll to unread')).not.toBeNull();
+
+      await screen.rerender(
+        <Buffer
+          lines={lines}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'another'}
+          client={client}
+          clearNotification={() => {}}
           lastReadLine={2}
+          currentBufferLinesFetched={false}
+        />
+      );
+
+      await act(() => jest.runAllTimers());
+
+      expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
+    });
+
+    it('scrolls to the end if the message is not loaded', async () => {
+      const lines = [
+        {
+          id: 2,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 0,
+          message: 'Third message',
+          pointers: ['86c417600', '8580eeec0', '8580dcc40', '86c2ff040'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine,
+        {
+          id: 1,
+          buffer: '86c417600',
+          date: '2024-04-05T02:40:09.000Z',
+          date_printed: '2024-04-06T17:20:30.000Z',
+          displayed: 1,
+          highlight: 1,
+          message: 'Second message',
+          pointers: ['86c417600', '8580eeec0', '8580dcf80', '86c2fefd0'],
+          prefix: 'user',
+          tags_array: ['irc_privmsg', 'notify_message']
+        } as WeechatLine
+      ];
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      await render(
+        <Buffer
+          lines={lines}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+          lastReadLine={0}
+          currentBufferLinesFetched={true}
         />
       );
 
