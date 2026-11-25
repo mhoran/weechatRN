@@ -649,14 +649,14 @@ describe(Buffer, () => {
 
       await render(
         <Buffer
-          lines={lines}
+          lines={[]}
           onLongPress={() => {}}
           parseArgs={[]}
           bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
           lastReadLine={0}
-          currentBufferLinesFetched={true}
+          currentBufferLinesFetched={false}
         />
       );
 
@@ -669,24 +669,24 @@ describe(Buffer, () => {
 
       await act(() => jest.runAllTimers());
 
-      expect(screen.queryByLabelText('Scroll to unread')).not.toBeNull();
+      expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
 
       await screen.rerender(
         <Buffer
           lines={lines}
           onLongPress={() => {}}
           parseArgs={[]}
-          bufferId={'another'}
+          bufferId={'86c417600'}
           client={client}
           clearNotification={() => {}}
-          lastReadLine={2}
-          currentBufferLinesFetched={false}
+          lastReadLine={0}
+          currentBufferLinesFetched={true}
         />
       );
 
       await act(() => jest.runAllTimers());
 
-      expect(screen.queryByLabelText('Scroll to unread')).toBeNull();
+      expect(screen.queryByLabelText('Scroll to unread')).not.toBeNull();
     });
 
     it('scrolls to the end if the message is not loaded', async () => {

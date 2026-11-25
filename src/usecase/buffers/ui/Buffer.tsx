@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -100,14 +101,33 @@ const Buffer = ({
   const nickWidthMeasurer = useRef<TextInputInstance>(null);
   const linesList = useRef<FlashListRef<WeechatLine>>(null);
   const jumpToUnreadButton = useRef<ViewInstance>(null);
-  const seenLastLine = useRef(false);
 
   const [nickWidth, setNickWidth] = useState(0);
   const [showScrollToEndButton, setShowScrollToEndButton] = useState(false);
-  const [showJumpToUnread, setShowJumpToUnread] = useState(false);
+  const [seenLastReadLine, setSeenLastReadLine] = useState(false);
   const [unreadButtonHeight, setUnreadButtonHeight] = useState(0);
   const [listHeight, setListHeight] = useState(0);
-  const [viewableLines, setViewableLines] = useState<WeechatLine[]>([]);
+  const [visibleIndices, setVisibleIndicies] = useState<(number | null)[]>();
+
+  const lastReadLineIndex = useMemo(
+    () => lines.findIndex((line) => line.id === lastReadLine),
+    [lines, lastReadLine]
+  );
+
+  let showJumpToUnread = false;
+  if (
+    currentBufferLinesFetched &&
+    visibleIndices !== undefined &&
+    lastReadLine !== undefined &&
+    !seenLastReadLine
+  ) {
+    const lastReadLineVisible = visibleIndices.includes(lastReadLineIndex);
+
+    if (lastReadLineVisible) {
+      setSeenLastReadLine(true);
+    }
+    showJumpToUnread = !lastReadLineVisible;
+  }
 
   useLayoutEffect(() => {
     nickWidthMeasurer.current?.measure((x, y, width) => setNickWidth(width));
@@ -128,30 +148,9 @@ const Buffer = ({
   useLayoutEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowScrollToEndButton(false);
-    seenLastLine.current = false;
-    setShowJumpToUnread(false);
-    setViewableLines([]);
+    setSeenLastReadLine(false);
+    setVisibleIndicies(undefined);
   }, [bufferId]);
-
-  useLayoutEffect(() => {
-    if (
-      !currentBufferLinesFetched ||
-      lastReadLine === undefined ||
-      seenLastLine.current ||
-      viewableLines.length === 0
-    )
-      return;
-
-    const item = viewableLines.find((line) => line.id === lastReadLine);
-
-    if (item) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowJumpToUnread(false);
-      seenLastLine.current = true;
-    } else {
-      setShowJumpToUnread(true);
-    }
-  }, [currentBufferLinesFetched, lastReadLine, viewableLines]);
 
   useEffect(() => {
     if (notificationLineId === undefined) return;
@@ -223,7 +222,7 @@ const Buffer = ({
   const handleViewableItemsChanged: (info: {
     viewableItems: ViewToken<WeechatLine>[];
   }) => void = useCallback(({ viewableItems }) => {
-    setViewableLines(viewableItems.map((token) => token.item));
+    setVisibleIndicies(viewableItems.map((token) => token.index));
   }, []);
 
   const handleOnLayout = useCallback((event: LayoutChangeEvent) => {
@@ -279,15 +278,12 @@ const Buffer = ({
               style={{ color: palette.text }}
               accessibilityLabel="Scroll to unread"
               onPress={() => {
-                const index = lines.findIndex(
-                  (item) => item.id === lastReadLine
-                );
-                if (index < 0) {
+                if (lastReadLineIndex < 0) {
                   linesList.current?.scrollToEnd({ animated: true });
                   return;
                 }
                 void linesList.current?.scrollToIndex({
-                  index: index,
+                  index: lastReadLineIndex,
                   animated: true,
                   viewPosition: 1
                 });
