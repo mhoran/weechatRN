@@ -130,13 +130,15 @@ const Buffer = ({
     setShowScrollToEndButton(false);
     seenLastLine.current = false;
     setShowJumpToUnread(false);
+    setViewableLines([]);
   }, [bufferId]);
 
   useLayoutEffect(() => {
     if (
       !currentBufferLinesFetched ||
       lastReadLine === undefined ||
-      seenLastLine.current
+      seenLastLine.current ||
+      viewableLines.length === 0
     )
       return;
 
