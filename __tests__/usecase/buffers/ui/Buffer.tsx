@@ -112,6 +112,24 @@ describe(Buffer, () => {
       Buffer.DEFAULT_LINE_INCREMENT = default_line_increment;
     });
 
+    it('indicates that lines are loading', async () => {
+      const client = new RelayClient(jest.fn(), jest.fn(), jest.fn());
+
+      await render(
+        <Buffer
+          lines={[]}
+          onLongPress={() => {}}
+          parseArgs={[]}
+          bufferId={'86c417600'}
+          client={client}
+          clearNotification={() => {}}
+          currentBufferLinesFetched={false}
+        />
+      );
+
+      expect(screen.queryByText('Loading...')).not.toBeNull();
+    });
+
     it('only renders when there are more lines to load', async () => {
       Buffer.DEFAULT_LINE_INCREMENT = 1;
 

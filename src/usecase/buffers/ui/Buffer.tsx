@@ -44,20 +44,22 @@ interface HeaderProps {
   lines: WeechatLine[];
   fetchMoreLines: (lines: number) => void;
   unreadButtonHeight: number;
+  currentBufferLinesFetched: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
   lines,
   fetchMoreLines,
-  unreadButtonHeight
+  unreadButtonHeight,
+  currentBufferLinesFetched
 }) => {
   const [desiredLines, setDesiredLines] = useState(
     Buffer.DEFAULT_LINE_INCREMENT
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!currentBufferLinesFetched);
   const [prevLines, setPrevLines] = useState(lines);
 
-  if (lines !== prevLines) {
+  if (currentBufferLinesFetched && lines !== prevLines) {
     setPrevLines(lines);
     setLoading(false);
   }
@@ -261,6 +263,7 @@ const Buffer = ({
             lines={lines}
             fetchMoreLines={fetchMoreLines}
             unreadButtonHeight={unreadButtonHeight}
+            currentBufferLinesFetched={currentBufferLinesFetched}
           />
         }
         onScroll={handleOnScroll}
