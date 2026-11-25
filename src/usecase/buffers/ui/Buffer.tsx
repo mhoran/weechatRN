@@ -107,6 +107,7 @@ const Buffer = ({
   const [showJumpToUnread, setShowJumpToUnread] = useState(false);
   const [unreadButtonHeight, setUnreadButtonHeight] = useState(0);
   const [listHeight, setListHeight] = useState(0);
+  const [viewableLines, setViewableLines] = useState<WeechatLine[]>([]);
 
   useLayoutEffect(() => {
     nickWidthMeasurer.current?.measure((x, y, width) => setNickWidth(width));
@@ -130,6 +131,25 @@ const Buffer = ({
     seenLastLine.current = false;
     setShowJumpToUnread(false);
   }, [bufferId]);
+
+  useLayoutEffect(() => {
+    if (
+      !currentBufferLinesFetched ||
+      lastReadLine === undefined ||
+      seenLastLine.current
+    )
+      return;
+
+    const item = viewableLines.find((line) => line.id === lastReadLine);
+
+    if (item) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowJumpToUnread(false);
+      seenLastLine.current = true;
+    } else {
+      setShowJumpToUnread(true);
+    }
+  }, [currentBufferLinesFetched, lastReadLine, viewableLines]);
 
   useEffect(() => {
     if (notificationLineId === undefined) return;
@@ -200,28 +220,9 @@ const Buffer = ({
 
   const handleViewableItemsChanged: (info: {
     viewableItems: ViewToken<WeechatLine>[];
-  }) => void = useCallback(
-    ({ viewableItems }) => {
-      if (
-        !currentBufferLinesFetched ||
-        lastReadLine === undefined ||
-        seenLastLine.current
-      )
-        return;
-
-      const item = viewableItems.find(
-        (token) => token.item.id === lastReadLine
-      )?.item;
-
-      if (item) {
-        setShowJumpToUnread(false);
-        seenLastLine.current = true;
-      } else {
-        setShowJumpToUnread(true);
-      }
-    },
-    [currentBufferLinesFetched, lastReadLine]
-  );
+  }) => void = useCallback(({ viewableItems }) => {
+    setViewableLines(viewableItems.map((token) => token.item));
+  }, []);
 
   const handleOnLayout = useCallback((event: LayoutChangeEvent) => {
     setListHeight(event.nativeEvent.layout.height);
