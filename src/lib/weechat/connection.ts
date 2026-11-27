@@ -1,3 +1,4 @@
+import type { WebSocketCompat } from '../../native/WebSocket';
 import type { AppDispatch } from '../../store';
 import { disconnectAction } from '../../store/actions';
 
@@ -25,7 +26,7 @@ export enum State {
 }
 
 export default abstract class WeechatConnection {
-  protected websocket?: WebSocket;
+  protected websocket?: WebSocketCompat;
   protected state = State.DISCONNECTED;
   protected url: URL;
 

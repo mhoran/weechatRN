@@ -13,6 +13,11 @@ export default {
     config: {
       usesNonExemptEncryption: false
     },
+    infoPlist: {
+      NSAppTransportSecurity: {
+        NSAllowsArbitraryLoads: true
+      }
+    },
     privacyManifests: {
       NSPrivacyAccessedAPITypes: [
         {

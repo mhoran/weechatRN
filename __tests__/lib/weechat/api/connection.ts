@@ -1,11 +1,12 @@
 import WeechatApiConnection from '../../../../src/lib/weechat/api/connection';
 import type { ConnectionError } from '../../../../src/lib/weechat/connection';
+import * as WebSocketCompat from '../../../../src/native/WebSocket';
 import {
   disconnectAction,
   fetchVersionAction
 } from '../../../../src/store/actions';
 
-const mockWebSocket = jest.fn(function () {
+const mockWebSocket = jest.fn(function (_url, _protocols?) {
   this.readyState = WebSocket.OPEN;
   this.send = jest.fn();
   this.close = jest.fn(() => {
@@ -16,16 +17,17 @@ const mockWebSocket = jest.fn(function () {
 });
 
 describe(WeechatApiConnection, () => {
-  let realWebSocket: typeof WebSocket;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    realWebSocket = window.WebSocket;
-    window.WebSocket = mockWebSocket as unknown as typeof WebSocket;
+    jest
+      .spyOn(WebSocketCompat, 'createWebSocket')
+      .mockImplementation(
+        (url, protocols?) => new mockWebSocket(url, protocols)
+      );
   });
 
   afterEach(() => {
-    window.WebSocket = realWebSocket;
+    jest.restoreAllMocks();
   });
 
   it('calls onError when authentication fails', () => {
