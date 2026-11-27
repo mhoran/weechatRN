@@ -9,6 +9,7 @@ import {
   bufferTitleChangedAction,
   bufferUnhiddenAction,
   fetchBuffersAction,
+  fetchLinesAction,
   lastReadLinesAction
 } from './actions';
 import { createReducer } from '@reduxjs/toolkit';
@@ -108,6 +109,27 @@ const bufferReducer = createReducer(initialState, (builder) => {
       [action.payload.id]: {
         ...state[action.payload.id],
         notify: action.payload.notify
+      }
+    };
+  });
+  builder.addCase(fetchLinesAction, (state, action) => {
+    const bufferId = action.payload[0].buffer;
+    const lastReadLine = state[bufferId]?.last_read_line;
+    const lastReadLineIndex = action.payload.findIndex(
+      (line) => line.id === lastReadLine
+    );
+
+    if (lastReadLineIndex < 0) return;
+
+    const lastDisplayedLine = action.payload
+      .slice(lastReadLineIndex)
+      .find((line) => line.displayed === 1);
+
+    return {
+      ...state,
+      [bufferId]: {
+        ...state[bufferId],
+        last_read_line: lastDisplayedLine?.id ?? lastReadLine
       }
     };
   });

@@ -109,9 +109,14 @@ const Buffer = ({
   const [listHeight, setListHeight] = useState(0);
   const [visibleIndices, setVisibleIndicies] = useState<(number | null)[]>();
 
+  const filtered = useMemo(
+    () => lines.filter((line) => line.displayed === 1),
+    [lines]
+  );
+
   const lastReadLineIndex = useMemo(
-    () => lines.findIndex((line) => line.id === lastReadLine),
-    [lines, lastReadLine]
+    () => filtered.findIndex((line) => line.id === lastReadLine),
+    [filtered, lastReadLine]
   );
 
   let showJumpToUnread = false;
@@ -157,7 +162,7 @@ const Buffer = ({
 
     clearNotification();
 
-    const index = lines.findIndex((line) => line.id === notificationLineId);
+    const index = filtered.findIndex((line) => line.id === notificationLineId);
     if (index < 0) return;
 
     setTimeout(() => {
@@ -179,13 +184,7 @@ const Buffer = ({
 
   const renderBuffer: ListRenderItem<WeechatLine> = useCallback(
     ({ item, index }) => {
-      let lastMessage;
-      for (let i = index + 1; i < lines.length; i++) {
-        if (lines[i].displayed) {
-          lastMessage = lines[i];
-          break;
-        }
-      }
+      const lastMessage = filtered[index + 1];
 
       return (
         <BufferLine
@@ -198,7 +197,7 @@ const Buffer = ({
         />
       );
     },
-    [lastReadLine, lines, nickWidth, onLongPress, parseArgs]
+    [lastReadLine, filtered, nickWidth, onLongPress, parseArgs]
   );
 
   const handleOnScroll = useCallback(
@@ -248,7 +247,7 @@ const Buffer = ({
         ref={linesList}
         accessibilityLabel="Message list"
         style={styles.list}
-        data={lines}
+        data={filtered}
         inverted
         key={bufferId}
         onLayout={handleOnLayout}

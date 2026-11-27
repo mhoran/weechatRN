@@ -936,8 +936,7 @@ describe('transformToReduxAction', () => {
                 id: 0,
                 buffer: '83a41cd80',
                 pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
-                date: new Date('2024-11-09T00:02:07.000Z'),
-                date_printed: new Date('2024-11-10T17:28:48.000Z')
+                date: new Date('2024-11-09T00:02:07.000Z')
               }
             ]
           }
@@ -975,8 +974,7 @@ describe('transformToReduxAction', () => {
               {
                 buffer: '83a41cd80',
                 pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
-                date: new Date('2024-11-09T00:02:07.000Z'),
-                date_printed: new Date('2024-11-10T17:28:48.000Z')
+                date: new Date('2024-11-09T00:02:07.000Z')
               }
             ]
           }
@@ -989,6 +987,73 @@ describe('transformToReduxAction', () => {
       expect(store.getState().lines).toHaveProperty('83a41cd80');
       const lines = store.getState().lines['83a41cd80'];
       expect(lines[0].id).toEqual(parseInt('85d064440', 16));
+    });
+
+    it('sets the buffer last read line to the last displayed line', () => {
+      const store = configureStore({
+        preloadedState: {
+          buffers: {
+            '1a75e5089400': { last_read_line: 29093662383424 } as WeechatBuffer
+          }
+        },
+        reducer,
+        enhancers: (getDefaultEnhancers) =>
+          getDefaultEnhancers({ autoBatch: false })
+      });
+
+      const action = transformToReduxAction({
+        id: 'lines',
+        header: { compression: 0, length: 0 },
+        objects: [
+          {
+            type: 'hda',
+            content: [
+              {
+                // 29093662383616
+                buffer: '1a75e5089400',
+                pointers: [
+                  '1a75e5089400',
+                  '1a75e54f2b40',
+                  '1a75e56983e0',
+                  '1a75e5695e00'
+                ],
+                date: new Date('2024-11-09T00:02:09.000Z'),
+                displayed: 1
+              },
+              {
+                // 29093662383424
+                buffer: '1a75e5089400',
+                pointers: [
+                  '1a75e5089400',
+                  '1a75e54f2b40',
+                  '1a75e56983a0',
+                  '1a75e5695d40'
+                ],
+                date: new Date('2024-11-09T00:02:08.000Z'),
+                displayed: 0
+              },
+              {
+                // 29093662383232
+                buffer: '1a75e5089400',
+                pointers: [
+                  '1a75e5089400',
+                  '1a75e54f2b40',
+                  '1a75e5698380',
+                  '1a75e5695c80'
+                ],
+                date: new Date('2024-11-09T00:02:07.000Z'),
+                displayed: 1
+              }
+            ]
+          }
+        ]
+      });
+      expect(action).toBeDefined();
+
+      store.dispatch(action!);
+
+      const buffer = store.getState().buffers['1a75e5089400'];
+      expect(buffer.last_read_line).toEqual(29093662383232);
     });
 
     it('does not set deprecated properties', () => {

@@ -22,29 +22,24 @@ const BufferLine: React.FC<Props> = ({
   lastReadLine,
   lastMessageDate
 }) => {
-  const showLine = line.displayed !== 0;
   const showDate = !(lastMessageDate && isSameDay(line.date, lastMessageDate));
   const showReadMarker = line.id === lastReadLine;
 
   return (
     <View>
-      {showLine && (
-        <>
-          {showDate && (
-            <View style={[styles.container]}>
-              <Text style={[styles.text, { color: cof.chat_day_change.color }]}>
-                -- {formatDateDayChange(line.date)} --
-              </Text>
-            </View>
-          )}
-          <Default
-            line={line}
-            onLongPress={onLongPress}
-            parseArgs={parseArgs}
-            nickWidth={nickWidth}
-          />
-        </>
+      {showDate && (
+        <View style={[styles.container]}>
+          <Text style={[styles.text, { color: cof.chat_day_change.color }]}>
+            -- {formatDateDayChange(line.date)} --
+          </Text>
+        </View>
       )}
+      <Default
+        line={line}
+        onLongPress={onLongPress}
+        parseArgs={parseArgs}
+        nickWidth={nickWidth}
+      />
       {showReadMarker && (
         <View
           style={{ borderWidth: 1, borderColor: cof.chat_read_marker.color }}
