@@ -1080,7 +1080,7 @@ describe('transformToReduxAction', () => {
                 buffer: '83a41cd80',
                 pointers: ['83a41cd80', '8493d36c0', '84d806c20', '85d064440'],
                 date: new Date('2024-11-09T00:02:07.000Z'),
-                date_printed: new Date('2024-11-10T17:28:48.000Z')
+                date_printed: new Date('2024-11-09T00:02:07.000Z')
               }
             ]
           }
@@ -1110,6 +1110,7 @@ describe('transformToReduxAction', () => {
       buffer: string;
       pointer: string;
       date: Date;
+      date_printed?: Date;
       tags: string[];
       notify_level?: number;
       highlight?: number;
@@ -1307,6 +1308,7 @@ describe('transformToReduxAction', () => {
         buffer: '83a41cd80',
         pointer: '85d064440',
         date: new Date('2024-11-09T00:02:07.000Z'),
+        date_printed: new Date('2024-11-09T00:02:07.000Z'),
         tags: [],
         notify_level: -1
       });
@@ -1402,7 +1404,7 @@ describe('transformToReduxAction', () => {
                 buffer: '83d204d80',
                 pointers: ['83d204d80', '83c016280', '838a65900', '83c000420'],
                 date: new Date('2024-11-09T00:02:07.000Z'),
-                date_printed: new Date('2024-11-10T17:28:48.000Z'),
+                date_printed: new Date('2024-11-09T00:02:07.000Z'),
                 message: 'Beep boop'
               }
             ]
