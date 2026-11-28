@@ -7,7 +7,6 @@ import type { EventSubscription } from 'react-native';
 import {
   Dimensions,
   Keyboard,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -244,8 +243,6 @@ class App extends React.PureComponent<Props, State> {
               drawerType="slide"
             >
               <SafeAreaView style={styles.container}>
-                <StatusBar barStyle="light-content" />
-
                 <NicklistModal
                   key={currentBufferId}
                   ref={this.nicklistRef}

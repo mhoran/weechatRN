@@ -203,10 +203,18 @@ export default class WeechatNative extends React.Component<null, State> {
               <NavigationContainer
                 theme={theme === 'dark' ? DarkTheme : DefaultTheme}
               >
-                <Stack.Navigator>
+                <Stack.Navigator
+                  screenOptions={{
+                    statusBarStyle: theme === 'light' ? 'dark' : 'light'
+                  }}
+                >
                   <Stack.Screen
                     name="App"
-                    options={{ headerShown: false, gestureEnabled: false }}
+                    options={{
+                      headerShown: false,
+                      gestureEnabled: false,
+                      statusBarStyle: 'light'
+                    }}
                   >
                     {(props) => (
                       <App

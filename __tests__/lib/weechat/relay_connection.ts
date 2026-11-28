@@ -1,5 +1,6 @@
 import type { ConnectionError } from '../../../src/lib/weechat/connection';
 import WeechatRelayConnection from '../../../src/lib/weechat/relay_connection';
+import * as WebSocketCompat from '../../../src/native/WebSocket';
 import {
   disconnectAction,
   fetchVersionAction
@@ -16,16 +17,15 @@ const mockWebSocket = jest.fn(function () {
 });
 
 describe(WeechatRelayConnection, () => {
-  let realWebSocket: typeof WebSocket;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    realWebSocket = window.WebSocket;
-    window.WebSocket = mockWebSocket as unknown as typeof WebSocket;
+    jest
+      .spyOn(WebSocketCompat, 'createWebSocket')
+      .mockImplementation(() => new mockWebSocket());
   });
 
   afterEach(() => {
-    window.WebSocket = realWebSocket;
+    jest.restoreAllMocks();
   });
 
   it('calls onError when authentication fails', () => {

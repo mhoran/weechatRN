@@ -1,3 +1,4 @@
+import { createWebSocket } from '../../native/WebSocket';
 import type { AppDispatch } from '../../store';
 import { transformToReduxAction } from './action_transformer';
 import type { ConnectionError } from './connection';
@@ -25,7 +26,7 @@ export default class WeechatRelayConnection extends WeechatConnection {
   }
 
   protected openSocket(): void {
-    this.websocket = new WebSocket(this.url.toString());
+    this.websocket = createWebSocket(this.url.toString());
 
     this.websocket.onopen = () => this.onopen();
     this.websocket.onmessage = (event) => this.onmessage(event);

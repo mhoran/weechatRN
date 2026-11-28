@@ -14,16 +14,16 @@ import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 import { accessibilityLabel, buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useEffect, useEffectEvent, useState } from 'react';
-import { Platform, StatusBar, useColorScheme, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createSelector } from 'reselect';
+import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 import type { StoreState } from '../../store';
 import { setConnectionInfoAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { Settings } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 
 type NavigationProps = NativeStackScreenProps<
   RootStackParamList,
@@ -42,8 +42,6 @@ const selectConnectionState = createSelector(
 );
 
 const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
-  const theme = useColorScheme();
-
   const connectionOptions = useAppSelector(selectConnectionState);
 
   const hostname = useNativeState(connectionOptions.hostname);
@@ -77,10 +75,6 @@ const ConnectionSettings: React.FC<NavigationProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1 }}>
-        <StatusBar
-          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-        />
-
         <KeyboardAvoidingView
           enabled={Platform.OS === 'android'}
           style={{ flex: 1 }}

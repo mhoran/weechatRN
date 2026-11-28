@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - development
+          - preview
           - production
   push:
     tags:

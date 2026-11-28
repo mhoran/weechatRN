@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer';
+import { createWebSocket } from '../../../native/WebSocket';
 import type { AppDispatch } from '../../../store';
 import type { ConnectionError } from '../connection';
 import WeechatConnection, { AuthenticationError, State } from '../connection';
@@ -21,7 +22,7 @@ export default class WeechatApiConnection extends WeechatConnection {
   }
 
   protected openSocket(): void {
-    this.websocket = new WebSocket(this.url.toString(), [
+    this.websocket = createWebSocket(this.url.toString(), [
       'api.weechat',
       `base64url.bearer.authorization.weechat.${Buffer.from(`plain:${this.password}`).toString('base64')}`
     ]);
