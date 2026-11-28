@@ -2,14 +2,14 @@ import { FieldGroup, Host, Switch, Text, TextInput } from '@expo/ui';
 import { accessibilityLabel } from '@expo/ui/swift-ui/modifiers';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useEffect, useEffectEvent, useReducer } from 'react';
-import { Platform, StatusBar, useColorScheme } from 'react-native';
+import { Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 import { setMediaUploadOptionsAction } from '../../store/actions';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { MediaUploadOptions } from '../../store/settings';
 import type { RootStackParamList } from '../Root';
 import { styles } from './styles';
-import { KeyboardAvoidingView } from '../../../modules/keyboard-avoiding-view';
 
 type NavigationProps = NativeStackScreenProps<
   RootStackParamList,
@@ -30,8 +30,6 @@ const initialState = (uploadOptions: MediaUploadOptions) => {
 };
 
 const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
-  const theme = useColorScheme();
-
   const dispatch = useAppDispatch();
 
   const uploadOptions = useAppSelector(
@@ -81,9 +79,6 @@ const UploadSettings: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'bottom', 'left']}>
-      <StatusBar
-        barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-      />
       <KeyboardAvoidingView
         enabled={Platform.OS === 'android'}
         style={{ flex: 1 }}
